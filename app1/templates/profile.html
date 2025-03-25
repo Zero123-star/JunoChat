@@ -1,0 +1,48 @@
+{% block content %}
+<h2>Profile Page</h2>
+
+<table>
+    <tr>
+        <th>Field</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+        <td>Username</td>
+        <td>{{ user_data.username }}</td>
+    </tr>
+    <tr>
+        <td>Email</td>
+        <td>{{ user_data.email }}</td>
+    </tr>
+    <tr>
+        <td>Phone Number</td>
+        <td>{{ user_data.phone_number }}</td>
+    </tr>
+    <tr>
+        <td>Country</td>
+        <td>{{ user_data.country }}</td>
+    </tr>
+    <tr>
+        <td>Address</td>
+        <td>{{ user_data.address }}</td>
+    </tr>
+    <tr>
+        <td>Date of Birth</td>
+        <td>{{ user_data.date_of_birth }}</td>
+    </tr>
+    <tr>
+        <td>Profile Picture</td>
+        <td>
+            {% if user_data.profile_picture %}
+                <img src="{{ user_data.profile_picture }}" alt="Profile Picture" style="max-width: 200px;">
+            {% else %}
+                No Profile Picture
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+<p>
+    <a href="{% url 'password_change' %}">Change Password</a>
+</p>
+{% endblock %}

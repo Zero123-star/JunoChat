@@ -3,12 +3,22 @@ from django.contrib.auth.models import AbstractUser
 import random, string
 
 class CustomUser(AbstractUser):
-    #profile_picture = models.ImageField(upload_to='pfp/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='pfp/', blank=True, null=True)
     code = models.CharField(max_length=100, null=True)
     confirmed_email = models.BooleanField(default=False, null=False)
     blocked = models.BooleanField(default=False, null=False)
     followers = models.ManyToManyField('self', through='Follow', symmetrical=False, related_name='following')
-    
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='customuser_set',
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='customuser_permissions_set',
+        blank=True
+    )    
     class Meta:
         permissions = (
             ('block_user', 'Can block users'),

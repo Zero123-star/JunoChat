@@ -27,6 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ADMINS = [
+    ('Brain', 'lightbrain2018@gmail.com'),
+    ('Mastermind', 'djangonuts232@gmail.com'),
+]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587 
+EMAIL_USE_TLS = True 
+EMAIL_HOST_USER = 'djangonuts232@gmail.com'
+EMAIL_HOST_PASSWORD = 'egtmnmsaxuwntjqp'
+DEFAULT_FROM_EMAIL = 'Da-Boss <djangonuts232@gmail.com>'
+SITE_URL = 'http://localhost:8000'
 
 # Application definition
 
@@ -37,7 +50,108 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'app1',
 ]
+
+import os
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'debug_filter': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelname == 'DEBUG',
+        },
+        'info_filter': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelname == 'INFO',
+        },
+        'warning_filter': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelname == 'WARNING',
+        },
+        'error_filter': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelname == 'ERROR',
+        },
+        'critical_filter': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelname == 'CRITICAL',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'debug_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join('logs', 'debug.log'),
+            'formatter': 'verbose',
+            'filters': ['debug_filter'],
+        },
+        'info_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join('logs', 'info.log'),
+            'formatter': 'verbose',
+            'filters': ['info_filter'],
+        },
+        'warning_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join('logs', 'warning.log'),
+            'formatter': 'verbose',
+            'filters': ['warning_filter'],
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join('logs', 'error.log'),
+            'formatter': 'verbose',
+            'filters': ['error_filter'],
+        },
+        'critical_file': {
+            'level': 'CRITICAL',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join('logs', 'critical.log'),
+            'formatter': 'verbose',
+            'filters': ['critical_filter'],
+        },
+    },
+    'loggers': {
+        'app1': {
+            'handlers': ['console', 'debug_file', 'info_file', 'warning_file', 'error_file', 'critical_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+from django.contrib.messages import constants as message_constants
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+MESSAGE_TAGS = {
+    message_constants.DEBUG: 'debug',
+    message_constants.INFO: 'info',
+    message_constants.SUCCESS: 'success',
+    message_constants.WARNING: 'warning',
+    message_constants.ERROR: 'error',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -79,17 +193,19 @@ DATABASES = {
         'OPTIONS': {
                 'options': '-c search_path=django'
         },
-        'NAME': 'Django_MDS',   # numele bazei de date
-        'USER': 'postgres',      # username pt conexiunea la baza de date
+        'NAME': 'Django_MDS',
+        'USER': 'postgres',
         'PASSWORD': 'SQL2388@',
-        'HOST': 'localhost',  # sau IP-ul serverului
-        'PORT': '5432',       # portul implicit pentru PostgreSQL
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'app1.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -123,6 +239,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
