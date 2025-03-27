@@ -27,10 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-ADMINS = [
-    ('Brain', 'lightbrain2018@gmail.com'),
-    ('Mastermind', 'djangonuts232@gmail.com'),
-]
+#ADMINS = [
+#      ('Brain', 'lightbrain2018@gmail.com'),
+#      ('Mastermind', 'djangonuts232@gmail.com'),
+#  ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -41,6 +41,10 @@ EMAIL_HOST_PASSWORD = 'egtmnmsaxuwntjqp'
 DEFAULT_FROM_EMAIL = 'Da-Boss <djangonuts232@gmail.com>'
 SITE_URL = 'http://localhost:8000'
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,7 +54,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app1',
+    'rest_framework',
+    'base',
+    'corsheaders',
+    'drf_yasg',
 ]
 
 import os
@@ -133,7 +140,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'app1': {
+        'base': {
             'handlers': ['console', 'debug_file', 'info_file', 'warning_file', 'error_file', 'critical_file'],
             'level': 'DEBUG',
             'propagate': False,
@@ -161,6 +168,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'Django_MDS.urls'
@@ -205,7 +213,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = 'app1.CustomUser'
+AUTH_USER_MODEL = 'base.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -238,11 +246,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
+
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}

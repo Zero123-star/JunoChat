@@ -4,7 +4,7 @@ import random, string
 
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='pfp/', blank=True, null=True)
-    code = models.CharField(max_length=100, null=True)
+    code = models.CharField(max_length=100, unique=True, null=True)
     confirmed_email = models.BooleanField(default=False, null=False)
     blocked = models.BooleanField(default=False, null=False)
     followers = models.ManyToManyField('self', through='Follow', symmetrical=False, related_name='following')
@@ -55,6 +55,7 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ('follower', 'followed')
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.follower} follows {self.followed}"
@@ -74,12 +75,15 @@ class Character(models.Model):
     tags = models.ManyToManyField(Tag, related_name='characters', blank=True)
     creator = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='card_characters')
 
+    class Meta:
+        ordering = ['name']
+        
     def __str__(self):
         return f"{self.name} ({self.id})"  
 
 
 class Message(models.Model):
-    description = models.TextField(null=True)
+    description = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     chat = models.ForeignKey('Chat', on_delete=models.CASCADE, related_name='messages')
     sender_user = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_messages')
@@ -96,6 +100,9 @@ class Message(models.Model):
         super().delete(*args, **kwargs)
         Message.objects.filter(chat=self.chat, number__gt=number).update(number=models.F('number') - 1)
     
+    class Meta:
+        ordering = ['chat', 'number']
+            
     def __str__(self):
         return f"Message from {self.sender_user or self.sender_bot} in {self.chat}"
 
