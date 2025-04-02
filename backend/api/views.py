@@ -1,4 +1,5 @@
 from rest_framework import viewsets, filters, permissions
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from base.models import CustomUser, Follow, Tag, Character, Message, Chat
@@ -8,7 +9,7 @@ from .serializers import CustomUserSerializer, FollowSerializer, TagSerializer, 
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email']
     
@@ -42,13 +43,13 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class FollowViewSet(viewsets.ModelViewSet):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
@@ -56,7 +57,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class CharacterViewSet(viewsets.ModelViewSet):
     queryset = Character.objects.all()
     serializer_class = CharacterSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description', 'tags__name']
     ordering_fields = ['name']
@@ -69,11 +70,13 @@ class CharacterViewSet(viewsets.ModelViewSet):
         characters = Character.objects.filter(creator=request.user)
         serializer = self.get_serializer(characters, many=True)
         return Response(serializer.data)
+    
+    
 
 
 class ChatViewSet(viewsets.ModelViewSet):
     serializer_class = ChatSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         return Chat.objects.filter(user=self.request.user)
@@ -89,7 +92,7 @@ class ChatViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         return Message.objects.filter(chat__user=self.request.user)
