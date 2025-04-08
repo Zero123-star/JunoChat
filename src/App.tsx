@@ -1,5 +1,3 @@
-
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
@@ -12,6 +10,8 @@ import NotFound from './pages/NotFoundPage';
 import './index.css'; // Importă Tailwind CSS
 import ChatPage from './pages/ChatPage';
 import CharacterDetails from './components/CharacterDetails';
+import AddCharacterPage from './pages/AddCharacterPage';
+import EditCharacterPage from './pages/EditCharacterPage';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +26,8 @@ const App = () => (
             <Route path="/home" element={<HomePage />} />
             <Route path="/" element={<SimplePage />} />
             <Route path="/characters" element={<CharactersPage />} />
+            <Route path="/characters/add" element={<AddCharacterPage />} />
+            <Route path="/characters/edit/:id" element={<EditCharacterPage />} />
             <Route path="/chat/:characterId" element={<ChatPage />} /> 
             <Route path="/character/:id" element={<CharacterDetails />} /> 
             <Route path="/login" element={<LoginPage />} />

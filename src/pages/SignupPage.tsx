@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login, getCurrentUser } from '@/api';
+import { signup, getCurrentUser } from '@/api';
 import { Button } from '@/components/ui/uiButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,11 +8,13 @@ import { toast } from 'sonner';
 import { Sparkles, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const LoginPage: React.FC = () => {
+const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -30,18 +32,25 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await login(formData);
-      // Store the auth token
-      localStorage.setItem('token', response.auth_token);
+      // Remove confirmPassword before sending to API
+      const { confirmPassword, ...signupData } = formData;
+      const response = await signup(signupData);
       
-      // Get user data
-      const userData = await getCurrentUser();
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Show success message
+      toast.success('Account created successfully! Please log in.');
       
-      navigate('/characters');
-    } catch (err) {
-      setError('Invalid username or password');
+      // Redirect to login page
+      navigate('/login');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -75,10 +84,10 @@ const LoginPage: React.FC = () => {
               <Sparkles className="text-pink-500 h-8 w-8 mx-auto mb-2" />
             </motion.div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text">
-              Welcome Back!
+              Create Your Account
             </h1>
             <p className="text-purple-700 mt-2">
-              Sign in to chat with your favorite characters
+              Join the adventure and start chatting with characters
             </p>
           </div>
 
@@ -90,12 +99,26 @@ const LoginPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-purple-800 font-medium">Username</Label>
+              <Label htmlFor="username" className="text-purple-800 font-medium">Username</Label>
               <Input 
-                id="email" 
+                id="username" 
                 type="text" 
                 name="username"
                 value={formData.username}
+                onChange={handleChange}
+                placeholder="Choose a username" 
+                required 
+                className="bg-white/50 border-pink-200 focus:border-purple-400"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-purple-800 font-medium">Email</Label>
+              <Input 
+                id="email" 
+                type="email" 
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email" 
                 required 
@@ -104,22 +127,28 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-purple-800 font-medium">Password</Label>
-                <a 
-                  href="#" 
-                  className="text-sm text-pink-500 hover:text-pink-700 hover:underline"
-                >
-                  Forgot password?
-                </a>
-              </div>
+              <Label htmlFor="password" className="text-purple-800 font-medium">Password</Label>
               <Input 
                 id="password" 
                 type="password" 
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter your password" 
+                placeholder="Create a password" 
+                required 
+                className="bg-white/50 border-pink-200 focus:border-purple-400"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-purple-800 font-medium">Confirm Password</Label>
+              <Input 
+                id="confirmPassword" 
+                type="password" 
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm your password" 
                 required 
                 className="bg-white/50 border-pink-200 focus:border-purple-400"
               />
@@ -130,22 +159,22 @@ const LoginPage: React.FC = () => {
               disabled={loading}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium h-11"
             >
-              {loading ? 'Logging in...' : 'Start Your Adventure'}
+              {loading ? 'Creating Account...' : 'Create Account'}
               <Heart className="ml-2 h-4 w-4" />
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-purple-700">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-pink-500 hover:text-pink-700 hover:underline font-medium">
-                Create one now
+              Already have an account?{" "}
+              <Link to="/login" className="text-pink-500 hover:text-pink-700 hover:underline font-medium">
+                Log in here
               </Link>
             </p>
             
             <div className="mt-6 pt-6 border-t border-pink-100">
               <p className="text-xs text-purple-500">
-                By logging in, you agree to chat responsibly with anime characters
+                By creating an account, you agree to chat responsibly with anime characters
               </p>
             </div>
           </div>
@@ -155,4 +184,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

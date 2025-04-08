@@ -1,10 +1,12 @@
 export interface Character {
     id: string;
     name: string;
-    avatar?: string;
     description: string;
-    tags?: string[];
-    creator?: string;
+    avatar?: string;
+    tags: string; // Stored as comma-separated string in Django
     color?: string;
-  }
+    creator: string; // User ID or username
+    created_at?: string;
+    updated_at?: string;
+}
   
