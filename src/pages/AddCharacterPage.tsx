@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createCharacter } from '@/api';
 import { Character } from '@/types/character';
+import { Button } from '@/components/ui/uiButton';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Sparkles, Image as ImageIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 const AddCharacterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,11 +20,13 @@ const AddCharacterPage: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  // Check if user is logged in
+  // Check authentication on component mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
+      toast.error('Please log in to create a character');
       navigate('/login');
     }
   }, [navigate]);
@@ -30,9 +38,11 @@ const AddCharacterPage: React.FC = () => {
 
     try {
       await createCharacter(formData);
+      toast.success('Character created successfully!');
       navigate('/characters');
     } catch (err) {
       setError('Failed to create character. Please try again.');
+      toast.error('Failed to create character');
     } finally {
       setLoading(false);
     }
@@ -48,92 +58,157 @@ const AddCharacterPage: React.FC = () => {
     setFormData(prev => ({ ...prev, tags: tags.join(',') }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+        setFormData(prev => ({ ...prev, avatar: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-100 to-pink-100 p-8">
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold mb-6">Add New Character</h1>
-        
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Avatar URL</label>
-            <input
-              type="url"
-              name="avatar"
-              value={formData.avatar}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Tags (comma-separated)</label>
-            <input
-              type="text"
-              value={formData.tags}
-              onChange={handleTagsChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Color</label>
-            <input
-              type="color"
-              name="color"
-              value={formData.color}
-              onChange={handleChange}
-              className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => navigate('/characters')}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+      <motion.div 
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-pink-100">
+          <div className="text-center mb-8">
+            <motion.div 
+              className="inline-block"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 260, 
+                damping: 20 
+              }}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50"
-            >
-              {loading ? 'Creating...' : 'Create Character'}
-            </button>
+              <Sparkles className="text-pink-500 h-8 w-8 mx-auto mb-2" />
+            </motion.div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text">
+              Create New Character
+            </h1>
+            <p className="text-purple-700 mt-2">
+              Bring your character to life
+            </p>
           </div>
-        </form>
-      </div>
+
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-purple-800 font-medium">Name</Label>
+              <Input 
+                id="name" 
+                type="text" 
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter character name" 
+                required 
+                className="bg-white/50 border-pink-200 focus:border-purple-400"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-purple-800 font-medium">Description</Label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Describe your character"
+                required
+                rows={4}
+                className="w-full px-3 py-2 bg-white/50 border border-pink-200 rounded-lg focus:border-purple-400 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="image" className="text-purple-800 font-medium">Character Image</Label>
+              <div className="flex items-center space-x-4">
+                <label className="flex-1">
+                  <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-pink-200 rounded-lg cursor-pointer hover:border-purple-400 transition-colors">
+                    <div className="text-center">
+                      <ImageIcon className="h-8 w-8 mx-auto text-pink-500" />
+                      <p className="mt-2 text-sm text-purple-700">Click to upload image</p>
+                    </div>
+                    <input
+                      type="file"
+                      id="image"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+                </label>
+                {previewImage && (
+                  <img
+                    src={previewImage}
+                    alt="Preview"
+                    className="h-32 w-32 object-cover rounded-lg"
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tags" className="text-purple-800 font-medium">Tags</Label>
+              <Input 
+                id="tags" 
+                type="text" 
+                value={formData.tags}
+                onChange={handleTagsChange}
+                placeholder="Enter tags (comma-separated)" 
+                className="bg-white/50 border-pink-200 focus:border-purple-400"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="color" className="text-purple-800 font-medium">Color</Label>
+              <div className="flex items-center space-x-4">
+                <input
+                  type="color"
+                  id="color"
+                  name="color"
+                  value={formData.color}
+                  onChange={handleChange}
+                  className="h-10 w-20 rounded-lg cursor-pointer"
+                />
+                <span className="text-purple-700">{formData.color}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-4 pt-4">
+              <Button
+                type="button"
+                onClick={() => navigate('/characters')}
+                className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                {loading ? 'Creating...' : 'Create Character'}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </motion.div>
     </div>
   );
 };
