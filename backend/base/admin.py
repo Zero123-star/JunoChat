@@ -33,7 +33,7 @@ admin.site.register(Tag, TagAdmin)
     
 from .models import Character
 class CharacterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'creator', 'id')
+    list_display = ('name', 'creator', 'id', 'source', 'description', 'avatar')
     search_fields = ('name', 'description')
     list_filter = ('tags',)
     filter_horizontal = ('tags',)

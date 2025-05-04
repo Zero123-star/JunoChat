@@ -41,7 +41,7 @@ class CharacterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Character
-        fields = ['id', 'name', 'description', 'tags', 'creator', 'creator_username']
+        fields = ['id', 'name', 'avatar', 'source', 'description', 'tags', 'creator', 'creator_username']
         read_only_fields = ['id']
     
     def create(self, validated_data):

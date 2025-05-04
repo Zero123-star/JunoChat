@@ -42,7 +42,9 @@ DEFAULT_FROM_EMAIL = 'Da-Boss <djangonuts232@gmail.com>'
 SITE_URL = 'http://localhost:8000'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:3000",  # Dacă folosești Create React App
+    "http://localhost:5173", 
+     "http://localhost:5174", # Dacă folosești Vite
 ]
 
 # Application definition
@@ -56,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'base',
+    'api',
     'corsheaders',
     'drf_yasg',
 ]
@@ -203,7 +206,7 @@ DATABASES = {
         },
         'NAME': 'Django_MDS',
         'USER': 'postgres',
-        'PASSWORD': 'SQL2388@',
+        'PASSWORD': 'mongo',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -258,10 +261,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.permissions.AllowAny',
     ],
 }
+
+import os
+
+MEDIA_URL = '/media/'  # URL-ul pentru accesarea fișierelor media
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directorul unde sunt stocate fișierele media
