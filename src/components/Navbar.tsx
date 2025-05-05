@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          {isLoggedIn && (
+          {
             <Button
               onClick={() => navigate('/characters/add')}
               className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
@@ -34,7 +34,7 @@ const Navbar: React.FC = () => {
               <Plus className="h-4 w-4" />
               <span>New Character</span>
             </Button>
-          )}
+          }
           
           {!isLoggedIn ? (
             <Button

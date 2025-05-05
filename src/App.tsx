@@ -12,6 +12,7 @@ import ChatPage from './pages/ChatPage';
 import CharacterDetails from './components/CharacterDetails';
 import AddCharacterPage from './pages/AddCharacterPage';
 import EditCharacterPage from './pages/EditCharacterPage';
+import SignupPage from './pages/SignupPage';
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/chat/:characterId" element={<ChatPage />} /> 
             <Route path="/character/:id" element={<CharacterDetails />} /> 
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} /> 
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

@@ -4,7 +4,6 @@ import { login, getCurrentUser } from '@/api';
 import { Button } from '@/components/ui/uiButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
 import { Sparkles, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -40,7 +39,8 @@ const LoginPage: React.FC = () => {
       localStorage.setItem('user', JSON.stringify(userData));
       
       navigate('/characters');
-    } catch (err) {
+    } catch (error) {
+      console.error('Login error:', error);
       setError('Invalid username or password');
     } finally {
       setLoading(false);

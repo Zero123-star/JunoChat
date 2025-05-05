@@ -91,7 +91,7 @@ export const signup = async (userData: {
 };
 
 // Character management endpoints
-export const createCharacter = async (characterData: Omit<Character, 'id' | 'creator'>) => {
+export const createCharacter = async (characterData: Character) => {
   const response = await API.post<Character>('characters/', characterData);
   return response.data;
 };

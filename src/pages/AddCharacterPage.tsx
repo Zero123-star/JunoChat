@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createCharacter } from '@/api';
 import { Character } from '@/types/character';
@@ -23,13 +23,13 @@ const AddCharacterPage: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Check authentication on component mount
-  useEffect(() => {
+  /*useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       toast.error('Please log in to create a character');
       navigate('/login');
     }
-  }, [navigate]);
+  }, [navigate]);*/
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,10 +37,10 @@ const AddCharacterPage: React.FC = () => {
     setError(null);
 
     try {
-      await createCharacter(formData);
+      await createCharacter({ ...formData, id: '', creator: '' });
       toast.success('Character created successfully!');
       navigate('/characters');
-    } catch (err) {
+    } catch {
       setError('Failed to create character. Please try again.');
       toast.error('Failed to create character');
     } finally {
