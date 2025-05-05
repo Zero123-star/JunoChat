@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Character AI Chat</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: auto; padding: 2rem; }
+    label, select, input, textarea, button { display: block; width: 100%; margin-top: 1rem; }
+    textarea { height: 100px; }
+    .reply { background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Character AI Chat</h1>
+  <form method="post" action="/chat">
+    <label for="character">Character</label>
+    <select name="character" id="character">
+      {% for p in personas %}
+        <option value="{{ p }}" {% if selected_character == p %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+    <label for="model">Model</label>
+    <select name="model" id="model">
+      {% for m in models %}
+        <option value="{{ m }}" {% if selected_model == m %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+    <label for="message">Message</label>
+    <textarea name="message" id="message">{{ user_message or '' }}</textarea>
+    <button type="submit">Send</button>
+  </form>
+  {% if reply %}
+    <div class="reply">
+      <strong>Assistant:</strong><br>
+      {{ reply }}
+    </div>
+  {% endif %}
+
+  <hr>
+  <h2>Character Profiles</h2>
+  {% for p in personas %}
+    {% set persona = load_persona(p) %}
+    <div class="reply">
+      <strong>{{ persona.name }}</strong><br>
+      <img src="{{ persona.image_url }}" alt="{{ persona.name }}'s image" style="max-width: 100px; max-height: 100px;"><br>
+      <em>{{ persona.persona }}</em>
+    </div>
+  {% endfor %}
+
+
+  {% if reflection %}
+    <div class="reply">
+      <strong>Character Thinking:</strong><br>
+      <em>{{ reflection }}</em>
+    </div>
+  {% endif %}
+
+</body>
+</html>
