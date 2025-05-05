@@ -1,7 +1,2 @@
-Project created by:
-1. Luparu Ioan-Teodor
-2. Moise Irina
-3. Corobana Ingrid-Adriana @dirgnic
-4. Prizlopan Iustin-George
-5. Sescu Matei
-   
+# Character AI Router
+A backend-only Character-AI-like router app with LoRA fine-tuning, vector memory, and prompt templating.

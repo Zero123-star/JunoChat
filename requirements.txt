@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+transformers
+peft
+datasets
+torch
+sentence-transformers
+chromadb
+jinja2
