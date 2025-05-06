@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+transformers
+peft
+datasets
+torch
+sentence-transformers
+chromadb
+jinja2
+sqlmodel>=0.0.8
+optimum
