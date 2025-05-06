@@ -3,6 +3,48 @@ def format_prompt(template_name, persona, history, message, summary=None):
 
     # Default to plain
     if template_name == "plain":
+        persona_text = persona["persona"].strip()
+        lines = []
+
+        # Inject persona into the first user message instead of <|system|>
+        intro = f"You are {persona_text}"  # e.g., "You are Bob, a hard-boiled detective..."
+        lines.append(f"<|user|>{intro}")
+
+        # Optional summary
+        if summary:
+            lines.append(f"<|user|>Summary of previous discussion: {summary.strip()}")
+
+        # System-level persona definition
+        lines.append(f"<|system|>{persona_text}")
+
+        # Optional summary as system-level
+        if summary:
+            lines.append(f"<|system|>Summary of previous discussion: {summary.strip()}")
+
+        # Inject system message version of history
+        for turn in history:
+            user = turn.get("user", "").strip()
+            assistant = turn.get("assistant", "").strip()
+            if user and assistant:
+                lines.append(f"<|system|>User: {user}\nAssistant: {assistant}")
+
+        # Also replay actual conversation history using chat-style tags
+        for turn in history:
+            user = turn.get("user", "").strip()
+            assistant = turn.get("assistant", "").strip()
+            if user:
+                lines.append(f"<|user|>{user}")
+            if assistant:
+                lines.append(f"<|assistant|>{assistant}")
+
+        # Current turn
+        lines.append(f"<|user|>{message.strip()}")
+        lines.append(f"<|assistant|>")
+
+        return "".join(lines)
+
+
+    elif template_name == "hermes":
         lines = [persona_text, ""]
         if summary:
             lines.append(f"Summary of previous discussion: {summary}\n")
