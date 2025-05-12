@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { createCharacter } from '@/api';
 import { Character } from '@/types/character';
 import { Button } from '@/components/ui/uiButton';
@@ -23,13 +23,13 @@ const AddCharacterPage: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Check authentication on component mount
-  /*useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       toast.error('Please log in to create a character');
       navigate('/login');
     }
-  }, [navigate]);*/
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -214,3 +214,7 @@ const AddCharacterPage: React.FC = () => {
 };
 
 export default AddCharacterPage; 
+
+function useEffect(arg0: () => void, arg1: NavigateFunction[]) {
+  throw new Error('Function not implemented.');
+}

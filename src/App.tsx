@@ -13,6 +13,7 @@ import CharacterDetails from './components/CharacterDetails';
 import AddCharacterPage from './pages/AddCharacterPage';
 import EditCharacterPage from './pages/EditCharacterPage';
 import SignupPage from './pages/SignupPage';
+import UserProfilePage from './pages/UserProfilePage';
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,8 @@ const App = () => (
             <Route path="/character/:id" element={<CharacterDetails />} /> 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} /> 
+            <Route path="/profile" element={<UserProfilePage />} />
+            <Route path="/profile/:username" element={<UserProfilePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
