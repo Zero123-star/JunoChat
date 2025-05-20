@@ -20,6 +20,7 @@ for i in uv:
     print(i.id)
 uer=CustomUser.objects.get(email="email")
 ch=Character.objects.all()
+
 for i in ch:
     aux=i.id
 #v=Chat.objects.create(
@@ -30,6 +31,7 @@ for i in ch:
 #print("gg")
 # Obține un utilizator existent
 user = uer
+print(uer.pk)
 ''''
 # Listează personajele de adăugat
 characters = [

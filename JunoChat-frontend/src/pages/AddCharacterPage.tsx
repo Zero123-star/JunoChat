@@ -37,7 +37,12 @@ const AddCharacterPage: React.FC = () => {
     setError(null);
 
     try {
-      await createCharacter(formData);
+      //console.log(formData);
+      console.log("User",localStorage.getItem('user'));
+      const creator_id = localStorage.getItem('user');
+      const final_data={formData,creator_id};
+      const response=await createCharacter(final_data);
+      console.log(response)
       toast.success('Character created successfully!');
       navigate('/characters');
     } catch (err) {

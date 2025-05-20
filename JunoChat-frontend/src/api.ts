@@ -105,11 +105,23 @@ export const signup = async (userData: {
 };
 
 // Character management endpoints
-export const createCharacter = async (characterData: Omit<Character, 'id' | 'creator'>) => {
-  const response = await API.post<Character>('characters/', characterData);
+export const createCharacter = async (data: { 
+  formData: Omit<Character, 'id' | 'creator'>, 
+  creator_id: any 
+}) => {
+  
+  console.log("Front end",data);
+  try{
+  const response = await API.post<Character>('characters/create_character/', data);
+  console.log(response.data);
   return response.data;
+  }
+  catch(error)
+  {
+    console.log(error);
+    throw data;
+  }
 };
-
 export const updateCharacter = async (id: string, characterData: Partial<Omit<Character, 'id' | 'creator'>>) => {
   const response = await API.put<Character>(`characters/${id}/`, characterData);
   return response.data;
