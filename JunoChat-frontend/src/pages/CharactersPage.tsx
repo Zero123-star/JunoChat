@@ -70,7 +70,7 @@ const CharactersPage: React.FC = () => {
             <div className="flex justify-center mb-4">
               <span className="inline-block bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text text-5xl font-bold">
                 <Sparkles className="inline-block mr-2 text-pink-500" size={32} />
-                Anime & Cartoon Characters
+                Characters
                 <Heart className="inline-block ml-2 text-pink-500" size={28} />
               </span>
             </div>

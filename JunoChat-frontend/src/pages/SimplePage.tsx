@@ -51,11 +51,11 @@ const SimplePage: React.FC = () => {
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold text-purple-600 mb-2">
           <span className="inline-block animate-bounce mr-2">✨</span>
-          Anime Chat
+          JunoChat
           <span className="inline-block animate-bounce ml-2">✨</span>
         </h1>
         <p className="text-lg text-purple-500">
-          Vorbește cu personajele tale preferate din anime și desene animate!
+          Talk with your favorite characters!
         </p>
       </header>
 
@@ -97,7 +97,7 @@ const SimplePage: React.FC = () => {
 
       {/* Footer */}
       <footer className="mt-12 text-center text-purple-500 pb-4">
-        <p>© 2023 Anime Chat App - Creat pentru învățare React</p>
+        <p>© 2023 JunoChat App - Creat pentru învățare React</p>
       </footer>
     </div>
   );

@@ -151,7 +151,7 @@ const LoginPage: React.FC = () => {
             
             <div className="mt-6 pt-6 border-t border-pink-100">
               <p className="text-xs text-purple-500">
-                By logging in, you agree to chat responsibly with anime characters
+                We hope you will have fun!
               </p>
             </div>
           </div>

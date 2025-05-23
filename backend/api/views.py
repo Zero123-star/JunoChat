@@ -1,5 +1,6 @@
 import requests###pip install requests
 import json
+import uuid
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, filters, permissions
@@ -89,6 +90,55 @@ class CharacterViewSet(viewsets.ModelViewSet):
         characters = Character.objects.filter(creator=request.user)
         serializer = self.get_serializer(characters, many=True)
         return Response(serializer.data)
+               
+    @csrf_exempt
+    @action(detail=False, methods=['post'])
+    def create_character(self,request):
+            print(123)
+            try:
+                # Parse the request body
+                data = request.data
+                print(123)
+                # Extract formData and creator_id from the request
+                form_data = data.get('formData')
+                creator_id = data.get('creator_id')
+                print(form_data)
+                # Validate creator_id and check if user exists
+                if not creator_id:
+                    return JsonResponse({'error': 'Creator ID is required'}, status=400)
+                print(creator_id)
+                # Extract character fields from formData
+                name = form_data.get('name')
+                description = form_data.get('description')
+                avatar = form_data.get('avatar', None)
+                tags = form_data.get('tags', '')
+                color = form_data.get('color', None)
+                
+                # Validate required fields
+                if not name or not description:
+                    return JsonResponse({'error': 'Name and description are required'}, status=400)
+                mimi=CustomUser.objects.get(id=creator_id)
+                print(name,description,avatar,creator_id,id)
+                # Create new character
+                character = Character.objects.create(
+                          # Generate a unique ID
+                    name=name,
+                    source="Created",
+                    description=description,
+                    avatar=avatar,
+                    #tags=tags,
+                    #color=color,
+                    creator=mimi  # Use the provided creator_id
+                )
+                print("HEY HEY HEY")
+                # Return the created character as JSON
+                return JsonResponse({'triumph': "Yes"}, status=201)
+            
+            except json.JSONDecodeError:
+                return JsonResponse({'error': 'Invalid JSON'}, status=400)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+        
     
     
 
@@ -113,6 +163,10 @@ class ChatViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+
+
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
@@ -132,8 +186,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         chat = serializer.validated_data.get('chat')
         if chat.user == self.request.user:
             serializer.save(sender_user=self.request.user)
-
-
+            
 
 def return_character_description(bot_id):
     queryset = Character.objects.all()
@@ -148,6 +201,8 @@ def return_simple_jailbreak(description):
     messages=[{'role' : 'system', 'content' : 'You are going to engage in a simple rpchat. Play in character based on the <Character sheet> description'},
               {'role' : 'system', 'content' : description},{'role': 'system', 'content' : 'Beginning of the rpchat below:'}]
     return messages
+
+
 @csrf_exempt
 def openrouter_chat(request):
     if request.method == "POST":
@@ -163,7 +218,7 @@ def openrouter_chat(request):
             response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
-                    "Authorization": f"Bearer ",
+                    "Authorization": f"Bearer",
                     "Content-Type": "application/json"
                 },
                 data=json.dumps({
@@ -180,4 +235,3 @@ def openrouter_chat(request):
                 "error": f"OpenRouter API returned status code {response.status_code}",
                         "details": response.text
                 }, status=response.status_code)
-    
