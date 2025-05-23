@@ -33,17 +33,11 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
-  // Patch: fire a custom event after login/logout to force Navbar update in the same tab
-  const triggerAuthChange = () => {
-    window.dispatchEvent(new Event('authChange'));
-  };
-
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       setAuthState({ isLoggedIn: false, username: null });
-      triggerAuthChange();
       navigate('/login');
     }
   };
@@ -57,6 +51,12 @@ const Navbar: React.FC = () => {
             className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
           >
             Home
+          </Link>
+          <Link 
+            to="/chats" 
+            className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
+          >
+            Chats
           </Link>
           <Link 
             to="/characters" 
@@ -76,7 +76,16 @@ const Navbar: React.FC = () => {
               <span>New Character</span>
             </Button>
           )}
-          
+
+          {/* Move Search Users button here */}
+          <Button
+            onClick={() => navigate('/search-users')}
+            className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
+          >
+            <span>Search Users</span>
+          </Button>
+
+          {/* Profile/Login/Logout buttons */}
           {authState.isLoggedIn ? (
             currentPath === `/profile/${authState.username}` ? (
               <Button
