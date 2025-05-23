@@ -124,24 +124,31 @@ const CharacterDetails: React.FC = () => {
           <div>
             <h2 className="text-xl font-semibold mb-2">Previous Chats</h2>
             <div className="max-h-60 overflow-y-auto border rounded-lg p-2 bg-gray-50">
-              {chats.length === 0 && <p className="text-gray-400">No chats yet.</p>}
-              {chats.slice(0, 5).map((chat) => (
-                <div
-                  key={chat.id}
-                  className="mb-2 p-2 bg-white rounded shadow cursor-pointer hover:bg-blue-50 transition"
-                  onClick={() => navigate(`/chat/${chat.id}`)}
-                >
-                  <div className="font-medium">{chat.title}</div>
-                  <div className="text-sm text-gray-500 truncate">{chat.last_message}</div>
-                </div>
-              ))}
-              {chats.length > 5 && (
-                <div
-                  className="text-center text-blue-600 font-medium cursor-pointer hover:underline"
-                  onClick={() => navigate(`/characters/${id}/chats`)}
-                >
-                  View all chats...
-                </div>
+              {!user ? (
+                <p className="text-gray-400">You must be logged in to view previous chats.</p>
+              ) : chats.length === 0 ? (
+                <p className="text-gray-400">No chats yet.</p>
+              ) : (
+                <>
+                  {chats.slice(0, 5).map((chat) => (
+                    <div
+                      key={chat.id}
+                      className="mb-2 p-2 bg-white rounded shadow cursor-pointer hover:bg-blue-50 transition"
+                      onClick={() => navigate(`/chat/${chat.id}`)}
+                    >
+                      <div className="font-medium">{chat.title}</div>
+                      <div className="text-sm text-gray-500 truncate">{chat.last_message}</div>
+                    </div>
+                  ))}
+                  {chats.length > 5 && (
+                    <div
+                      className="text-center text-blue-600 font-medium cursor-pointer hover:underline"
+                      onClick={() => navigate(`/characters/${id}/chats`)}
+                    >
+                      View all chats...
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
