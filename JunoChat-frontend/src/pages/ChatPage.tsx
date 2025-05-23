@@ -89,6 +89,20 @@ const ChatPage: React.FC = () => {
     alert(`Reroll assistant message at index ${index}`);
   };
 
+  // Check if user is logged in (adjust the key as per your app's logic)
+  const loggedInUser = localStorage.getItem('user'); // or 'token', etc.
+
+  if (!loggedInUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-white p-8 rounded shadow text-center">
+          <h2 className="text-xl font-bold mb-4">You must be logged in to chat.</h2>
+          <p>Please log in to start or continue a chat.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
