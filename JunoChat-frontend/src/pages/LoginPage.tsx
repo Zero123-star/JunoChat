@@ -42,6 +42,7 @@ const LoginPage: React.FC = () => {
       //const userData = await getCurrentUser();
         localStorage.setItem('user', JSON.stringify(response.status));
       }
+      window.dispatchEvent(new Event('authChange'));
       navigate('/characters');
     } catch (err) {
       {setError('Invalid username or password');
