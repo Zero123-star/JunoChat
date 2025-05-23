@@ -15,6 +15,8 @@ import AddCharacterPage from './pages/AddCharacterPage';
 import EditCharacterPage from './pages/EditCharacterPage';
 import UserProfilePage from './pages/UserProfilePage';
 import Debug from './pages/debug';
+import ChatsHistoryPage from './pages/ChatsHistoryPage';
+import UserSearchPage from './pages/UserSearchPage';
 
 const queryClient = new QueryClient();
 
@@ -32,11 +34,14 @@ const App = () => (
             <Route path="/characters" element={<CharactersPage />} />
             <Route path="/characters/add" element={<AddCharacterPage />} />
             <Route path="/characters/edit/:id" element={<EditCharacterPage />} />
-            <Route path="/chat/:characterId" element={<ChatPage />} />            <Route path="/character/:id" element={<CharacterDetails />} /> 
+            <Route path="/chat/:characterId" element={<ChatPage />} />            
+            <Route path="/character/:id" element={<CharacterDetails />} /> 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/profile/:username" element={<UserProfilePage />} />
+            <Route path="/chats" element={<ChatsHistoryPage />} />
+            <Route path="/search-users" element={<UserSearchPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
