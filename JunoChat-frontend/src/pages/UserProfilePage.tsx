@@ -9,7 +9,8 @@ import CharacterCarousel from '@/components/CharacterCarousel';
 
 const UserProfilePage: React.FC = () => {
   const { username } = useParams<{ username: string }>();
-  const loggedInUsername = localStorage.getItem('username'); // Assume username is stored in localStorage
+  const user = localStorage.getItem('user');
+  const loggedInUsername = user ? JSON.parse(user).username : null;
   const isOwnProfile = username === loggedInUsername;
 
   const navigate = useNavigate();

@@ -52,12 +52,14 @@ const Navbar: React.FC = () => {
           >
             Home
           </Link>
-          <Link 
-            to="/chats" 
-            className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
-          >
-            Chats
-          </Link>
+          {authState.isLoggedIn && (
+            <Link 
+              to="/chats" 
+              className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
+            >
+              Chats
+            </Link>
+          )}
           <Link 
             to="/characters" 
             className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
