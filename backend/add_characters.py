@@ -1,6 +1,6 @@
 import os
 import django
-
+import requests
 # Set Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Django_MDS.settings')
 
@@ -15,14 +15,74 @@ from base.models import Character
 from base.models import CustomUser
 from base.models import Chat
 from base.models import Message
+from api.views import ChatViewSet
 uv=Chat.objects.all()
 for i in uv:
     print(i.id)
 uer=CustomUser.objects.get(email="email")
-ch=Character.objects.all()
 
-for i in ch:
-    aux=i.id
+#Posting to a function from chatviewset, get_chats that returns a json with all the chats of a user
+chat_view_set = ChatViewSet()
+json={'user_id': uer.id}
+
+username='test'
+email='email@email'
+password='123'
+
+
+
+user = CustomUser.objects.get(username=username)
+user.delete()
+print("User deleted:", username)
+'''''
+Creates a user
+user = CustomUser.objects.create(
+    username=username,
+    email=email,
+    password=password,  # Note: Password should be hashed in production
+    is_superuser=False,
+    first_name='',
+    last_name='',
+    is_staff=False,
+    is_active=True,
+    date_joined='2006-10-25',  # Automatically set by Django
+    confirmed_email=False,  # Assuming you have a field for email confirmation
+    blocked=False  # Assuming you have a field for blocking users
+)
+print("User created:", user.username)
+###Delete the user
+'''
+
+#Delete all messages from a chat id 
+''''
+def delete_messages_from_chat(chat_id):
+    messages = Message.objects.filter(chat_id=chat_id)
+    for message in messages:
+        message.delete()
+    print(f"All messages from chat {chat_id} have been deleted.")
+delete_messages_from_chat(chat_id=4)
+'''''
+
+
+'''''
+print(message.description)
+###Testing a function now...
+def get_messages_list(chatid):
+  messages = Message.objects.filter(chat_id=chatid).order_by('number')
+  messages_list = []
+  for message in messages:
+    role = 'user' if message.sender_bot_id is None else 'assistant'
+    messages_list.append({
+    'role': role,
+    'content': message.description
+    })
+  return messages_list
+m=get_messages_list(chatid=4)
+print(m)
+'''
+
+
+#    print("This message is sent by the bot"
 #v=Chat.objects.create(
 #    id=1,
 #    chatbot_id=aux,
@@ -30,8 +90,26 @@ for i in ch:
 #    )
 #print("gg")
 # Obține un utilizator existent
+
+#NOTE: Chat correctly increments id. TODO: Decrement last ids when deleting a chat, otherwise we will get an overflow at some point
+''''
 user = uer
-print(uer.pk)
+user_id=user.id
+get_bot=Character.objects.get(name="Baloo the Bear")
+bot_id=get_bot.id
+##Now to generate mock chat (Lets hope we dont have to give ids)
+chat_that_doest_exist = Chat.objects.create(
+    chatbot_id=bot_id,
+    user_id=user_id
+)
+
+#print("check")
+#print(chat_that_doest_exist.id)
+##Delete the mock chat
+#chat_that_doest_exist.delete()
+#print("Successfully deleted the mock chat")
+'''
+
 ''''
 # Listează personajele de adăugat
 characters = [

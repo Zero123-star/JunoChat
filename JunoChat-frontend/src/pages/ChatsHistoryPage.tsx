@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import {getChatHistory} from '@/api'; 
 interface Chat {
   id: string;
   title: string;
@@ -16,13 +16,10 @@ const ChatsHistoryPage: React.FC = () => {
     const fetchChats = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8000/api/chats/', {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (!response.ok) throw new Error('Failed to fetch chats');
-        const data = await response.json();
-        setChats(data);
+        const user = localStorage.getItem('user');
+        const response = await getChatHistory(user); // Returns json containing list of all chats
+        console.log("Chats history response:", response.chats);
+        setChats(response.chats || []);
       } catch {
         setError('Failed to load chat history.');
       } finally {

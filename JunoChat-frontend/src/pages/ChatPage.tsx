@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { openrouter_chat } from '@/api';
+import { useParams, useLocation } from 'react-router-dom';
+import { openrouter_chat,getChatMessages, storeMessage} from '@/api';
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
 }
-
 interface Character {
   characterId: number;
   name: string;
@@ -20,6 +19,8 @@ const ChatPage: React.FC = () => {
   const [input, setInput] = useState(''); // Starea pentru input-ul utilizatorului
   const [loading, setLoading] = useState(true); // Starea pentru încărcare
   const [error, setError] = useState<string | null>(null); // Starea pentru erori
+  const location = useLocation(); //Getting from URL
+  const chatId = location.state?.chatId;
   useEffect(() => {
     if (messages.length > 0) {
       console.log('Last message:', messages[messages.length - 1]);
@@ -50,23 +51,50 @@ const ChatPage: React.FC = () => {
     fetchCharacter();
   }, [characterId]);
 
+//Load all messages from the chat
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getChatMessages(chatId); // API endpoint for chat messages
+        console.log("Chat messages response:", response);
+        const data =response.messages;
+        setMessages(data || []); // Setează mesajele din chat
+      } catch (error) {
+        console.error('Eroare la obținerea mesajelor:', error);
+        setError('Failed to load chat messages. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMessages();
+  }
+  , [chatId]);
 
 
   const handleSendMessage = async () => {
-    if (input.trim() === '') return;
+
 
     // Add user message
     const auxiliary=messages;
-    auxiliary.push({role: 'user', content: input });//We are using auxiliary, using a setter then sending messages leads to sync bugs
+    //Get userid from local storage
+    if(input.trim()!='') {
+    const userId = localStorage.getItem('user');
+    const json= { role: 'user', content: input, id: userId };
+    const response=await storeMessage(chatId,json);
+    console.log(response);
+    auxiliary.push({role: 'user', content: input});//We are using auxiliary, using a setter then sending messages leads to sync bugs
     //setMessages((prev) => [...prev, { role: 'user', content: input }]);
-    console.log("Messages array is now:",auxiliary)
-    //Get response
+    console.log("Messages array is now:",auxiliary)}
     try {
       console.log("Messages array before frontend api is now:",auxiliary)
       const response = await openrouter_chat(auxiliary,characterId);
       console.log("Messages after openrouter",auxiliary)
       const bot_reply = response.choices[0].message.content;
       auxiliary.push({ role: 'assistant', content: bot_reply });
+      const bot_response= await storeMessage(chatId,{ role: 'assistant', content: bot_reply, id: characterId });
+      console.log("Bot response stored:", bot_response);
       setMessages(auxiliary);
       } catch (error) {
         console.error("Error fetching response:", error);
@@ -92,8 +120,9 @@ const ChatPage: React.FC = () => {
   // Check if user is logged in (adjust the key as per your app's logic)
   const loggedInUser = localStorage.getItem('user'); // or 'token', etc.
 
-  if (!loggedInUser) {
-    return (
+  if (loggedInUser==null) {
+   
+    return ( 
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-white p-8 rounded shadow text-center">
           <h2 className="text-xl font-bold mb-4">You must be logged in to chat.</h2>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login, getCurrentUser } from '@/api';
+import { login} from '@/api';
 import { Button } from '@/components/ui/uiButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
 import { Sparkles, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 

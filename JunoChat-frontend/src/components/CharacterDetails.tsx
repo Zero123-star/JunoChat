@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
+import { get_first_chat, getCurrentUser, getChatHistory} from '@/api';
+import { get } from 'http';
 interface Character {
   id: string;
   name: string;
@@ -49,7 +50,9 @@ const CharacterDetails: React.FC = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/characters/${id}/chats/`);
+          //userid from localstorage
+        const userId = localStorage.getItem('user');
+        const response = await getChatHistory(userId); //TODO: Some filtering
         if (response.ok) {
           const data = await response.json();
           setChats(data);
@@ -62,11 +65,16 @@ const CharacterDetails: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/current_user/');
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
+        const currentUserId = localStorage.getItem('user');
+        const response = await getCurrentUser(currentUserId); 
+        if (!response.ok) {
+          throw new Error('Failed to fetch user details');
         }
+          console.log("Response from getCurrentUser:", response);
+          const data = await response.json();
+          setUser(data.username);
+          console.log("Current user:", data.username);
+        
       } catch {}
     };
     fetchUser();
@@ -78,7 +86,18 @@ const CharacterDetails: React.FC = () => {
   };
 
   const handleStartChat = () => {
-    navigate(`/chat/${id}`);
+          const navigate_to_firstChat = async (data2: { user_id: any; character_id: any }) => {
+          const first_id = await get_first_chat(data2);
+          console.log("First chat ID:", first_id.chat_id);
+          navigate(`/chat/${id}`, {
+          state: { chatId: first_id.chat_id }
+        }); // Get to the first chat with the character
+        }
+        const character_id=id;
+        const user_id=localStorage.getItem('user'); 
+        const data2={ user_id, character_id };
+        console.log("Data to send:", data2);
+        navigate_to_firstChat(data2);
   };
 
   const handleEditCharacter = () => {
@@ -134,7 +153,7 @@ const CharacterDetails: React.FC = () => {
                     <div
                       key={chat.id}
                       className="mb-2 p-2 bg-white rounded shadow cursor-pointer hover:bg-blue-50 transition"
-                      onClick={() => navigate(`/chat/${chat.id}`)}
+                      onClick={() => navigate(`/chats/${chat.id}`)}
                     >
                       <div className="font-medium">{chat.title}</div>
                       <div className="text-sm text-gray-500 truncate">{chat.last_message}</div>

@@ -21,11 +21,15 @@ characters_router.register(r'chats', ChatViewSet, basename='character-chats')
 
 chats_router = NestedDefaultRouter(router, r'chats', lookup='chat')
 chats_router.register(r'messages', MessageViewSet, basename='chat-messages')
+router.register(r'messages', MessageViewSet, basename='messages')  # Added
+
 urlpatterns = [
+    
     path('', include(router.urls)),
     path('api/users/', include(users_router.urls)),
     path('api/characters/', include(characters_router.urls)),
     path('api/chats/', include(chats_router.urls)),
     path('api/characters/<int:character_id>/', include(characters_router.urls)),
+    path('api/messages/', include(router.urls)), ###ADDED
     path('api/chat/', views.openrouter_chat, name='openrouter_chat'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

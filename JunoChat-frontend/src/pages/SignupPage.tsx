@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signup, getCurrentUser } from '@/api';
+import { signup} from '@/api';
 import { Button } from '@/components/ui/uiButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -43,7 +43,7 @@ const SignupPage: React.FC = () => {
       // Remove confirmPassword before sending to API
       const { confirmPassword, ...signupData } = formData;
       const response = await signup(signupData);
-      
+      console.log("Response from signup:", response);
       // Show success message
       toast.success('Account created successfully! Please log in.');
       
