@@ -1,0 +1,1 @@
+import{j as t}from"./index-C6xq9Q1d.js";function e(){return t.jsx("div",{className:"min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6 flex items-center justify-center",children:t.jsx("h1",{className:"text-4xl font-bold",children:"404 - Pagina nu a fost gasita"})})}export{e as default};
