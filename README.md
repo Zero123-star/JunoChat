@@ -8,3 +8,7 @@ Project created by:
 Prezentarea:
 https://docs.google.com/presentation/d/1qzRUgrHuKpphR5YxCUE4La8j73GP5ahMA_CF7nhCJzc/edit#slide=id.g354cb1e781f_0_437
    
+
+Am adaugat:
+-> rollback/edit mesaje, guest mode, dark theme
+-> incercare conectiune backend AI pentru mesaje
