@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Character AI Chat</title>
+  <style>
+    <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom right, #6a0dad, #120048);
+    color: #f5f5f5;
+    margin: 0;
+    padding: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h1 {
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+  }
+
+  label {
+    font-weight: bold;
+    margin-top: 1rem;
+  }
+
+  select, input, textarea, button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    background-color: #f0e6ff;
+    color: #120048;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  button {
+    background-color: #9d4edd;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #7b2cbf;
+  }
+
+  .reply {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left: 6px solid #c77dff;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+    white-space: pre-wrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: #f5f5f550;
+    margin: 3rem 0;
+  }
+
+  img {
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  em {
+    color: #e0b3ff;
+  }
+</style>
+
+  </style>
+</head>
+<body>
+  <h1>Character AI Chat</h1>
+
+  <form method="post" action="/chat">
+    <label for="character">Character</label>
+    <select name="character" id="character">
+      {% for p in personas %}
+        <option value="{{ p }}" {% if selected_character == p %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="model">Model</label>
+    <select name="model_key" id="model_key">
+      {% for m in models %}
+        <option value="{{ m }}" {% if selected_model == m %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="message">Message</label>
+    <textarea name="message" id="message">{{ user_message or '' }}</textarea>
+
+    <button type="submit">Send</button>
+  </form>
+
+  {% if reply %}
+    <div class="reply">
+      <strong>Assistant:</strong><br>
+      {{ reply }}
+    </div>
+  {% endif %}
+
+  <hr>
+  <h2>Character Profiles</h2>
+  {% for p in personas %}
+    {% set persona = persona_data[p] %}
+    <div class="reply">
+      <strong>{{ persona.name }}</strong><br>
+      {% if persona.image_url %}
+        <img src="{{ persona.image_url }}" alt="{{ persona.name }}'s image" style="max-width: 100px; max-height: 100px;"><br>
+      {% endif %}
+      <em>{{ persona.persona }}</em>
+    </div>
+  {% endfor %}
+
+  {% if reflection %}
+    <div class="reply">
+      <strong>Character Thinking:</strong><br>
+      <em>{{ reflection }}</em>
+    </div>
+  {% endif %}
+</body>
+</html>
