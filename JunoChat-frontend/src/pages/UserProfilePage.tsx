@@ -18,7 +18,7 @@ const UserProfilePage: React.FC = () => {
   const [name, setName] = useState<string>('Loading...');
   const [email, setEmail] = useState<string>('Loading...');
   const [createdCharacters, setCreatedCharacters] = useState([]);
-  const [favoritedCharacters, setFavoritedCharacters] = useState([]);
+  const [favoriteCharacters, setFavoriteCharacters] = useState([]);
   const [followsCount, setFollowsCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
 
@@ -26,12 +26,12 @@ const UserProfilePage: React.FC = () => {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/profile/${username}/`);
-        const { name, email, profile_image, created_characters, favorited_characters, follows_count, following_count } = response.data;
+        const { name, email, profile_image, created_characters, favorite_characters, follows_count, following_count } = response.data;
         setName(name);
         setEmail(email);
         setProfileImage(profile_image || defaultAvatar);
         setCreatedCharacters(created_characters);
-        setFavoritedCharacters(favorited_characters);
+        setFavoriteCharacters(favorite_characters);
         setFollowsCount(follows_count);
         setFollowingCount(following_count);
       } catch (error) {
@@ -142,8 +142,8 @@ const UserProfilePage: React.FC = () => {
             </div>
 
             <div className="space-y-5">
-              <h2 className="text-xl font-bold text-purple-800">Favorited Characters</h2>
-              <CharacterCarousel characters={favoritedCharacters} onSelect={() => {}} />
+              <h2 className="text-xl font-bold text-purple-800">Favorite Characters</h2>
+              <CharacterCarousel characters={favoriteCharacters} onSelect={() => {}} />
             </div>
 
             <div className="space-y-5">
