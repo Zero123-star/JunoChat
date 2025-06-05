@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { openrouter_chat,getChatMessages, storeMessage} from '@/api';
+import { Button } from '@/components/Button';
+
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -185,25 +187,28 @@ const ChatPage: React.FC = () => {
                 >
                   {message.content}
                   <div className={`flex gap-2 mt-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <button
-                      className="text-xs px-2 py-1 rounded bg-yellow-200 hover:bg-yellow-300 text-yellow-900"
+                    <Button
+                      size="sm"
+                      glassEffect
                       onClick={() => handleEditMessage(index)}
                     >
                       Edit
-                    </button>
-                    <button
-                      className="text-xs px-2 py-1 rounded bg-red-200 hover:bg-red-300 text-red-900"
+                    </Button>
+                    <Button
+                      size="sm"
+                      glassEffect
                       onClick={() => handleDeleteMessage(index)}
                     >
                       Delete
-                    </button>
+                    </Button>
                     {message.role === 'assistant' && (
-                      <button
-                        className="text-xs px-2 py-1 rounded bg-blue-200 hover:bg-blue-300 text-blue-900"
+                      <Button
+                        size="sm"
+                        glassEffect
                         onClick={() => handleRerollMessage(index)}
                       >
                         Reroll
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>

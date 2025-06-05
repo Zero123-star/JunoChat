@@ -4,6 +4,7 @@ import { Character } from '@/types/character';
 import { fetchCharacters } from '../api';
 import { Search } from 'lucide-react';
 import { CharacterCard } from '@/components/CharacterCard';
+import { Button } from '@/components/Button';
 
 const SimplePage: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -82,15 +83,15 @@ const SimplePage: React.FC = () => {
         {characters.length === 0 && (
           <div className="col-span-full text-center py-10">
             <p className="text-xl text-purple-600">Nu am găsit personaje... 😢</p>
-            <button 
+            <Button
+              gradient
               onClick={() => {
                 setSearchQuery('');
                 setCharacters(characters);
               }}
-              className="mt-4 bg-purple-500 text-white py-2 px-6 rounded-lg"
             >
               Arată toate personajele
-            </button>
+            </Button>
           </div>
         )}
       </div>

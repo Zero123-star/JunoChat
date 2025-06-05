@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Character } from '@/types/character';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CharacterCard from './CharacterCard';
+import { Button } from '@/components/Button';
 
 interface CharacterCarouselProps {
   characters: Character[];
@@ -40,20 +41,24 @@ const CharacterCarousel: React.FC<CharacterCarouselProps> = ({ characters, onSel
       </div>
 
       {/* Săgeata pentru navigare spre stânga */}
-      <button 
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-orange-500/20 backdrop-blur-sm hover:bg-red/40 p-2 rounded-full z-10"
+      <Button
+        size="icon"
+        glassEffect
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10"
         onClick={handlePrev}
       >
-        <ChevronLeft className="h-6 w-6 text-white" />
-      </button>
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
       
       {/* Săgeata pentru navigare spre dreapta */}
-      <button 
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-orange-500/20 backdrop-blur-sm hover:bg-red/40 p-2 rounded-full z-10"
+      <Button
+        size="icon"
+        glassEffect
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
         onClick={handleNext}
       >
-        <ChevronRight className="h-6 w-6 text-white" />
-      </button>
+        <ChevronRight className="h-6 w-6" />
+      </Button>
     </div>
   );
 };

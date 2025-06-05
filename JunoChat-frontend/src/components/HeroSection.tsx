@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from '@/components/Button';
 import GlassmorphicContainer from '@/components/GlassmorphicContainer';
 
 export const HeroSection: React.FC = () => {
@@ -26,7 +25,6 @@ export const HeroSection: React.FC = () => {
         </p>
         
         <div className="mt-24 w-full overflow-hidden">
-
         </div>
       </div>
     </section>

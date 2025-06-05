@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/Button';
 
 interface User {
   username: string;
@@ -41,13 +42,13 @@ const UserSearchPage: React.FC = () => {
           placeholder="Enter username"
           className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
-        <button
+        <Button
           type="submit"
-          className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
+          gradient
           disabled={loading}
         >
           Search
-        </button>
+        </Button>
       </form>
       {error && <div className="text-red-500 mb-4">{error}</div>}
       <ul className="space-y-2">
@@ -55,10 +56,15 @@ const UserSearchPage: React.FC = () => {
           results.map(user => (
             <li
               key={user.username}
-              className="bg-white rounded shadow p-3 cursor-pointer hover:bg-purple-100 transition"
-              onClick={() => navigate(`/profile/${user.username}`)}
+              className="bg-white rounded shadow p-3 cursor-pointer hover:bg-purple-100 transition flex justify-between items-center"
             >
               <span className="font-medium text-purple-700">{user.username}</span>
+              <Button
+                gradient
+                onClick={() => navigate(`/profile/${user.username}`)}
+              >
+                View Profile
+              </Button>
             </li>
           ))
         ) : (

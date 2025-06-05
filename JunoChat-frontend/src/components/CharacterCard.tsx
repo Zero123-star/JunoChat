@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Character } from '@/types/character';
-import { Button } from '@/components/ui/uiButton';
+import { Button } from '@/components/Button';
 import { MessageCircle, Star, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -99,9 +99,9 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
         </p>
 
         <Button
-
           onClick={handleNavigateToChat}
-          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium"
+          gradient
+          className="w-full flex items-center justify-center"
         >
           <MessageCircle className="mr-2 h-4 w-4" />
           Start Chatting

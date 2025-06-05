@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateCharacter, fetchCharacter } from '@/api';
 import { Character } from '@/types/character';
-import { Button } from '@/components/ui/uiButton';
+import { Button } from '@/components/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sparkles, Image as ImageIcon } from 'lucide-react';
@@ -225,14 +225,14 @@ const EditCharacterPage: React.FC = () => {
               <Button
                 type="button"
                 onClick={() => navigate('/characters')}
-                className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300"
+                glassEffect
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
+                gradient
                 disabled={loading}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 {loading ? 'Saving...' : 'Save Changes'}
               </Button>
