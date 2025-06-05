@@ -2,6 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { get_first_chat, getCurrentUser, getChatHistory} from '@/api';
 import { get } from 'http';
+import { Button } from '@/components/Button';
+
 interface Character {
   id: string;
   name: string;
@@ -125,19 +127,19 @@ const CharacterDetails: React.FC = () => {
           <p className="text-gray-700 mb-3">{character?.description}</p>
           <p className="text-gray-500 mb-6">Source: {character?.source}</p>
           <div className="flex gap-3 mb-6">
-            <button
+            <Button
               onClick={handleStartChat}
-              className="bg-purple-600 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-pink-500 transition"
+              gradient
             >
               Start Chat
-            </button>
+            </Button>
             {isCreator && (
-              <button
+              <Button
                 onClick={handleEditCharacter}
-                className="bg-pink-500 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-purple-700 transition"
+                glassEffect
               >
                 Edit Character
-              </button>
+              </Button>
             )}
           </div>
           <div>

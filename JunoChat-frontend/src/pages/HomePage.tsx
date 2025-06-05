@@ -31,10 +31,6 @@ const HomePage: React.FC = () => {
       getCharacters();
     }, []);
 
-
-
-
-
   const handleSelectCharacter = (character: Character) => {
     toast.success(`Starting chat with ${character.name}`);
     console.log("Selected character:", character);
@@ -96,33 +92,13 @@ const HomePage: React.FC = () => {
               <div className="mt-12 text-center animate-on-scroll">
                 <Button
                   size="lg"
-                  variant="outline"
+                  gradient
                   className="px-8"
                   onClick={() => navigate('/characters')}
                 >
                   Explore All Characters
                 </Button>
               </div>
-            </div>
-          </section>
-
-          <section className="py-24 px-6 bg-gradient-to-br from-primary/5 to-primary/10">
-            <div className="max-w-5xl mx-auto">
-              <GlassmorphicContainer className="p-12 text-center animate-on-scroll">
-                <h2 className="text-3xl sm:text-4xl font-bold mb-6 tracking-tight text-balance">
-                  Ready to Experience the Future of AI Conversation?
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8 text-balance">
-                  Join thousands of users already engaging with our AI characters. Create an account and unlock the full experience.
-                </p>
-                <Button
-                  size="lg"
-                  className="px-8 py-6 text-base font-medium shadow-subtle hover:shadow-subtle-lg transition-all"
-                  onClick={() => navigate('/login')}
-                >
-                  Get Started Free
-                </Button>
-              </GlassmorphicContainer>
             </div>
           </section>
         </>

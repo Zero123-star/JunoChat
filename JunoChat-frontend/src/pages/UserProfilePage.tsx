@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '@/components/ui/uiButton';
+import { Button } from '@/components/Button';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import axios from 'axios';
@@ -128,7 +128,7 @@ const UserProfilePage: React.FC = () => {
                 <Button
                   type="button"
                   onClick={handleFollow}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
+                  gradient
                 >
                   Follow
                 </Button>

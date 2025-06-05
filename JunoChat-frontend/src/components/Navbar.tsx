@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/uiButton';
+import { Button } from '@/components/Button';
 import { Plus, LogIn, User } from 'lucide-react';
 
 const Navbar: React.FC = () => {
@@ -72,27 +72,27 @@ const Navbar: React.FC = () => {
           {authState.isLoggedIn && (
             <Button
               onClick={() => navigate('/characters/add')}
-              className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
+              glassEffect
+              className="flex items-center space-x-2"
             >
               <Plus className="h-4 w-4" />
               <span>New Character</span>
             </Button>
           )}
 
-          {/* Move Search Users button here */}
           <Button
             onClick={() => navigate('/search-users')}
-            className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
+            glassEffect
           >
-            <span>Search Users</span>
+            Search Users
           </Button>
 
-          {/* Profile/Login/Logout buttons */}
           {authState.isLoggedIn ? (
             currentPath === `/profile/${authState.username}` ? (
               <Button
                 onClick={handleLogout}
-                className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white/40 shadow-lg hover:from-red-600 hover:to-pink-600 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium outline outline-2 outline-pink-200"
+                gradient
+                className="flex items-center space-x-2"
               >
                 <LogIn className="h-4 w-4" />
                 <span>Log out</span>
@@ -100,7 +100,8 @@ const Navbar: React.FC = () => {
             ) : (
               <Button
                 onClick={() => navigate(`/profile/${authState.username}`)}
-                className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
+                glassEffect
+                className="flex items-center space-x-2"
               >
                 <User className="h-4 w-4" />
                 <span>{authState.username}</span>
@@ -109,7 +110,8 @@ const Navbar: React.FC = () => {
           ) : (
             <Button
               onClick={() => navigate('/login')}
-              className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
+              glassEffect
+              className="flex items-center space-x-2"
             >
               <LogIn className="h-4 w-4" />
               <span>Login</span>
