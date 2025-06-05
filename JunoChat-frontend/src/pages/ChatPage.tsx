@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { openrouter_chat,getChatMessages, storeMessage} from '@/api';
 import { Button } from '@/components/Button';
@@ -15,34 +15,49 @@ interface Character {
 }
 
 const ChatPage: React.FC = () => {
-  const { characterId } = useParams<{ characterId: string }>(); // Obține ID-ul personajului din URL
-  const [character, setCharacter] = useState<Character | null>(null); // Starea pentru datele personajului
-  const [messages, setMessages] = useState<Message[]>([]); // Starea pentru mesaje
-  const [input, setInput] = useState(''); // Starea pentru input-ul utilizatorului
-  const [loading, setLoading] = useState(true); // Starea pentru încărcare
-  const [error, setError] = useState<string | null>(null); // Starea pentru erori
-  const location = useLocation(); //Getting from URL
+  const { characterId } = useParams<{ characterId: string }>(); 
+  const [character, setCharacter] = useState<Character | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [characterLoading, setCharacterLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(true);
+  const location = useLocation();
   const chatId = location.state?.chatId;
+  
+  // Add ref for the messages container
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   useEffect(() => {
     if (messages.length > 0) {
       console.log('Last message:', messages[messages.length - 1]);
     }
   }, [messages]);
   
-  
-  // Obține datele personajului din API
+  // Fetch character data
   useEffect(() => {
     const fetchCharacter = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://localhost:8000/api/characters/${characterId}/`); // API endpoint
+        const response = await fetch(`http://localhost:8000/api/characters/${characterId}/`);
         if (!response.ok) {
           throw new Error('Failed to fetch character data');
         }
 
         const data = await response.json();
-        setCharacter(data); // Setează datele personajului
+        setCharacter(data);
       } catch (error) {
         console.error('Eroare la obținerea datelor personajului:', error);
         setError('Failed to load character data. Please try again later.');
@@ -53,16 +68,16 @@ const ChatPage: React.FC = () => {
     fetchCharacter();
   }, [characterId]);
 
-//Load all messages from the chat
+  // Load all messages from the chat
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await getChatMessages(chatId); // API endpoint for chat messages
+        const response = await getChatMessages(chatId);
         console.log("Chat messages response:", response);
-        const data =response.messages;
-        setMessages(data || []); // Setează mesajele din chat
+        const data = response.messages;
+        setMessages(data || []);
       } catch (error) {
         console.error('Eroare la obținerea mesajelor:', error);
         setError('Failed to load chat messages. Please try again later.');
@@ -70,43 +85,36 @@ const ChatPage: React.FC = () => {
         setLoading(false);
       }
     };
-    fetchMessages();
-  }
-  , [chatId]);
-
+    if (chatId) {
+      fetchMessages();
+    }
+  }, [chatId]);
 
   const handleSendMessage = async () => {
-
-
-    // Add user message
-    const auxiliary=messages;
-    //Get userid from local storage
-    if(input.trim()!='') {
-    const userId = localStorage.getItem('user');
-    const json= { role: 'user', content: input, id: userId };
-    const response=await storeMessage(chatId,json);
-    console.log(response);
-    auxiliary.push({role: 'user', content: input});//We are using auxiliary, using a setter then sending messages leads to sync bugs
-    //setMessages((prev) => [...prev, { role: 'user', content: input }]);
-    console.log("Messages array is now:",auxiliary)}
+    if (input.trim() === '') return;
+    
+    const userMessage: Message = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    
     try {
-      console.log("Messages array before frontend api is now:",auxiliary)
-      const response = await openrouter_chat(auxiliary,characterId);
-      console.log("Messages after openrouter",auxiliary)
-      const bot_reply = response.choices[0].message.content;
-      auxiliary.push({ role: 'assistant', content: bot_reply });
-      const bot_response= await storeMessage(chatId,{ role: 'assistant', content: bot_reply, id: characterId });
-      console.log("Bot response stored:", bot_response);
-      setMessages(auxiliary);
-      } catch (error) {
-        console.error("Error fetching response:", error);
-        // Handle the error appropriately
-      }
-    setInput(''); // Reset input
+      const userId = localStorage.getItem('user');
+      await storeMessage(chatId, { role: 'user', content: input, id: userId });
+      
+      const response = await openrouter_chat([...messages, userMessage], characterId);
+      const botReply = response.choices[0].message.content;
+      const botMessage: Message = { role: 'assistant', content: botReply };
+      
+      await storeMessage(chatId, { role: 'assistant', content: botReply, id: characterId });
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Failed to send message. Please try again.");
+    }
+    
+    setInput('');
   };
 
   const handleEditMessage = (index: number) => {
-    // Implement your edit logic here (e.g., open a modal or inline edit)
     alert(`Edit message at index ${index}`);
   };
 
@@ -115,15 +123,13 @@ const ChatPage: React.FC = () => {
   };
 
   const handleRerollMessage = async (index: number) => {
-    // Implement your reroll logic here (e.g., re-fetch or regenerate the assistant's message)
     alert(`Reroll assistant message at index ${index}`);
   };
 
-  // Check if user is logged in (adjust the key as per your app's logic)
-  const loggedInUser = localStorage.getItem('user'); // or 'token', etc.
+  // Check if user is logged in
+  const loggedInUser = localStorage.getItem('user');
 
-  if (loggedInUser==null) {
-   
+  if (loggedInUser == null) {
     return ( 
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-white p-8 rounded shadow text-center">
@@ -159,11 +165,11 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex flex-col h-screen">
+    <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 min-h-screen flex flex-col">
       {/* Header with bot's name */}
       <header className="bg-purple-500 text-white p-4 flex items-center space-x-4 fixed top-12 sm:top-16 left-0 right-0 z-40">
         <img
-          src={character?.avatar || 'https://via.placeholder.com/150'} // Use character avatar or a placeholder
+          src={character?.avatar || 'https://via.placeholder.com/150'}
           alt={character?.name || 'Bot Avatar'}
           className="w-12 h-12 rounded-full object-cover"
         />
@@ -171,71 +177,81 @@ const ChatPage: React.FC = () => {
       </header>
 
       {/* Messages area */}
-      <main className="p-4 overflow-y-auto pt-24 sm:pt-28 flex flex-col flex-1">
-        <div className="bg-white rounded-lg shadow-lg p-4 space-y-4 flex flex-col justify-center min-h-full">
-          {messages.length > 0 ? (
-            messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} items-center group`}
-              >
+      <div className="flex-1 overflow-y-auto pt-28 sm:pt-32 pb-16">
+        <div className="max-w-5xl mx-auto w-full px-4">
+          <div className="space-y-4 py-12">
+            {messages.length > 0 ? (
+              messages.map((message, index) => (
                 <div
-                  className={`${message.role === 'user'
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-gray-200 text-gray-800'
-                  } px-4 py-2 rounded-lg max-w-xs relative`}
+                  key={index}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} items-center group`}
                 >
-                  {message.content}
-                  <div className={`flex gap-2 mt-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <Button
-                      size="sm"
-                      glassEffect
-                      onClick={() => handleEditMessage(index)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      glassEffect
-                      onClick={() => handleDeleteMessage(index)}
-                    >
-                      Delete
-                    </Button>
-                    {message.role === 'assistant' && (
+                  <div
+                    className={`${message.role === 'user'
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-200 text-gray-800'
+                    } px-4 py-2 rounded-lg max-w-xs relative break-words overflow-wrap-anywhere`}
+                  >
+                    {message.content}
+                    <div className={`flex gap-2 mt-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <Button
                         size="sm"
-                        glassEffect
-                        onClick={() => handleRerollMessage(index)}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                        onClick={() => handleEditMessage(index)}
                       >
-                        Reroll
+                        Edit
                       </Button>
-                    )}
+                      <Button
+                        size="sm"
+                        className="bg-red-500 hover:bg-red-600 text-white"
+                        onClick={() => handleDeleteMessage(index)}
+                      >
+                        Delete
+                      </Button>
+                      {message.role === 'assistant' && (
+                        <Button
+                          size="sm"
+                          className="bg-green-500 hover:bg-green-600 text-white"
+                          onClick={() => handleRerollMessage(index)}
+                        >
+                          Reroll
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-center">No messages yet.</p>
-          )}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">No messages yet.</p>
+            )}
+            {/* Invisible div to scroll to */}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Input field at the bottom */}
-      <footer className="bg-gray-100 p-4 fixed bottom-0 left-0 right-0 z-50">
-        <div className="flex items-center space-x-4">
+      <footer className="bg-gray-100 p-4 fixed bottom-0 left-0 right-0 z-30">
+        <div className="max-w-5xl mx-auto flex items-center space-x-4">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
             className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSendMessage();
+              }
+            }}
           />
-          <button
+          <Button
             onClick={handleSendMessage}
-            className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
+            gradient
+            className="px-4 py-2"
           >
             Send
-          </button>
+          </Button>
         </div>
       </footer>
     </div>
