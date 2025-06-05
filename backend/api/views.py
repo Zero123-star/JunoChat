@@ -269,7 +269,8 @@ class ChatViewSet(viewsets.ModelViewSet):
                     'id': str(chat.id),
                     'title': f"Chat with {chat.chatbot.name}",
                     'last_message': last_message_content,
-                    'character_name': bot.name if bot else "Unknown Bot"
+                    'character_name': bot.name if bot else "Unknown Bot",
+                    'character_id': str(bot.id)
                 })
                 print("Did")
             print(chat_list)
