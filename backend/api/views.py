@@ -269,7 +269,8 @@ class ChatViewSet(viewsets.ModelViewSet):
                     'id': str(chat.id),
                     'title': f"Chat with {chat.chatbot.name}",
                     'last_message': last_message_content,
-                    'character_name': bot.name if bot else "Unknown Bot"
+                    'character_name': bot.name if bot else "Unknown Bot",
+                    'character_id': str(bot.id)  # Add the character_id to the response
                 })
                 print("Did")
             print(chat_list)
@@ -387,7 +388,7 @@ def openrouter_chat(request):
             response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
-                    "Authorization": f"Bearer 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",#DO NOT COMMIT WITH THE KEY
+                    "Authorization": f"Bearer",#DO NOT COMMIT WITH THE KEY
                     "Content-Type": "application/json"
                 },
                 data=json.dumps({
