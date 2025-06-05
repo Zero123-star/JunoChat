@@ -189,14 +189,14 @@ const ChatPage: React.FC = () => {
                   <div className={`flex gap-2 mt-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <Button
                       size="sm"
-                      glassEffect
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white"
                       onClick={() => handleEditMessage(index)}
                     >
                       Edit
                     </Button>
                     <Button
                       size="sm"
-                      glassEffect
+                      className="bg-red-500 hover:bg-red-600 text-white"
                       onClick={() => handleDeleteMessage(index)}
                     >
                       Delete
@@ -204,7 +204,7 @@ const ChatPage: React.FC = () => {
                     {message.role === 'assistant' && (
                       <Button
                         size="sm"
-                        glassEffect
+                        className="bg-green-500 hover:bg-green-600 text-white"
                         onClick={() => handleRerollMessage(index)}
                       >
                         Reroll
@@ -230,12 +230,13 @@ const ChatPage: React.FC = () => {
             placeholder="Type your message..."
             className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
-          <button
+          <Button
             onClick={handleSendMessage}
-            className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
+            gradient
+            className="px-4 py-2"
           >
             Send
-          </button>
+          </Button>
         </div>
       </footer>
     </div>
