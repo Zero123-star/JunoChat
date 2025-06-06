@@ -90,7 +90,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
         <h3 className="text-xl font-bold text-white mb-1 flex items-center">
           {character.name}
           {isHovered && (
-            <Sparkles className="ml-2 h-4 w-4 text-yellow-300" />
+            <Sparkles className="ml-2 h-4 w-4 text-yellow-300" data-testid="sparkles-icon" />
           )}
         </h3>
 
