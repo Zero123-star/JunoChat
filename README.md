@@ -20,7 +20,11 @@ Source Control: Git
 Teste Automate: 
 
 -> Backend: backend/api
+
 Three .py files that contain testing methods for creating, handling or retrieving Chats (tests_chats.py), Messages (tests_messages.py) and Users (tests_users.py).
+-> Fronted: JunoChat-frontend/src/test, JunoChat-frontend/src/pages/__tests__, JunoChat-frontend/src/components/__tests__
+
+React component testing - Vitest + React Testing Library testing UI interactions, navigation, form handling, API calls, authentication states, and error scenarios with comprehensive mocking.
 
 Raportare bug si rezolvare cu pull request:
 
