@@ -27,6 +27,7 @@ Comentarii Cod:
 
 frontend/src/pages/CharacterCard
 
+'''
 import React, { useState } from 'react';
 import { Character } from '@/types/character';
 import { Button } from '@/components/Button';
@@ -73,6 +74,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
 
     navigate_to_firstChat(data);
   };
+  
   return (
     <motion.div
       className="relative group rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
@@ -136,6 +138,8 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
 };
 
 export default CharacterCard;
+
+'''
 
 
 Documentare folosire AI + prompt engineering: 
