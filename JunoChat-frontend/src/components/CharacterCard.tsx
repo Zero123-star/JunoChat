@@ -41,7 +41,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
     const userId = localStorage.getItem('user');
     if (!userId) {
       console.error("User ID not found in local storage");
-      navigate(`/chat/${character.id}`); //TODO: don't even get to the chat, prompt for user to login
+      navigate(`/chat/${character.id}`);
       return;
     }
 
