@@ -12,4 +12,7 @@ AI Tools:
 https://docs.google.com/document/d/1JgHTK_ybPZP2erUVWUId70tVgmbGioUs8RNFP7gHFc0/edit?usp=sharing
 
 Rec API AI: https://drive.google.com/file/d/1XlF04LryojUbVU0notUkpyfi0siDVWfz/view?usp=sharing
+
+Backlog: 
+https://junochat.atlassian.net/jira/software/projects/SCRUM/boards/1/timeline
    
