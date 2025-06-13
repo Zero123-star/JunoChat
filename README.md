@@ -27,7 +27,7 @@ Comentarii Cod:
 
 frontend/src/pages/CharacterCard
 
-'''
+```
 import React, { useState } from 'react';
 import { Character } from '@/types/character';
 import { Button } from '@/components/Button';
@@ -139,7 +139,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
 
 export default CharacterCard;
 
-'''
+```
 
 
 Documentare folosire AI + prompt engineering: 
