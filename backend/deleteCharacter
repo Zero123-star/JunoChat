@@ -1,0 +1,13 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Django_MDS.settings')
+django.setup()
+
+from base.models import Character
+
+# Găsește și șterge personajele după un criteriu
+characters_to_delete = Character.objects.filter(name="God")  # Exemplu: toate personajele din "Naruto"
+characters_to_delete.delete()
+
+print("Personaje șterse cu succes!")
