@@ -13,7 +13,7 @@ Rec API AI: https://drive.google.com/file/d/1XlF04LryojUbVU0notUkpyfi0siDVWfz/vi
 Backlog (User Stories): 
 https://junochat.atlassian.net/jira/software/projects/SCRUM/boards/1/timeline
 
-Diagrame: 
+Diagrame: uml1.svg, uml2.png
 
 Source Control: Git
 
