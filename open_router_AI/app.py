@@ -47,7 +47,109 @@ async def on_startup():
 
 # ───────────────────── ROUTES ──────────────<iS>──────
 from fastapi import Body, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 
+# In-memory store for last replies (for demo; use DB for production)
+LAST_REPLIES = {}
+
+@app.post("/send-message")
+async def send_message(
+    character: str = Form(...),
+    message: str = Form(...),
+    model_key: str = Form("hermes"),
+    session_id: str = Form(None)
+):
+    # Use the same logic as your /chat endpoint, but return JSON
+    try:
+        personas = list_personas()
+        persona_data = {p: load_persona(p) for p in personas}
+        if character not in persona_data:
+            default_persona = {
+                "name": character,
+                "persona": f"{character} is a helpful, friendly assistant.",
+                "image_url": "",
+                "character_memory": [],
+                "generation_params": {"max_new_tokens": 300, "temperature": 0.7, "top_p": 0.9},
+                "template": "plain"
+            }
+            save_persona(character, default_persona)
+            persona = default_persona
+            persona_data[character] = default_persona
+        else:
+            persona = persona_data[character]
+
+        model_obj, tokenizer_or_token = get_model(model_key or persona.get("model"))
+
+        db = SessionLocal()
+        chat = db.query(Chat).filter_by(session_id=session_id, user_id="demo", character=character).first()
+        if not chat:
+            chat = Chat(session_id=session_id or str(uuid.uuid4()), user_id="demo", character=character)
+            db.add(chat)
+            db.commit()
+            db.refresh(chat)
+
+        db_messages = db.query(Message).filter_by(chat_id=chat.id).order_by(Message.timestamp).all()
+        history = []
+        for m in db_messages:
+            if m.sender == "user":
+                history.append({"user": m.content, "assistant": ""})
+            else:
+                history[-1]["assistant"] = m.content
+
+        summary, recent = maybe_summarize(history)
+        snippets = retrieve_similar(character, "demo", message, top_k=5)
+        if snippets:
+            summary = (summary or "") + "\n" + "\n".join(snippets)
+
+        prompt = format_prompt(persona.get("template", "plain"), persona, recent, message, summary)
+        gen_args = persona.get("generation_params", {})
+
+        if isinstance(model_obj, str):
+            headers = {"Authorization": f"Bearer {tokenizer_or_token}"}
+            payload = {"inputs": prompt, "parameters": gen_args}
+            resp = requests.post(model_obj, headers=headers, json=payload, timeout=60)
+            resp.raise_for_status()
+            reply = resp.json()[0]["generated_text"].split("<|assistant|>")[-1].strip()
+        else:
+            inputs = tokenizer_or_token(prompt, return_tensors="pt").to(model_obj.device)
+            with torch.no_grad():
+                outputs = model_obj.generate(**inputs, **gen_args)
+            reply = tokenizer_or_token.decode(
+                outputs[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
+            ).strip()
+
+        db.add_all([
+            Message(chat_id=chat.id, sender="user", content=message),
+            Message(chat_id=chat.id, sender="assistant", content=reply)
+        ])
+        db.commit()
+
+        store_message(character, "demo", message, reply)
+        LAST_REPLIES[character] = reply  # Store last reply for this character
+
+        return JSONResponse({"reply": reply})
+
+    except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
+        return JSONResponse({"error": str(e), "traceback": tb}, status_code=500)
+
+@app.get("/last-reply")
+async def last_reply(character: str):
+    reply = LAST_REPLIES.get(character)
+    if reply is None:
+        return JSONResponse({"reply": None, "error": "No reply found for this character"}, status_code=404)
+    return JSONResponse({"reply": reply})
+
+# ...existing code...
+
+app.add_middleware(
+       CORSMiddleware,
+       allow_origins=["http://localhost:5173"],  # or ["*"] for all origins (not recommended for production)
+       allow_credentials=True,
+       allow_methods=["*"],
+       allow_headers=["*"],
+   )
 @app.post("/personas", status_code=status.HTTP_201_CREATED)
 async def create_persona_endpoint(
     payload: dict = Body(..., example={
@@ -115,6 +217,11 @@ def index(request: Request):
     })
 from fastapi.logger import logger
 
+# Set up logging to ensure INFO logs show up
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("chat_logger")
+
 @app.post("/chat", response_class=HTMLResponse)
 async def chat_post(
     request: Request,
@@ -124,6 +231,9 @@ async def chat_post(
     session_id: str = Query(default_factory=lambda: str(uuid.uuid4()))
 ):
     try:
+        # Use our logger for visibility
+        logger.info(f"[CHAT] Character: {character} | Message: {message}")
+
         personas = list_personas()
         persona_data = {p: load_persona(p) for p in personas}
 
@@ -210,6 +320,9 @@ async def chat_post(
             reply = tokenizer_or_token.decode(
                 outputs[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
             ).strip()
+
+        # Print the response to the console
+        logger.info(f"[RESPONSE] Character: {character} | Message: {message} | Response: {reply}")
 
         db.add_all([
             Message(chat_id=chat.id, sender="user", content=message),
