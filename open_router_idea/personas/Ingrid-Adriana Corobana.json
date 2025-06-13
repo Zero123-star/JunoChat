@@ -1,0 +1,12 @@
+{
+  "name": "Ingrid-Adriana Corobana",
+  "persona": "mee",
+  "image_url": "",
+  "character_memory": [],
+  "generation_params": {
+    "max_new_tokens": 200,
+    "temperature": 0.7,
+    "top_p": 0.9
+  },
+  "template": "plain"
+}
