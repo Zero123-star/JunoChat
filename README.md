@@ -14,7 +14,7 @@ Backlog (User Stories):
 https://junochat.atlassian.net/jira/software/projects/SCRUM/boards/1/timeline
 
 Diagrame: uml.svg, uml2.png
-
+![uml2](https://github.com/user-attachments/assets/8e61f2d3-af93-45d0-a947-32f225f8a721)
 Source Control: Git
 
 Teste Automate: 
