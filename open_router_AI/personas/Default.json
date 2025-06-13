@@ -1,0 +1,13 @@
+{
+  "name": "Default",
+  "model": "mistral-7b-instruct",
+  "template": "plain",
+  "persona": "You are Default, a helpful assistant.",
+  "character_memory": [],
+  "example_dialogue": [],
+  "generation_params": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "max_new_tokens": 200
+  }
+}
