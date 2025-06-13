@@ -10,4 +10,6 @@ https://docs.google.com/presentation/d/1qzRUgrHuKpphR5YxCUE4La8j73GP5ahMA_CF7nhC
 
 AI Tools:
 https://docs.google.com/document/d/1JgHTK_ybPZP2erUVWUId70tVgmbGioUs8RNFP7gHFc0/edit?usp=sharing
+
+Rec API AI: https://drive.google.com/file/d/1XlF04LryojUbVU0notUkpyfi0siDVWfz/view?usp=sharing
    
