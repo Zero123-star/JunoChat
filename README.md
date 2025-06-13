@@ -7,4 +7,7 @@ Project created by:
 
 Prezentarea:
 https://docs.google.com/presentation/d/1qzRUgrHuKpphR5YxCUE4La8j73GP5ahMA_CF7nhCJzc/edit#slide=id.g354cb1e781f_0_437
+
+AI Tools:
+https://docs.google.com/document/d/1JgHTK_ybPZP2erUVWUId70tVgmbGioUs8RNFP7gHFc0/edit?usp=sharing
    
