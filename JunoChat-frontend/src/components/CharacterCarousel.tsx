@@ -43,7 +43,7 @@ const CharacterCarousel: React.FC<CharacterCarouselProps> = ({ characters, onSel
       {/* Săgeata pentru navigare spre stânga */}
       <Button
         size="icon"
-        glassEffect
+        gradient
         className="absolute left-4 top-1/2 -translate-y-1/2 z-10"
         onClick={handlePrev}
       >
@@ -53,7 +53,7 @@ const CharacterCarousel: React.FC<CharacterCarouselProps> = ({ characters, onSel
       {/* Săgeata pentru navigare spre dreapta */}
       <Button
         size="icon"
-        glassEffect
+        gradient
         className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
         onClick={handleNext}
       >
