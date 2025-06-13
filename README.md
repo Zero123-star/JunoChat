@@ -73,7 +73,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
 
     navigate_to_firstChat(data);
   };
-
   return (
     <motion.div
       className="relative group rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
