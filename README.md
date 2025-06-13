@@ -19,6 +19,9 @@ Source Control: Git
 
 Teste Automate: 
 
+-> Backend: backend/api
+Three .py files that contain testing methods for creating, handling or retrieving Chats (tests_chats.py), Messages (tests_messages.py) and Users (tests_users.py).
+
 Raportare bug si rezolvare cu pull request:
 
 <img width="892" alt="Screenshot 2025-06-13 at 12 32 26" src="https://github.com/user-attachments/assets/5b509902-aa13-47c1-87f4-7e37f5877c92" />
