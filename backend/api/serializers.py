@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from base.models import CustomUser, Follow, Tag, Character, Message, Chat
+from .models import CustomUser, Follow, Tag, Character, Message, Chat
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
