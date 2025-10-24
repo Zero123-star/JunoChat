@@ -7,7 +7,7 @@ from rest_framework import viewsets, filters, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from base.models import CustomUser, Follow, Tag, Character, Message, Chat
+from .models import CustomUser, Follow, Tag, Character, Message, Chat
 from .serializers import CustomUserSerializer, FollowSerializer, TagSerializer, CharacterSerializer, MessageSerializer, ChatSerializer, ChatListSerializer
 import logging
 logger = logging.getLogger(__name__)
