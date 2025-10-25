@@ -1,11 +1,12 @@
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
 from django.urls import path, include
-from api.views import CustomUserViewSet, FollowViewSet, TagViewSet, CharacterViewSet, ChatViewSet, MessageViewSet
+from api.views import CustomUserViewSet, FollowViewSet, TagViewSet, CharacterViewSet, ChatViewSet, MessageViewSet,CustomOpenrouterViewset
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views
+#from . import views
 router = DefaultRouter()
+router.register(r'chat', CustomOpenrouterViewset, basename='openrouter-chat')
 router.register(r'users', CustomUserViewSet)
 router.register(r'follows', FollowViewSet)
 router.register(r'tags', TagViewSet)
@@ -31,5 +32,5 @@ urlpatterns = [
     path('api/chats/', include(chats_router.urls)),
     path('api/characters/<int:character_id>/', include(characters_router.urls)),
     path('api/messages/', include(router.urls)), ###ADDED
-    path('api/chat/', views.openrouter_chat, name='openrouter_chat'),
+    #path('api/chat/', CustomOpenrouterViewset.as_view(), name='openrouter_chat'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from django.contrib.auth.hashers import make_password
-from base.models import CustomUser
+from api.models import CustomUser
 
 class UserRegistrationTest(APITestCase):
     def test_register_user_success(self):

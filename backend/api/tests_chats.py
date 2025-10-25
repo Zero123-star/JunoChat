@@ -1,6 +1,6 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
-from base.models import CustomUser, Character, Chat
+from api.models import CustomUser, Character, Chat
 
 class ChatTests(APITestCase):
     def setUp(self):
