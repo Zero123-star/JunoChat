@@ -1,19 +1,28 @@
 from .item import Item
 
+### Add debugging and try throw catch for when functions are called.
+# We will need when we will move to building the actual combat system
+        
 class Inventory:
-    def __init__(self):
+    def __init__(self, capacity : int = 30):
+        self.capacity = capacity
         self.items = []
-        self.equipped_items = dict
-        ### Add debugging and try throw catch for when functions are called.
-        # We will need when we will move to building the actual combat system
-        # Also please add returns
+        self.equipped_items = {"Head": None, "Chest": None, "Left_Hand": None, "Right_Hand": None, "Legs": None, "Feet" : None}
 
-    def add_item(self, item: Item): ### Return the added item
+    def add_item(self, item: Item):
+        if len(self.items) >= self.capacity:
+            print(f"[Inventory] Cannot add '{item.name}': inventory full!")
+            return None
         self.items.append(item)
+        return item
 
-    def remove_item(self, item: Item): ##Return the removed item. We will probably need that when we use potions
+    def remove_item(self, item: Item):
         if item in self.items:
             self.items.remove(item)
+            print(f"[Inventory] '{item.name}' discarded.")
+            return item
+        print(f"[Inventory] '{item.name} not in inventory!'")
+        return None
 
     def has_item(self, item: Item) -> bool:
         return item in self.items
@@ -21,15 +30,43 @@ class Inventory:
     def list_items(self):
         return [item.name for item in self.items]
     
-    def equip_item(self, item: Item): ###Return the equipped item
-        if item in self.items:
-            self.equipped_items[item.slot] = item
-            
-    def unequip_item(self, slot: str): ### Return the unequiped item
-        if slot in self.equipped_items:
-            del self.equipped_items[slot] ####Does it return in the self.items? 
+    def equip_item(self, item: Item):
+        # Check Inventory
+        if item not in self.items:
+            print(f"[Inventory] Cannot equip '{item.name}': item not in inventory!")
+            return None
 
+        # Slot Validation
+        if not item.slot:
+            print(f"[Inventory] Cannot equip '{item.name}': item has no slot assigned!")
+            return None
+        if item.slot not in self.equipped_items:
+            print(f"[Inventory] Cannot equip '{item.name}': invalid slot '{item.slot}'!")
+            return None
+        if self.equipped_items[item.slot]:
+            print(f"[Inventory] Cannot equip '{item.name}': slot '{item.slot}' is already taken!")
+            return None
 
+        # Equip
+        self.equipped_items[item.slot] = item
+        print(f"[Inventory] Equipped '{item.name}' in slot '{item.slot}'.")
+        return item
+
+    def unequip_item(self, slot: str):
+        
+        # Slot Validation
+        if slot not in self.equipped_items:
+            print(f"[Inventory] Cannot unequip: invalid slot '{slot}'.")
+            return None
+        item = self.equipped_items[slot]
+        if not item:
+            print(f"[Inventory] No item equipped in slot '{slot}'.")
+            return None
+
+        # Unequip
+        self.equipped_items[slot] = None
+        print(f"[Inventory] Unequipped '{item.name}' from slot '{slot}'.")
+        return item
 
     def get_equipped_items(self):
         return self.equipped_items
@@ -38,4 +75,4 @@ class Inventory:
         return item in self.equipped_items.values()
     
     def __repr__(self) -> str:
-        return f"Inventory(items={self.items}, equipped_items={self.equipped_items})"
+        return f"Inventory(Items={self.items}, Equipped_items={self.equipped_items})"

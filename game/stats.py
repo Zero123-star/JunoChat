@@ -18,22 +18,41 @@ class Stats:
         # Returns the total value of a temporary stat with given name
         return sum(effect["Value"] for effect in self.temporaries.get(stat, []))
 
-    def add_temporary(self, stat: str, effect: dict):
+    def add_temporary(self, stat: str, value: int, turns: int | None = None, source: str | None = None):
+        # Adds a temporary or persistent effect depending on turns
+        effect = {"Value": value}
+        if turns is not None:
+            effect["Turns"] = turns
+        if source is not None:
+            effect["Source"] = source
         self.temporaries[stat].append(effect)
-        return self.temporaries
-
-    def increase_permanent(self, stat: str, value: int):
+        
+    def update_permanent(self, stat: str, value: int):
         self.permanents[stat] = self.permanents.get(stat, 0) + value
         return self.permanents
 
-    def decrease_duration(self):
+    def update_duration(self):
         # Decreases the duration of temporary stats, then removes expired temporary stats
         updated = {}
         for stat, effects in self.temporaries.items():
-            remaining = [
-                {"Value": e["Value"], "Turns": e["Turns"] - 1}
-                for e in effects if e["Turns"] > 1]
+            remaining = []
+            for e in effects:
+                # Temporary Effects without "Turns" are given by items.
+                if "Turns" not in e:
+                    remaining.append(e)
+                elif e["Turns"] > 1:
+                    remaining.append({"Value": e["Value"], "Turns": e["Turns"] - 1, "Source": e.get("Source")})
+            # Keep updated effects that did not expire    
             if remaining:
                 updated[stat] = remaining
         self.temporaries = defaultdict(list, updated)
-        return self.temporaries
+        
+        
+    def remove_source(self, source: str):
+        # Removes all effects created by a specified source
+        for stat, effects in list(self.temporaries.items()):
+            filtered = [e for e in effects if e.get("Source") != source]
+            if filtered:
+                self.temporaries[stat] = filtered
+            else:
+                del self.temporaries[stat]
