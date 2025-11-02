@@ -371,16 +371,16 @@ Yes, but incrementally. RPG system will differentiate JunoChat from competitors 
 
 ### 3.3 Predicted Changes for SE Course
 
-**Expected Team Evolution:**
-- Team may expand if RPG feature requires additional Python/game development expertise
-- DevOps role may be separated as deployment complexity increases
-- Possible addition of dedicated QA engineer for automated testing
-- Frontend team may need strengthening for RPG UI complexity
+**Team Status:**
+- Current 5-member team will remain stable throughout the SE course
+- No team expansion planned
 
 **Role Modifications:**
-- Team Lead will focus more on architecture and less on implementation
-- Backend developer may specialize in microservices (RPG game service)
-- Frontend developer may need to learn Canvas API for RPG graphics
+- Project Owner (Irina) will balance product vision with hands-on frontend development
+- Backend developers (Iustin, Ioan) will collaborate on RPG system architecture
+- Frontend developers (Ingrid, Matei) will share responsibilities for new features
+- Cross-training within existing team for full-stack capabilities
+- All team members will contribute to documentation and testing
 
 ---
 
