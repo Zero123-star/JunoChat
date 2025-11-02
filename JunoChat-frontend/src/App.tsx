@@ -17,6 +17,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import Debug from './pages/debug';
 import ChatsHistoryPage from './pages/ChatsHistoryPage';
 import UserSearchPage from './pages/UserSearchPage';
+import PhotoboothPage from './pages/PhotoboothPage';
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/profile/:username" element={<UserProfilePage />} />
             <Route path="/chats" element={<ChatsHistoryPage />} />
             <Route path="/search-users" element={<UserSearchPage />} />
+            <Route path="/photobooth" element={<PhotoboothPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

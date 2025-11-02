@@ -66,6 +66,12 @@ const Navbar: React.FC = () => {
           >
             Characters
           </Link>
+          <Link 
+            to="/photobooth" 
+            className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
+          >
+            Photobooth
+          </Link>
         </div>
 
         <div className="flex items-center space-x-3">
