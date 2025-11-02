@@ -256,49 +256,68 @@ Yes, but incrementally. RPG system will differentiate JunoChat from competitors 
 
 ### 3.1 MDS Project Team Members
 
+**Project created by:**
+- Luparu Ioan-Teodor
+- Moise Irina
+- Corobana Ingrid-Adriana (@dirgnic)
+- Prizlopan Iustin-George
+- Sescu Matei
+
 | Name | Role | Responsibilities | Status for SE Course |
 |------|------|------------------|---------------------|
-| Ingrid Corobana | Full-Stack Developer / Team Lead | - Overall project coordination<br>- Frontend development (React, TypeScript)<br>- Backend development (Django, DRF)<br>- Database design<br>- Photobooth feature implementation<br>- Documentation | Continuing |
-| [Team Member 2] | Frontend Developer | - React component development<br>- UI/UX implementation<br>- State management<br>- API integration | TBD |
-| [Team Member 3] | Backend Developer | - Django REST API development<br>- Database modeling<br>- Authentication system<br>- OpenRouter AI integration | TBD |
-| [Team Member 4] | Designer / QA | - UI/UX design<br>- Testing and quality assurance<br>- User acceptance testing<br>- Documentation review | TBD |
+| Moise Irina | Project Owner / Frontend Developer | - Overall project ownership and vision<br>- Frontend development (React, TypeScript)<br>- UI/UX design and implementation<br>- User acceptance testing<br>- Stakeholder communication | Continuing |
+| Corobana Ingrid-Adriana | Full-Stack Developer / AI Integration Lead | - AI integration (OpenRouter API)<br>- Frontend development (React, TypeScript)<br>- Photobooth feature implementation<br>- Documentation and technical writing<br>- Code review | Continuing |
+| Prizlopan Iustin-George | Middle-End Developer / RPG Lead | - Django backend development<br>- RPG game system design and implementation<br>- API endpoint development<br>- Bridge between frontend and backend<br>- Game logic and mechanics | Continuing |
+| Luparu Ioan-Teodor | Backend Developer / RPG Developer | - RPG game development (Python)<br>- Database design and optimization<br>- Game state management<br>- Backend logic implementation<br>- Performance optimization | Continuing |
+| Sescu Matei | Frontend Developer | - React component development<br>- Frontend UI implementation<br>- Photobooth feature development<br>- Responsive design<br>- State management | Continuing |
 
 ### 3.2 Roles and Responsibilities
 
-#### Full-Stack Developer / Team Lead
+#### Project Owner (Irina Moise)
 - **Responsibilities:**
-  - Sprint planning and backlog management
-  - Architecture decisions and technical leadership
-  - Code review and merge approvals
+  - Product vision and roadmap
+  - Sprint planning and backlog prioritization
   - Stakeholder communication
-  - Both frontend and backend development
-  - DevOps and deployment
+  - User acceptance testing
+  - Frontend development (React/TypeScript)
+  - UI/UX design decisions
+  - Team coordination
 
-#### Frontend Developer
+#### AI Integration Lead (Ingrid Corobana)
+- **Responsibilities:**
+  - OpenRouter API integration for AI chat
+  - Photobooth feature development (with Matei)
+  - Full-stack development capabilities
+  - Technical documentation
+  - Code review and quality assurance
+  - Frontend and backend coordination
+
+#### Middle-End Developer / RPG Lead (Iustin Prizlopan)
+- **Responsibilities:**
+  - Django backend development
+  - RPG game system architecture and design
+  - API endpoint development and testing
+  - Bridge between frontend and backend teams
+  - Game logic implementation
+  - Database integration for RPG features
+
+#### Backend Developer / RPG Developer (Ioan Luparu)
+- **Responsibilities:**
+  - Python development for RPG system
+  - Database schema design and optimization
+  - Game state management and persistence
+  - Backend logic and business rules
+  - Performance optimization
+  - RPG combat and quest systems
+
+#### Frontend Developer (Matei Sescu)
 - **Responsibilities:**
   - React component development
+  - Photobooth feature UI (with Ingrid)
   - TypeScript implementation
-  - State management (Context API, potential Redux/Zustand)
-  - Responsive design implementation
+  - Responsive design and CSS
+  - State management in frontend
   - Integration with backend APIs
-  - Frontend testing
-
-#### Backend Developer
-- **Responsibilities:**
-  - Django REST API development
-  - Database schema design and migrations
-  - Authentication and authorization
-  - External API integrations (OpenRouter)
-  - Backend testing
-  - Performance optimization
-
-#### Designer / QA
-- **Responsibilities:**
-  - UI/UX design and prototyping
-  - User research and testing
-  - Quality assurance testing
-  - Bug reporting and tracking
-  - Documentation and user guides
 
 ### 3.3 Predicted Changes for SE Course
 
@@ -896,7 +915,7 @@ git checkout photobooth
 **Development Metrics:**
 - Total Commits: 50+
 - Development Time: 8 weeks (MDS course)
-- Team Size: 4 developers
+- Team Size: 5 developers
 - Sprints Completed: 3
 - User Stories Completed: 27/40 (67.5%)
 
@@ -904,13 +923,19 @@ git checkout photobooth
 
 ### 6.2 Contact Information
 
-**Team Lead:** Ingrid Corobana  
+**Project Owner:** Moise Irina  
+**Team Members:**
+- Corobana Ingrid-Adriana (@dirgnic) - AI Integration Lead
+- Prizlopan Iustin-George - Middle-End Developer / RPG Lead
+- Luparu Ioan-Teodor - Backend Developer / RPG Developer
+- Sescu Matei - Frontend Developer
+
 **Course:** Software Engineering 2025-2026  
 **Programme:** Informatics  
-**Institution:** [University Name]  
+**Repository:** [https://github.com/Zero123-star/JunoChat](https://github.com/Zero123-star/JunoChat)
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 1.1  
 **Last Updated:** November 2, 2025  
 **Next Review:** Start of Software Engineering course semester
