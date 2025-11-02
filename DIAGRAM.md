@@ -372,6 +372,217 @@ graph TB
 
 ---
 
+## UML - Complete System Class Diagram
+
+```mermaid
+classDiagram
+    %% Core User Management
+    class CustomUser {
+        <<Entity>>
+        -int id
+        -string username
+        -string email
+        -string password_hash
+        -ImageField profile_picture
+        -string code
+        -boolean confirmed_email
+        -boolean blocked
+        -datetime date_joined
+        +login(credentials) Token
+        +signup(data) User
+        +follow(user) void
+        +unfollow(user) void
+        +isFollowing(user) boolean
+        +getFollowersCount() int
+        +getFollowingCount() int
+        +updateProfile(data) void
+    }
+    
+    class Follow {
+        <<Association>>
+        -int id
+        -int follower_id
+        -int followed_id
+        -datetime created_at
+        +create() Follow
+        +delete() void
+    }
+    
+    %% Character System
+    class Character {
+        <<Entity>>
+        -UUID id
+        -string name
+        -ImageField avatar
+        -string source
+        -text description
+        -int creator_id
+        +create(data) Character
+        +update(data) void
+        +delete() void
+        +addTag(tag) void
+        +removeTag(tag) void
+        +getTags() Tag[]
+    }
+    
+    class Tag {
+        <<Entity>>
+        -int id
+        -string name
+        +create(name) Tag
+        +getCharacters() Character[]
+    }
+    
+    %% Chat System
+    class Chat {
+        <<Entity>>
+        -int id
+        -int user_id
+        -UUID chatbot_id
+        -datetime created_at
+        +startChat(user, character) Chat
+        +getMessages() Message[]
+        +sendMessage(content, sender) Message
+        +delete() void
+    }
+    
+    class Message {
+        <<Entity>>
+        -int id
+        -text description
+        -datetime timestamp
+        -int chat_id
+        -int sender_user_id
+        -UUID sender_bot_id
+        -int number
+        +send(content, chat) Message
+        +delete() void
+        +getNext() Message
+        +getPrevious() Message
+    }
+    
+    %% Backend Services
+    class UserViewSet {
+        <<Controller>>
+        +list() User[]
+        +retrieve(id) User
+        +create(data) User
+        +update(id, data) User
+        +destroy(id) void
+        +follow(id) void
+        +unfollow(id) void
+        +search(query) User[]
+    }
+    
+    class CharacterViewSet {
+        <<Controller>>
+        +list() Character[]
+        +retrieve(id) Character
+        +create(data) Character
+        +update(id, data) Character
+        +destroy(id) void
+    }
+    
+    class ChatViewSet {
+        <<Controller>>
+        +list() Chat[]
+        +retrieve(id) Chat
+        +create(data) Chat
+        +sendMessage(chatId, data) Message
+        +getMessages(chatId) Message[]
+    }
+    
+    class OpenRouterService {
+        <<Service>>
+        -string apiKey
+        -string baseURL
+        +sendChatRequest(messages) Response
+        +streamResponse(messages) Stream
+        +getModels() Model[]
+    }
+    
+    %% Frontend Components
+    class ChatPage {
+        <<Component>>
+        -Chat currentChat
+        -Message[] messages
+        -boolean isLoading
+        +sendMessage(content) void
+        +loadHistory() void
+        +handleResponse(message) void
+    }
+    
+    class CharactersPage {
+        <<Component>>
+        -Character[] characters
+        -string searchQuery
+        +loadCharacters() void
+        +filterByTag(tag) void
+        +navigateToChat(character) void
+    }
+    
+    class PhotoboothPage {
+        <<Component>>
+        -File userImage
+        -File characterImage
+        -string childName
+        -string mergedImage
+        +uploadImage(type, file) void
+        +mergeFaces() void
+        +downloadImage() void
+        +reset() void
+    }
+    
+    class APIService {
+        <<Service>>
+        -AxiosInstance axios
+        -string baseURL
+        -string token
+        +login(credentials) Token
+        +getCharacters() Character[]
+        +sendMessage(chatId, content) Message
+        +uploadImage(file) URL
+    }
+    
+    %% Relationships
+    CustomUser "1" -- "0..*" Character : creates >
+    CustomUser "1" -- "0..*" Chat : participates >
+    CustomUser "1" -- "0..*" Follow : follower >
+    CustomUser "1" -- "0..*" Follow : followed >
+    Character "1" -- "0..*" Chat : participates >
+    Character "0..*" -- "0..*" Tag : tagged with >
+    Chat "1" *-- "0..*" Message : contains >
+    Message "0..1" -- "1" CustomUser : sent by >
+    Message "0..1" -- "1" Character : sent by >
+    
+    UserViewSet ..> CustomUser : manages
+    CharacterViewSet ..> Character : manages
+    ChatViewSet ..> Chat : manages
+    ChatViewSet ..> OpenRouterService : uses
+    
+    ChatPage ..> APIService : calls
+    CharactersPage ..> APIService : calls
+    PhotoboothPage ..> APIService : calls
+    APIService ..> UserViewSet : HTTP
+    APIService ..> CharacterViewSet : HTTP
+    APIService ..> ChatViewSet : HTTP
+    
+    note for CustomUser "Django User Model\nExtends AbstractUser"
+    note for OpenRouterService "External AI API\nHandles chat completions"
+    note for PhotoboothPage "New Feature\nBlends two images"
+```
+
+**UML Legend:**
+- `<<Entity>>` - Database models
+- `<<Controller>>` - API endpoints/views
+- `<<Service>>` - Business logic services
+- `<<Component>>` - React UI components
+- Solid lines (--) - Associations
+- Dashed lines (..) - Dependencies
+- Asterisk (*--) - Composition
+
+---
+
 *Generated: November 2, 2025*  
 *Version: 1.0*  
 *Branch: photobooth*
