@@ -344,6 +344,30 @@ This document contains all user stories organized by epic/feature area, followin
 
 ---
 
+### US-3.7: Group Chat with AI Characters and Users
+**As a** user  
+**I want to** create group chats with multiple AI characters and other users  
+**So that** I can have dynamic multi-party conversations  
+
+**Acceptance Criteria:**
+- [ ] Option to create group chat from characters page
+- [ ] Can add multiple AI characters to one chat
+- [ ] Can invite other users to join the chat
+- [ ] All participants' messages visible in conversation
+- [ ] AI characters respond in context of group discussion
+- [ ] User messages clearly labeled by sender
+- [ ] AI characters maintain distinct personalities
+- [ ] Typing indicators show who is typing (user or which AI)
+- [ ] Group chat list separate from 1-on-1 chats
+- [ ] Can leave or delete group chats
+- [ ] Participants list visible in chat header
+
+**Priority:** SHOULD HAVE  
+**Story Points:** 13  
+**Status:**  IN PROGRESS
+
+---
+
 ## Epic 4: Social Features
 
 ### US-4.1: Follow User
@@ -718,10 +742,10 @@ This document contains all user stories organized by epic/feature area, followin
 
 ---
 
-**Total User Stories:** 40  
+**Total User Stories:** 41  
 **Completed:** 27  
-**In Progress:** 3  
+**In Progress:** 4  
 **Planned:** 10  
 
-**Document Version:** 1.0  
+**Document Version:** 1.1  
 **Last Updated:** November 2, 2025

@@ -112,6 +112,15 @@ Real-time conversation system with AI-powered characters using OpenRouter API.
 - Sends new message
 - Conversation context is maintained
 
+**Scenario 3.5: Group Chat (IN PROGRESS)**
+- User creates a group chat from Characters page
+- Selects multiple AI characters to add
+- Invites other users to join the group
+- All participants see messages in real-time
+- AI characters respond contextually to group discussion
+- Each AI maintains distinct personality in group setting
+- Users can identify who sent each message
+
 ### Acceptance Criteria
 -  Messages are displayed in chronological order
 -  User and bot messages are visually distinct
@@ -119,6 +128,18 @@ Real-time conversation system with AI-powered characters using OpenRouter API.
 -  Long conversations are paginated
 -  Chat history persists across sessions
 -  Error handling for AI service failures
+-  Group chats support multiple AI characters (IN PROGRESS)
+-  Group chats support multiple users (IN PROGRESS)
+-  Clear sender identification in group chats (IN PROGRESS)
+
+### Technical Implementation Notes
+- **1-on-1 Chats:** Single Chat model with one user and one character
+- **Group Chats (IN PROGRESS):** Enhanced Chat model with many-to-many relationships
+  - ManyToMany field for characters
+  - ManyToMany field for users (participants)
+  - Modified Message model to track sender type (user/character)
+  - Frontend UI to display multiple participants
+  - AI prompt engineering to maintain character personalities in group context
 
 ---
 

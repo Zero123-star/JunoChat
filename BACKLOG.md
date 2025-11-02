@@ -62,6 +62,8 @@ Launch MVP of RPG game system with combat and basic inventory.
 | ID | Issue | Story | Points | Status |
 |----|-------|-------|--------|--------|
 | #60 | Fix message deletion bug | US-3.6 | 2 |  IN PROGRESS |
+| #96 | Implement group chat database schema | US-3.7 | 5 |  IN PROGRESS |
+| #97 | Create group chat UI components | US-3.7 | 5 |  IN PROGRESS |
 | #61 | Implement auto-save for RPG | US-6.6 | 5 |  TODO |
 | #62 | Add combat victory/defeat screens | US-6.2 | 3 |  TODO |
 
@@ -82,6 +84,8 @@ Launch MVP of RPG game system with combat and basic inventory.
 | #66 | Add tag filtering to characters page | US-7.2 | 4 |  IN PROGRESS |
 | #67 | Implement followers list view | US-4.4 | 3 |  TODO |
 | #68 | Add following list view | US-4.5 | 3 |  TODO |
+| #98 | Add multiple AI characters to group chat | US-3.7 | 3 |  TODO |
+| #99 | Implement multi-user group chat support | US-3.7 | 3 |  TODO |
 | #69 | Create RPG quest log interface | US-6.4 | 3 |  TODO |
 
 #### Medium Priority (P2)
@@ -166,10 +170,10 @@ Launch MVP of RPG game system with combat and basic inventory.
 ##  Backlog Metrics
 
 ### Overall Statistics
-- **Total Issues:** 95
-- **Completed:** 51 (54%)
-- **In Progress:** 3 (3%)
-- **To Do:** 37 (39%)
+- **Total Issues:** 99
+- **Completed:** 51 (52%)
+- **In Progress:** 6 (6%)
+- **To Do:** 38 (38%)
 - **Blocked:** 0 (0%)
 - **Cancelled:** 4 (4%)
 
@@ -199,8 +203,8 @@ Launch MVP of RPG game system with combat and basic inventory.
 |------|--------------|-----------|-------------|-----------|------------|
 | User Management | 5 | 5 | 0 | 0 | 100% |
 | Character Management | 6 | 6 | 0 | 0 | 100% |
-| AI Chat System | 6 | 5 | 1 | 0 | 83% |
-| Social Features | 5 | 3 | 0 | 2 | 60% |
+| AI Chat System | 7 | 5 | 2 | 0 | 71% |
+| Social Features | 5 | 3 | 2 | 0 | 60% |
 | Photobooth | 5 | 5 | 0 | 0 | 100% |
 | RPG Game | 6 | 0 | 0 | 6 | 0% |
 | Tags & Search | 2 | 1 | 1 | 0 | 50% |
@@ -212,8 +216,10 @@ Launch MVP of RPG game system with combat and basic inventory.
 ### Recent Changes (November 2, 2025)
 -  Completed entire Photobooth epic (issues #45-#51)
 -  Added RPG game system issues (#52-#59)
+-  Added Group Chat feature (US-3.7) - IN PROGRESS (issues #96-#99)
 -  Moved message deletion to current sprint
 -  Increased sprint velocity target to 29 points
+-  Total user stories increased from 40 to 41
 
 ### Next Refinement Session
 - **Date:** November 8, 2025

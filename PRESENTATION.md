@@ -25,11 +25,11 @@
 
 ### 1.1 List of Initial User Stories
 
-The complete list of 40 initial user stories is documented in [USER_STORIES.md](./USER_STORIES.md). These stories are organized into 7 epics:
+The complete list of 41 user stories is documented in [USER_STORIES.md](./USER_STORIES.md). These stories are organized into 7 epics:
 
 1. **Epic 1: User Management & Authentication** (5 stories)
 2. **Epic 2: Character Management** (6 stories)
-3. **Epic 3: AI Chat System** (6 stories)
+3. **Epic 3: AI Chat System** (7 stories)
 4. **Epic 4: Social Features** (5 stories)
 5. **Epic 5: Photobooth Feature** (5 stories)
 6. **Epic 6: RPG Game System** (6 stories)
@@ -37,7 +37,7 @@ The complete list of 40 initial user stories is documented in [USER_STORIES.md](
 
 ### 1.2 Completed User Stories
 
-**27 User Stories Completed (67.5% completion rate)**
+**27 User Stories Completed (65.9% completion rate)**
 
 #### Epic 1: User Management & Authentication (5/5 COMPLETED - 100%)
 - US-1.1: User Registration
@@ -54,13 +54,14 @@ The complete list of 40 initial user stories is documented in [USER_STORIES.md](
 - US-2.5: Character Deletion
 - US-2.6: Character Search
 
-#### Epic 3: AI Chat System (5/6 COMPLETED - 83%)
+#### Epic 3: AI Chat System (5/7 COMPLETED - 71%)
 - US-3.1: Start New Chat (DONE)
 - US-3.2: Send Messages (DONE)
 - US-3.3: Receive AI Responses (DONE)
 - US-3.4: View Chat History (DONE)
 - US-3.5: Delete Chat (DONE)
 - US-3.6: Delete Individual Messages (IN PROGRESS)
+- US-3.7: Group Chat with AI Characters and Users (IN PROGRESS)
 
 #### Epic 4: Social Features (3/5 COMPLETED - 60%)
 - US-4.1: Follow Users (DONE)
@@ -107,6 +108,55 @@ Yes. This is a critical user experience feature that affects chat management. Us
 - Implement automatic message renumbering logic
 - Add comprehensive unit tests for message deletion scenarios
 - Use React Context or state management library (Zustand/Redux) for better state handling
+
+---
+
+#### US-3.7: Group Chat with AI Characters and Users (IN PROGRESS)
+
+**Priority:** SHOULD HAVE  
+**Story Points:** 13  
+**Status:** Currently in development
+
+**I. Why the User Story wasn't achieved:**
+- Feature is actively being developed (work in progress)
+- Requires significant database schema changes (many-to-many relationships)
+- Complex frontend UI to manage multiple participants
+- AI prompt engineering needed to maintain character personalities in group context
+- WebSocket/real-time updates add technical complexity
+- Large feature (13 story points) requires multiple sprints
+
+**II. Should it be developed in the following phase?**
+Yes, definitely. Group chat is a highly requested feature that will:
+- Increase user engagement significantly
+- Enable creative multi-character interactions
+- Support collaborative storytelling
+- Differentiate platform from competitors
+- Enable educational use cases (group discussions with historical figures, etc.)
+
+**III. Tactics to ensure achievement:**
+- Break down into smaller deliverable milestones:
+  - Milestone 1: Database schema changes (Chat with multiple characters)
+  - Milestone 2: Basic group chat UI (Sprint 4)
+  - Milestone 3: Multiple AI characters responding (Sprint 4-5)
+  - Milestone 4: Add multiple user participants (Sprint 5)
+  - Milestone 5: Real-time updates with WebSocket (Sprint 5)
+- Modify Django models:
+  - Add `participants` ManyToMany field to Chat model
+  - Add `characters` ManyToMany field to Chat model
+  - Add `sender_type` field to Message model
+- Create group chat UI components:
+  - ParticipantsList component
+  - GroupChatHeader with avatars
+  - Enhanced message bubbles with sender labels
+- AI prompt engineering:
+  - Include all characters' personalities in system prompt
+  - Add character name to each AI response
+  - Maintain conversation context for all participants
+- Implement message routing:
+  - Round-robin AI responses
+  - Or user-selected "@mention" system
+- Add comprehensive testing for group scenarios
+- Allocate 13 story points across Sprints 4-5
 
 ---
 
@@ -223,10 +273,10 @@ Yes, but incrementally. RPG system will differentiate JunoChat from competitors 
 
 | Status | Count | Percentage |
 |--------|-------|------------|
-| DONE | 27 | 67.5% |
-| IN PROGRESS | 3 | 7.5% |
-| PLANNED | 10 | 25.0% |
-| **TOTAL** | **40** | **100%** |
+| DONE | 27 | 65.9% |
+| IN PROGRESS | 4 | 9.8% |
+| PLANNED | 10 | 24.4% |
+| **TOTAL** | **41** | **100%** |
 
 ### 2.2 By Epic
 
@@ -234,7 +284,7 @@ Yes, but incrementally. RPG system will differentiate JunoChat from competitors 
 |------|-----------|-------------|---------|-------|------------|
 | User Management | 5 | 0 | 0 | 5 | 100% |
 | Character Management | 6 | 0 | 0 | 6 | 100% |
-| AI Chat System | 5 | 1 | 0 | 6 | 83% |
+| AI Chat System | 5 | 2 | 0 | 7 | 71% |
 | Social Features | 3 | 2 | 0 | 5 | 60% |
 | Photobooth | 5 | 0 | 0 | 5 | 100% |
 | RPG Game | 0 | 0 | 6 | 6 | 0% |
@@ -245,7 +295,7 @@ Yes, but incrementally. RPG system will differentiate JunoChat from competitors 
 | Priority | Completed | Remaining | % Complete |
 |----------|-----------|-----------|------------|
 | MUST HAVE | 19 | 4 | 83% |
-| SHOULD HAVE | 6 | 4 | 60% |
+| SHOULD HAVE | 6 | 5 | 55% |
 | COULD HAVE | 2 | 6 | 25% |
 
 **Detailed documentation:** [USER_STORIES.md](./USER_STORIES.md)
