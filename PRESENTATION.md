@@ -816,23 +816,7 @@ Add Photobooth feature with image blending
 
 ---
 
-#### 4.6.2 Code Smell Identification
-
-**1. Prop Drilling in Character Pages**
-- **Smell:** Passing props through 3+ component levels
-- **Solution:** Implement React Context or Zustand for character state
-
-**2. Duplicate Code in Serializers**
-- **Smell:** Similar validation logic repeated across serializers
-- **Solution:** Create base serializer classes with common validation
-
-**3. Hard-coded URLs**
-- **Smell:** API URLs written directly in components
-- **Solution:** Centralize in environment configuration
-
----
-
-#### 4.6.3 Technical Debt Items
+#### 4.6.2 Technical Debt Items
 
 See [BACKLOG.md - Technical Debt Section](./BACKLOG.md#-technical-debt) for complete list:
 
