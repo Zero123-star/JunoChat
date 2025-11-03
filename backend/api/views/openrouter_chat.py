@@ -22,18 +22,24 @@ class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead o
     
     @staticmethod
     def return_simple_jailbreak(description):
+        print("Hello from simple jailbreak")
         messages = [
             {'role': 'system', 'content': 'You are going to engage in a simple rpchat. Play in character based on the <Character sheet> description'},
             {'role': 'system', 'content': description},
             {'role': 'system', 'content': 'Beginning of the rpchat below:'}
         ]
         return messages
-    
+
     @action(detail=False, methods=['post'])
-    def chat(self, request):
+    def test_endpoint(self, request):
+        return JsonResponse({'message': 'Test endpoint is working!'})
+
+    @action(detail=False, methods=['post'])
+    def openrouter_chat(self, request):
         """
         Custom endpoint for OpenRouter chat integration
         """
+        print("Hello from OpenRouter Chat Endpoint")
         bot_id = request.data.get('id')
         messages = request.data.get('messages', [])
         
@@ -48,7 +54,6 @@ class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead o
         system_messages.extend(messages)
         
         print(system_messages)
-        
         # Call OpenRouter API
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",

@@ -10,7 +10,9 @@ client = Client()
 ###
 print("123")
 # Example GET request
-response = client.post('/api/users/get_username/', {'id': 1})
+response = client.post('/api/characters/retrieve_character/', {'name': 'testing 101'})
 
 print(response.status_code)
+if response.status_code == 200:
+    print(response.json())
 #print(response.content.decode())

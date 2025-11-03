@@ -11,7 +11,21 @@ from .models import CustomUser, Follow, Tag, Character, Message, Chat
 from .serializers import CustomUserSerializer, FollowSerializer, TagSerializer, CharacterSerializer, MessageSerializer, ChatSerializer, ChatListSerializer
 import logging
 logger = logging.getLogger(__name__)
+'''
+SET search_path TO django;
+ALTER TABLE base_character RENAME TO api_character;
+ALTER TABLE base_customuser RENAME TO api_customuser;
+ALTER TABLE base_chat RENAME TO api_chat;
+ALTER TABLE base_message RENAME TO api_message;
+ALTER TABLE base_follow RENAME TO api_follow;
+ALTER TABLE base_tag RENAME TO api_tag;
+ALTER TABLE base_character_tags RENAME TO api_character_tags;
+ALTER TABLE base_customuser_groups RENAME TO api_customuser_groups;
+ALTER TABLE base_customuser_user_permissions RENAME TO api_customuser_user_permissions;
 
+
+
+'''
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer

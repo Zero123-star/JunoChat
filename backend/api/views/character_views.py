@@ -31,7 +31,29 @@ class CharacterViewSet(viewsets.ModelViewSet):
         characters = Character.objects.filter(creator=request.user)
         serializer = self.get_serializer(characters, many=True)
         return Response(serializer.data)
-               
+
+
+
+    @action(detail=False, methods=['get'])
+    def list_characters(self, request):
+        characters = Character.objects.all()
+        serializer = self.get_serializer(characters, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def retrieve_character(self, request):
+        print("Hello from retrieve_character")
+        data = request.data
+        print(data.get('name')) 
+        try:
+            name1=data.get('name')
+            char=Character.objects.get(name=name1)
+            serializer=CharacterSerializer(char)
+            return Response(serializer.data)
+        except Exception as e:
+            print("Error in retrieve_character:", str(e))
+            return Response({'error': 'Something went wrong(retrieve_character)'}, status=404)
+
     @csrf_exempt
     @action(detail=False, methods=['post'])
     def create_character(self,request):
@@ -58,7 +80,7 @@ class CharacterViewSet(viewsets.ModelViewSet):
                 # Validate required fields
                 if not name or not description:
                     return JsonResponse({'error': 'Name and description are required'}, status=400)
-                mimi=CustomUser.objects.get(id=creator_id)
+                given_creator_id=CustomUser.objects.get(id=creator_id)
                 print(name,description,avatar,creator_id,id)
                 # Create new character
                 character = Character.objects.create(
@@ -69,7 +91,7 @@ class CharacterViewSet(viewsets.ModelViewSet):
                     avatar=avatar,
                     #tags=tags,
                     #color=color,
-                    creator=mimi  # Use the provided creator_id
+                    creator=given_creator_id  # Use the provided creator_id
                 )
                 print("HEY HEY HEY")
                 # Return the created character as JSON
