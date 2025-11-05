@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Follow, Tag, Character, Message, Chat
+from .models import CustomUser, Follow, Tag, Character, Message, Chat, GroupChatMessage, GroupChat
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -95,3 +95,31 @@ class ChatListSerializer(serializers.ModelSerializer):
         if last_message:
             return MessageSerializer(last_message).data
         return None
+
+
+class GroupChatMessageSerializer(serializers.ModelSerializer):
+    sender_username = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = GroupChatMessage
+        fields = ['id', 'description', 'timestamp', 'group_chat', 'sender_user', 'sender_bot', 'number', 'sender_username']
+        read_only_fields = ['timestamp', 'number', 'sender_username']
+    
+    def get_sender_username(self, obj):
+        if obj.sender_user:
+            return obj.sender_user.username
+        elif obj.sender_bot:
+            return obj.sender_bot.name
+        return None
+
+class GroupChatSerializer(serializers.ModelSerializer):
+    user_username = serializers.ReadOnlyField(source='user.username')
+    chatbot_names = serializers.SerializerMethodField()
+    messages = GroupChatMessageSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = GroupChat
+        fields = ['id', 'user', 'chatbots', 'user_username', 'chatbot_names', 'messages', 'created_at']
+    
+    def get_chatbot_names(self, obj):
+        return [bot.name for bot in obj.chatbots.all()]

@@ -55,3 +55,23 @@ class ChatAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'chatbot__name')
     raw_id_fields = ('user', 'chatbot')
 admin.site.register(Chat, ChatAdmin)
+
+from .models import GroupChat, GroupChatMessage
+class GroupChatAdmin(admin.ModelAdmin):
+    list_display = ('user', 'created_at', 'get_chatbots')
+    list_filter = ('user',)
+    search_fields = ('user__username',)
+    filter_horizontal = ('chatbots',)
+    
+    def get_chatbots(self, obj):
+        return ", ".join([bot.name for bot in obj.chatbots.all()])
+    get_chatbots.short_description = 'Chatbots'
+
+admin.site.register(GroupChat, GroupChatAdmin)
+
+class GroupChatMessageAdmin(admin.ModelAdmin):
+    list_display = ('group_chat', 'sender_user', 'sender_bot', 'number', 'description', 'timestamp')
+    list_filter = ('group_chat', 'sender_user', 'sender_bot')
+    search_fields = ('description',)
+
+admin.site.register(GroupChatMessage, GroupChatMessageAdmin)

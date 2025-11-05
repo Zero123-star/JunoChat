@@ -2,6 +2,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
 from django.urls import path, include
 from api.views import CustomUserViewSet, FollowViewSet, TagViewSet, CharacterViewSet, ChatViewSet, MessageViewSet,CustomOpenrouterViewset
+from api.views import GroupChatViewSet, GroupChatMessageViewSet
 from django.conf import settings
 from django.conf.urls.static import static
 #from . import views
@@ -12,6 +13,11 @@ router.register(r'follows', FollowViewSet)
 router.register(r'tags', TagViewSet)
 router.register(r'characters', CharacterViewSet, basename='character')
 router.register(r'chats', ChatViewSet, basename='chat')
+router.register(r'group_chats', GroupChatViewSet, basename='group-chat')
+
+group_chats_router = NestedDefaultRouter(router, r'group_chats', lookup='group_chat')
+group_chats_router.register(r'messages', GroupChatMessageViewSet, basename='group-chat-messages')
+
 
 users_router = NestedDefaultRouter(router, r'users', lookup='user')
 users_router.register(r'characters', CharacterViewSet, basename='user-characters')
@@ -32,5 +38,6 @@ urlpatterns = [
     path('api/chats/', include(chats_router.urls)),
     path('api/characters/<int:character_id>/', include(characters_router.urls)),
     path('api/messages/', include(router.urls)), ###ADDED
+    path('api/group_chats/', include(group_chats_router.urls)),
     #path('api/chat/', CustomOpenrouterViewset.as_view(), name='openrouter_chat'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
