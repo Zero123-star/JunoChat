@@ -29,20 +29,53 @@ class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead o
             {'role': 'system', 'content': 'Beginning of the rpchat below:'}
         ]
         return messages
+    def return_group_chat_jailbreak(self,other_bots):
+        #other_bots is a list of bot ids
+        print("Other bots:", other_bots)
+        bot_descriptions = []
+        try:
+            for bot_id in other_bots:
+                char_data = self.return_character_description(bot_id)
+                if char_data:
+                    bot_descriptions.append(f"<Character sheet: {char_data['name']}> {char_data['description']}")
+        except Exception as e:
+            print("Error occurred while retrieving character descriptions:", e)
+            return []
+        print("Hello from group chat jailbreak")
+        messages = [
+            {'role': 'system', 'content': 'You are going to engage in a group rpchat. Play in character based on the <Character sheet> descriptions of all participants.'},
+        ]
+        for desc in bot_descriptions:
+            messages.append({'role': 'system', 'content': desc})
+        messages.append({'role': 'system', 'content': 'Beginning of the group rpchat below:'})
+        return messages
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post', 'get'])
     def test_endpoint(self, request):
-        return JsonResponse({'message': 'Test endpoint is working!'})
+        bot_ids=request.data.get('ids', [])
+        print("TEST ENDPOINT REACHED")
+        #print(bot_ids[1])
+        messages=bot_ids
+        try:
+            messages=self.return_group_chat_jailbreak(bot_ids)
+        except Exception as e:
+            print("Error occurred while retrieving group chat messages:", e)
+        return JsonResponse({'message': 'Test endpoint is working!', 'messages': messages})
+
+    def openrouter_group_chat(self, request):
+        return self.openrouter_chat(request, is_group_chat=True)
+
+
 
     @action(detail=False, methods=['post'])
-    def openrouter_chat(self, request):
+    def openrouter_chat(self, request, is_group_chat=False):
         """
         Custom endpoint for OpenRouter chat integration
         """
         print("Hello from OpenRouter Chat Endpoint")
-        bot_id = request.data.get('id')
+        bot_id = request.data.get('id') 
         messages = request.data.get('messages', [])
-        
+        is_group_chat=request.data.get('is_group_chat', False)
         # Get character description
         char_data = self.return_character_description(bot_id)
         if not char_data:
@@ -50,19 +83,30 @@ class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead o
         
         # Build the prompt
         description = f"<Character sheet: {char_data['name']}> {char_data['description']}"
-        system_messages = self.return_simple_jailbreak(description)
-        system_messages.extend(messages)
         
+        if is_group_chat:
+            try:
+                bot_ids = request.data.get('other_bot_ids', [])
+                system_messages = self.return_group_chat_jailbreak(bot_ids)
+                system_messages.extend(messages)
+                what_bot_responds="The character that will respond in the next message is "+char_data['name']+"."
+                system_messages.append({'role': 'system', 'content': what_bot_responds})
+            except Exception as e:
+                print("Error occurred while retrieving group chat messages:", e)
+        else:
+            system_messages = self.return_simple_jailbreak(description)
+            system_messages.extend(messages)
+
         print(system_messages)
         # Call OpenRouter API
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": f"Bearer",  # ADD YOUR KEY
+                "Authorization": f"Bearer ",  # ADD YOUR KEY
                 "Content-Type": "application/json"
             },
             data=json.dumps({
-                "model": "deepseek/deepseek-chat-v3-0324:free",
+                "model": "openai/gpt-oss-120b:exacto",
                 "messages": system_messages,
                 "max_tokens": 500,
                 "streaming": False
