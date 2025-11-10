@@ -186,3 +186,80 @@ export const getCurrentUser = async (user_id: any) => {
   console.log("(API)Current user data:", response.data);
   return response.data;
 };
+
+
+//Group Chat Endpoints
+// Create a new group chat with multiple characters
+export const createGroupChat = async (user_id: string, character_ids: string[]) => {
+  console.log("(API) Creating group chat with:", { user_id, character_ids });
+  const response = await API.post('group_chats/create_group_chat/', {
+    user_id,
+    character_ids
+  });
+  console.log("(API) Group chat created:", response.data);
+  return response.data;
+};
+
+// Get existing group chat or return null
+export const getGroupChat = async (user_id: string, character_ids: string[]) => {
+  console.log("(API) Getting group chat for:", { user_id, character_ids });
+  const response = await API.post('group_chats/get_group_chat/', {
+    user_id,
+    character_ids
+  });
+  console.log("(API) Group chat response:", response.data);
+  return response.data;
+};
+
+// Get all group chats for a user
+export const getGroupChats = async (user_id: string) => {
+  console.log("(API) Fetching group chats for user ID:", user_id);
+  const response = await API.post('group_chats/get_group_chats/', { user_id });
+  console.log("(API) Group chats data:", response.data);
+  return response.data;
+};
+
+// Get messages from a group chat
+export const getGroupChatMessages = async (group_chat_id: string) => {
+  console.log("(API:0) Fetching group chat messages for chat ID:", group_chat_id);
+  console.log("(API:1) POST ROUTE: ", `group_chats/${group_chat_id}/messages/get_messages_list/`); 
+  const response = await API.post(`group_chats/${group_chat_id}/messages/get_messages_list/`, {
+    group_chat_id
+  });
+  console.log("(API) Group chat messages:", response.data);
+  return response.data;
+};
+
+// Store a message in a group chat
+export const storeGroupChatMessage = async (
+  group_chat_id: string,
+  message: { role: string; content: string; id: string }
+) => {
+  console.log("(API) Storing group chat message:", { group_chat_id, message });
+  const response = await API.post(`group_chats/${group_chat_id}/messages/store_message/`, {
+    group_chat_id,
+    message
+  });
+  console.log("(API) Group chat message stored:", response.data);
+  return response.data;
+};
+
+// Send message to group chat via OpenRouter
+export const sendGroupChatMessage = async (
+  bot_id: string,
+  messages: { role: string; content: string }[],
+  other_bot_ids: string[]
+) => {
+  console.log("(API) Sending group chat message to OpenRouter:", {
+    bot_id,
+    messages,
+    other_bot_ids
+  });
+  const response = await API.post('chat/openrouter_chat/', {
+    id: bot_id,
+    messages,
+    is_group_chat: true,
+    other_bot_ids
+  });
+  return response.data;
+};

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { Plus, LogIn, User } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -58,6 +59,15 @@ const Navbar: React.FC = () => {
               className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
             >
               Chats
+            </Link>
+          )}
+          {authState.isLoggedIn && (
+            <Link 
+              to="/create-group-chat" 
+              className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+            >
+              <Users className="h-4 w-4" />
+              Group Chat
             </Link>
           )}
           <Link 
