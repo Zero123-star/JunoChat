@@ -10,8 +10,15 @@ class GroupChatViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     
     @action(detail=False, methods=['post'])
+    def test_endpoint(self, request, *args, **kwargs):
+        group_chat_pk = kwargs.get('group_chat_pk')
+        print("TEST GROUP CHAT ENDPOINT REACHED")
+        return JsonResponse({'message': 'Group Chat endpoint is working!'})
+
+    @action(detail=False, methods=['post'])
     def create_group_chat(self, request):
         """Create a new group chat with multiple bots"""
+        print("CREATE GROUP CHAT", request.data)
         user_id = request.data.get('user_id')
         bot_ids = request.data.get('character_ids', [])  # List of character IDs
         
@@ -32,6 +39,7 @@ class GroupChatViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def get_group_chat(self, request):
+        print("GET GROUP CHAT", request.data)
         """Get existing group chat or return None"""
         user_id = request.data.get('user_id')
         bot_ids = request.data.get('character_ids', [])
@@ -88,7 +96,8 @@ class GroupChatMessageViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     
     @action(detail=False, methods=['post'])
-    def get_messages_list(self, request):
+    def get_messages_list(self, request,*args, **kwargs):
+        print("GET GROUP CHAT MESSAGES", request.data)
         group_chat_id = request.data.get('group_chat_id')
         messages = GroupChatMessage.objects.filter(group_chat_id=group_chat_id).order_by('number')
         messages_list = []
@@ -103,7 +112,15 @@ class GroupChatMessageViewSet(viewsets.ModelViewSet):
         return JsonResponse({'messages': messages_list})
     
     @action(detail=False, methods=['post'])
-    def store_message(self, request):
+    def test_endpoint(self, request, *args, **kwargs):
+        print("TEST GROUP CHAT MESSAGE ENDPOINT REACHED")
+        return JsonResponse({'message': 'Group Chat Message endpoint is working!'})
+
+
+    @action(detail=False, methods=['post'])
+    def store_message(self, request, *args, **kwargs):
+        print("STORE GROUP CHAT MESSAGE", request.data)
+        
         group_chat_id = request.data.get('group_chat_id')
         content = request.data.get('message')
         role = content.get('role')

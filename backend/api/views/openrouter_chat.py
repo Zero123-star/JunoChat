@@ -9,17 +9,19 @@ from rest_framework.response import Response
 from api.models import Character
 from api.serializers import CharacterSerializer  # Borrow this
 
-class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead of ModelViewSet
+
+class CustomOpenrouterViewset(viewsets.ViewSet):
     permission_classes = [AllowAny]
     serializer_class = CharacterSerializer
+
     @staticmethod
     def return_character_description(bot_id):
         queryset = Character.objects.all()
         for i in queryset:
             if str(i.id) == str(bot_id):
                 return {'description': i.description, 'name': i.name}
-        return None  # Better than "error 101"
-    
+        return None
+
     @staticmethod
     def return_simple_jailbreak(description):
         print("Hello from simple jailbreak")
@@ -29,8 +31,8 @@ class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead o
             {'role': 'system', 'content': 'Beginning of the rpchat below:'}
         ]
         return messages
-    def return_group_chat_jailbreak(self,other_bots):
-        #other_bots is a list of bot ids
+
+    def return_group_chat_jailbreak(self, other_bots):
         print("Other bots:", other_bots)
         bot_descriptions = []
         try:
@@ -52,45 +54,56 @@ class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead o
 
     @action(detail=False, methods=['post', 'get'])
     def test_endpoint(self, request):
-        bot_ids=request.data.get('ids', [])
+        bot_ids = request.data.get('ids', [])
         print("TEST ENDPOINT REACHED")
-        #print(bot_ids[1])
-        messages=bot_ids
         try:
-            messages=self.return_group_chat_jailbreak(bot_ids)
+            messages = self.return_group_chat_jailbreak(bot_ids)
         except Exception as e:
             print("Error occurred while retrieving group chat messages:", e)
+            messages = []
         return JsonResponse({'message': 'Test endpoint is working!', 'messages': messages})
 
     def openrouter_group_chat(self, request):
         return self.openrouter_chat(request, is_group_chat=True)
 
-
-
     @action(detail=False, methods=['post'])
     def openrouter_chat(self, request, is_group_chat=False):
-        """
-        Custom endpoint for OpenRouter chat integration
-        """
         print("Hello from OpenRouter Chat Endpoint")
-        bot_id = request.data.get('id') 
+        bot_id = request.data.get('id')
         messages = request.data.get('messages', [])
-        is_group_chat=request.data.get('is_group_chat', False)
-        # Get character description
+        is_group_chat = request.data.get('is_group_chat', False)
+
         char_data = self.return_character_description(bot_id)
         if not char_data:
             return JsonResponse({'error': 'Character not found'}, status=404)
-        
-        # Build the prompt
+
         description = f"<Character sheet: {char_data['name']}> {char_data['description']}"
-        
+
         if is_group_chat:
             try:
                 bot_ids = request.data.get('other_bot_ids', [])
                 system_messages = self.return_group_chat_jailbreak(bot_ids)
-                system_messages.extend(messages)
-                what_bot_responds="The character that will respond in the next message is "+char_data['name']+"."
+
+                # >>> CHANGED: Add sender info to each group chat message
+                formatted_messages = []
+                for msg in messages:
+                    sender_id = msg.get('sender_bot') or msg.get('sender_user')
+                    sender_name = "Unknown"
+                    if sender_id:
+                        sender_char = self.return_character_description(sender_id)
+                        if sender_char:
+                            sender_name = sender_char['name']
+                    formatted_messages.append({
+                        'role': msg.get('role', 'user'),
+                        # >>> CHANGED: prepend message content with sender name
+                        'content': f"<Message sent by: {sender_name}> {msg.get('content', '')}"
+                    })
+                # >>> CHANGED: replace raw messages with formatted ones
+                system_messages.extend(formatted_messages)
+
+                what_bot_responds = f"The character that will respond in the next message is {char_data['name']}."
                 system_messages.append({'role': 'system', 'content': what_bot_responds})
+
             except Exception as e:
                 print("Error occurred while retrieving group chat messages:", e)
         else:
@@ -98,21 +111,22 @@ class CustomOpenrouterViewset(viewsets.ViewSet):  # Changed to ViewSet instead o
             system_messages.extend(messages)
 
         print(system_messages)
+
         # Call OpenRouter API
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": f"Bearer ",  # ADD YOUR KEY
+                "Authorization": f"Bearer",  # ADD YOUR KEY
                 "Content-Type": "application/json"
             },
             data=json.dumps({
-                "model": "openai/gpt-oss-120b:exacto",
+                "model": "z-ai/glm-4.5-air",
                 "messages": system_messages,
                 "max_tokens": 500,
                 "streaming": False
             })
         )
-        
+
         if response.status_code == 200:
             return JsonResponse(response.json())
         else:
