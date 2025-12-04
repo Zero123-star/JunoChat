@@ -1,7 +1,4 @@
 from .item import Item
-
-### Add debugging and try throw catch for when functions are called.
-# We will need when we will move to building the actual combat system
         
 class Inventory:
     def __init__(self, capacity : int = 30):

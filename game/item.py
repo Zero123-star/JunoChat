@@ -1,14 +1,13 @@
 from . import item_types as it
 
-        
 class Item:
-    def __init__(self, name: str, type: it.ItemType, subtype: it.ItemSubType | None = None, slot: str | None = None, stats: dict | None = None, desc : str | None = None):
+    def __init__(self, name: str, type: it.ItemType, subtype: it.ItemSubType | None = None, slot: str | None = None, stats: dict | None = None, description : str | None = None):
         self.name = name
         self.type = type
         self.subtype = subtype
         self.slot= slot
         self.stats= stats or {}
-        self.desc = desc or ""
+        self.description = description or ""
 
     def get_name(self) -> str:
         return self.name
@@ -26,7 +25,7 @@ class Item:
         return self.stats
 
     def get_description(self) -> str:
-        return self.desc
+        return self.description
     
     def update_name(self, new_name: str):
         self.name = new_name
@@ -48,9 +47,9 @@ class Item:
         self.stats = new_stats
         return self.stats
     
-    def update_description(self, new_desc: str):
-        self.desc = new_desc
-        return self.desc
+    def update_description(self, new_description: str):
+        self.description = new_description
+        return self.description
 
     def __repr__(self) -> str:
         return f"Item(name={self.name}, type={self.type}, subtype={self.subtype})"

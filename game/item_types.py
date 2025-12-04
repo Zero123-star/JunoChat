@@ -11,6 +11,7 @@ class ItemSubType:
         SWORD = auto()
         BOW = auto()
         STAFF = auto()
+        SHIELD = auto()
         
     class ArmorType(Enum):
         HELMET = auto()

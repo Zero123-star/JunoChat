@@ -1,20 +1,23 @@
-from game.npc import NPC
-from game.stats import Stats
-
+from game.npc import *
+from game.item_types import ItemType as it, ItemSubType as ist
 def test_npc_initialization():
-    stats = Stats({"Strength": 2, "Constitution": 4, "Dexterity": 1})
-    npc = NPC(100, 50, 40, stats)
+    inventory = Inventory([Item("Sword", it.WEAPON, ist.WeaponType.SWORD, slot="Hand"), Item("Shield", it.WEAPON, ist.WeaponType.SHIELD, slot="Hand")])
+    moveset = Moveset([Ability("Slash", "", "Melee", 50, 0), Ability("Block", "", "Defense", 0, 0)])
+    stats = Statsheet({Stats.STRENGTH: 2, Stats.CONSTITUTION: 4, Stats.DEXTERITY: 1})
+    npc = NPC(100, 50, 40, inventory, moveset, stats)
     
     assert npc.get_health() == 100
     assert npc.get_mana() == 50
     assert npc.get_stamina() == 40
-    assert npc.get_stats().get_permanent("Strength") == 2
-    assert npc.get_stats().get_permanent("Constitution") == 4
-    assert npc.get_stats().get_permanent("Dexterity") == 1
+    assert npc.get_stats().get_permanent(Stats.STRENGTH) == 2
+    assert npc.get_stats().get_permanent(Stats.CONSTITUTION) == 4
+    assert npc.get_stats().get_permanent(Stats.DEXTERITY) == 1
     
 def test_npc_stat_modification():
-    stats = Stats({"Strength": 2, "Constitution": 4})
-    npc = NPC(100, 50, 40, stats)
+    inventory = Inventory([Item("Sword", it.WEAPON, ist.WeaponType.SWORD, slot="Hand"), Item("Shield", it.WEAPON, ist.WeaponType.SHIELD, slot="Hand")])
+    moveset = Moveset([Ability("Slash", "", "Melee", 50, 0), Ability("Block", "", "Defense", 0, 0)])
+    stats = Statsheet({Stats.STRENGTH: 2, Stats.CONSTITUTION: 4})
+    npc = NPC(100, 50, 40, inventory, moveset, stats)
     
     npc.change_health(-10)
     assert npc.get_health() == 90
@@ -25,48 +28,52 @@ def test_npc_stat_modification():
     npc.change_stamina(-5)
     assert npc.get_stamina() == 35
     
-    npc.get_stats().update_permanent("Strength", 3)
-    assert npc.get_stats().get_permanent("Strength") == 5
+    npc.get_stats().update_permanent(Stats.STRENGTH, 3)
+    assert npc.get_stats().get_permanent(Stats.STRENGTH) == 5
     
 def test_npc_temporary_stats():
-    stats = Stats({"Strength": 2})
-    npc = NPC(100, 50, 40, stats)
+    inventory = Inventory([Item("Sword", it.WEAPON, ist.WeaponType.SWORD, slot="Hand"), Item("Shield", it.WEAPON, ist.WeaponType.SHIELD, slot="Hand")])
+    moveset = Moveset([Ability("Slash", "", "Melee", 50, 0), Ability("Block", "", "Defense", 0, 0)])
+    stats = Statsheet({Stats.STRENGTH: 2})
+    npc = NPC(100, 50, 40, inventory, moveset, stats)
     
-    npc.get_stats().add_temporary("Strength", value=3, turns=2, source="Weaker Strength Potion")
-    assert npc.get_stats().get_temporary("Strength") == 3
+    npc.get_stats().add_temporary(Stats.STRENGTH, value=3, turns=2, source="Weaker Strength Potion")
+    assert npc.get_stats().get_temporary(Stats.STRENGTH) == 3
     
     npc.get_stats().update_duration()
-    assert dict(npc.get_stats().temporaries) == {"Strength": [{"Value": 3, "Turns": 1, "Source": "Weaker Strength Potion"}]}
+    assert dict(npc.get_stats().temporaries) == {Stats.STRENGTH: [{"Value": 3, "Turns": 1, "Source": "Weaker Strength Potion"}]}
     
     npc.get_stats().update_duration()
     assert dict(npc.get_stats().temporaries) == {}
     
 def test_npc_unique_id():
-    stats1 = Stats({"Strength": 2})
-    npc1 = NPC(100, 50, 40, stats1)
+    stats1 = Statsheet({Stats.STRENGTH: 2})
+    npc1 = NPC(100, 50, 40, None, None, stats1)
     
-    stats2 = Stats({"Constitution": 4})
-    npc2 = NPC(120, 60, 50, stats2)
+    stats2 = Statsheet({Stats.CONSTITUTION: 4})
+    npc2 = NPC(120, 60, 50, None, None, stats2)
     
     assert npc1.get_id() != npc2.get_id()
     assert npc2.get_id() == npc1.get_id() + 1
     
 def test_npc_stat_retrieval():
-    stats = Stats({"Strength": 2, "Constitution": 4, "Dexterity": 1})
-    npc = NPC(100, 50, 40, stats)
+    inventory = Inventory([Item("Sword", it.WEAPON, ist.WeaponType.SWORD, slot="Hand"), Item("Shield", it.WEAPON, ist.WeaponType.SHIELD, slot="Hand")])
+    moveset = Moveset([Ability("Slash", "", "Melee", 50, 0), Ability("Block", "", "Defense", 0, 0)])
+    stats = Statsheet({Stats.STRENGTH: 2, Stats.CONSTITUTION: 4, Stats.DEXTERITY: 1})
+    npc = NPC(100, 50, 40, inventory, moveset, stats)
     
     retrieved_stats = npc.get_stats()
-    assert retrieved_stats.get_permanent("Strength") == 2
-    assert retrieved_stats.get_permanent("Constitution") == 4
-    assert retrieved_stats.get_permanent("Dexterity") == 1
-    assert retrieved_stats.get_temporary("Strength") == 0
-    retrieved_stats.add_temporary("Strength", value=5, turns=3)
-    assert retrieved_stats.get_temporary("Strength") == 5
+    assert retrieved_stats.get_permanent(Stats.STRENGTH) == 2
+    assert retrieved_stats.get_permanent(Stats.CONSTITUTION) == 4
+    assert retrieved_stats.get_permanent(Stats.DEXTERITY) == 1
+    assert retrieved_stats.get_temporary(Stats.STRENGTH) == 0
+    retrieved_stats.add_temporary(Stats.STRENGTH, value=5, turns=3)
+    assert retrieved_stats.get_temporary(Stats.STRENGTH) == 5
     retrieved_stats.update_duration()
-    assert retrieved_stats.get_temporary("Strength") == 5
+    assert retrieved_stats.get_temporary(Stats.STRENGTH) == 5
     retrieved_stats.update_duration()
     retrieved_stats.update_duration()
-    assert retrieved_stats.get_temporary("Strength") == 0
+    assert retrieved_stats.get_temporary(Stats.STRENGTH) == 0
     
 def run_all_tests():
     test_functions = [
