@@ -68,11 +68,29 @@ class NPC:
     def check_equipped_items(self):
         return self.inventory.get_equipped_items()
     
+
+    #Equips the item, and adding its stats to the statsheet
     def equip(self, item:Item):
-        return self.inventory.equip_item(item)
-    
+        equipped_item=self.inventory.equip_item(item)
+        if equipped_item != None :
+            for stat_dict in equipped_item.stats:
+                stat_name=stat_dict.get("Type")
+                stat_value=stat_dict.get("Value")
+                stat_turn_duration=stat_dict.get("Turns")
+                self.stats.add_temporary(stat=stat_name,value=stat_value,
+                                         turns=stat_turn_duration,source=equipped_item.name)
+            return equipped_item
+        print("(npc)Unable to equip item!")
+        return None
+
+    #Unequips the item, removes its stats from the statsheet 
     def unequip(self, item:Item):
-        return self.inventory.unequip_item(item)
+        unequipped_item=self.inventory.unequip_item(item)
+        if unequipped_item != None : 
+            self.stats.remove_source(unequipped_item.name)
+            return unequipped_item
+        print("(npc)Error at unequipping item!")
+        return None
     
     def learn_ability(self, ability: Ability):
         return self.moveset.add_ability(ability)
@@ -86,18 +104,12 @@ class NPC:
     def list_abilities(self):
         return self.moveset.list_abilities()
     
+    #@returns damage dealt
     def use_ability(self, name):
-        ability_type, ability_pow, ability_cost = self.moveset.get_ability(name)
-        match ability_type:
-            case 'PHYSICAL':
-                if ability_cost > self.stamina:
-                    return 0
-            case 'MAGIC':
-                if ability_cost > self.mana:
-                    return 0
-            case _:
-                return 0
-        return 1
+        if(self.has_ability(name)):
+            return self.moveset.get_ability(name).get_damage(self.stats)
+        print("(NPC_use_ability): Error, ability not found")
+        return None
             
     def get_permanent_stat(self, stat: Stats) -> int:
         return self.stats.get_permanent(stat)
@@ -110,9 +122,3 @@ class NPC:
 
     def update_stat(self, stat: Stats, value: int):
         return self.stats.update_permanent(stat, value)
-
-    def update_stat_durations(self):
-        self.stats.update_duration()
-
-    def remove_stat_source(self, source: str):
-        self.stats.remove_source(source)

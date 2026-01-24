@@ -1,5 +1,5 @@
 from .item import Item
-        
+#({"Strength" : 5, "Turns" : 3},{"Dexterity" : 5, "Turns" : 3})
 class Inventory:
     def __init__(self, capacity : int = 30):
         self.capacity = capacity
@@ -27,6 +27,7 @@ class Inventory:
     def list_items(self):
         return [item.name for item in self.items]
     
+    #Returns reference to equipped item if succesfull or none otherwise
     def equip_item(self, item: Item):
         # Check Inventory
         if item not in self.items:

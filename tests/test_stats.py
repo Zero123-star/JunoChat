@@ -30,7 +30,7 @@ def test_update_duration():
         ]}
     )
     stats.update_duration()
-    assert stats.temporaries == {Stats.STRENGTH: [{"Value": 5, "Turns": 1, "Source": "Greater Strength Potion"}]}
+    assert stats.temporary_stats == {Stats.STRENGTH: [{"Value": 5, "Turns": 1, "Source": "Greater Strength Potion"}]}
 
 def run_all_tests():
     test_functions = [

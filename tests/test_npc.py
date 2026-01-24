@@ -41,10 +41,10 @@ def test_npc_temporary_stats():
     assert npc.get_stats().get_temporary(Stats.STRENGTH) == 3
     
     npc.get_stats().update_duration()
-    assert dict(npc.get_stats().temporaries) == {Stats.STRENGTH: [{"Value": 3, "Turns": 1, "Source": "Weaker Strength Potion"}]}
+    assert dict(npc.get_stats().temporary_stats) == {Stats.STRENGTH: [{"Value": 3, "Turns": 1, "Source": "Weaker Strength Potion"}]}
     
     npc.get_stats().update_duration()
-    assert dict(npc.get_stats().temporaries) == {}
+    assert dict(npc.get_stats().temporary_stats) == {}
     
 def test_npc_unique_id():
     stats1 = Statsheet({Stats.STRENGTH: 2})
@@ -74,7 +74,7 @@ def test_npc_stat_retrieval():
     retrieved_stats.update_duration()
     retrieved_stats.update_duration()
     assert retrieved_stats.get_temporary(Stats.STRENGTH) == 0
-    
+''' 
 def run_all_tests():
     test_functions = [
         test_npc_initialization,
@@ -83,17 +83,22 @@ def run_all_tests():
         test_npc_temporary_stats,
         test_npc_unique_id
     ]
-    
-    for test in test_functions:
-        try:
-            test()
-            print(f"✓ {test.__name__} passed")
-        except AssertionError as e:
-            print(f"✗ {test.__name__} failed: {str(e)}")
-        except Exception as e:
-            print(f"✗ {test.__name__} failed with error: {str(e)}")
-
+'''
+def auxi():
+    inventory = Inventory()
+    inventory2=Inventory([Item("Sword", it.WEAPON, ist.WeaponType.SWORD, slot="Hand"), Item("Shield", it.WEAPON, ist.WeaponType.SHIELD, slot="Hand")])
+    moveset = Moveset([Ability("Slash", "", "Melee", 50, 0), Ability("Block", "", "Defense", 0, 0)])
+    stats = Statsheet({Stats.STRENGTH: 2, Stats.CONSTITUTION: 4, Stats.DEXTERITY: 1})
+    npc = NPC(100, 50, 40, inventory, moveset, stats)
+    Items=[Item("Sword", it.WEAPON, ist.WeaponType.SWORD, slot="Left_Hand"), Item("Shield", it.WEAPON, ist.WeaponType.SHIELD, slot="Right_Hand")]
+    retrieved_stats = npc.get_stats()
+    for i in Items:
+        npc.get_inventory().add_item(i)
+    print(inventory.items)
+    print(inventory2.capacity)
+    npc.get_inventory().equip_item(inventory.items[0])    
+    #for name in npc.get_inventory().list_items:
+    #    print(name)
 if __name__ == "__main__":
-    run_all_tests()
-
+    auxi()
 # python -m tests.test_npc

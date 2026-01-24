@@ -1,12 +1,14 @@
 from . import item_types as it
 
+
+stats = ({"Type" : "Strength", "Value" : 5, "Turns" : 5})
 class Item:
     def __init__(self, name: str, type: it.ItemType, subtype: it.ItemSubType | None = None, slot: str | None = None, stats: dict | None = None, description : str | None = None):
         self.name = name
         self.type = type
         self.subtype = subtype
         self.slot= slot
-        self.stats= stats or {}
+        self.stats= stats or ({})
         self.description = description or ""
 
     def get_name(self) -> str:

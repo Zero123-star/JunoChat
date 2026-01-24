@@ -28,10 +28,8 @@ class Moveset:
             return 0    
         for ability in self.abilities:
             if ability.get_name() == name:
-                type = ability.get_type()
-                power = ability.get_power()
-                cost = ability.get_cost()
-                return type, power, cost
+                ability : Ability
+                return ability
                     
     
     def __repr__(self) -> str:
