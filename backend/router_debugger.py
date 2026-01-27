@@ -14,45 +14,10 @@ print("=" * 80)
 print("TESTING GROUP CHAT ENDPOINTS")
 print("=" * 80)
 
-# Test data
-ids = ["632b504c-2d0f-4156-adbb-2469a7f6af6e", "73e19c8a-1dd7-4bc6-8584-7f8f53e73aa2"]
-
-# Test 1: Test endpoint for GroupChatViewSet
-print("\n--- Test 1: GroupChatViewSet test_endpoint ---")
-test_data = {
-    'group_chat_id': "some-group-chat-id",
-    'message': {
-        'role': 'assistant',
-        'content': 'This is a test message from the group chat bot.',
-        'id': '73e19c8a-1dd7-4bc6-8584-7f8f53e73aa2'
-    }
-}
-
-# Correct URL for custom action on viewset
-response = client.post(
-    '/api/group_chats/test_endpoint/',  # Note: starts with /api/ because it's added in main urls.py
-    data=json.dumps(test_data),
-    content_type='application/json'
-)
-print(f"Status Code: {response.status_code}")
-if response.status_code == 200:
-    print(f"Response: {response.json()}")
-else:
-    print(f"Error: {response.content.decode()}")
-
-# Test 2: Test endpoint for GroupChatMessageViewSet
-print("\n--- Test 2: GroupChatMessageViewSet store_message ---")
-store_message_request = {
-  "description": "string",
-  "group_chat": 0,
-  "sender_user": 0,
-  "sender_bot": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-}
-
 # URL for nested router action
 response2 = client.post(
-    '/api/group_chats/0/messages/test_endpoint/',
-    data=json.dumps(store_message_request),
+    '/api/rpg/initialize/',
+    data=json.dumps({"some_key": "some_value"}),
     content_type='application/json'
 )
 print(f"Status Code: {response2.status_code}")

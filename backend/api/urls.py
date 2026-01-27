@@ -10,7 +10,8 @@ from api.views import (
     MessageViewSet,
     CustomOpenrouterViewset,
     GroupChatViewSet, 
-    GroupChatMessageViewSet
+    GroupChatMessageViewSet,
+    RPGCombatViewSet
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -25,6 +26,7 @@ router.register(r'characters', CharacterViewSet, basename='character')
 router.register(r'chats', ChatViewSet, basename='chat')
 router.register(r'group_chats', GroupChatViewSet, basename='group-chat')
 router.register(r'messages', MessageViewSet, basename='messages')
+router.register(r'rpg', RPGCombatViewSet, basename='rpg-combat')
 
 # Nested routers
 group_chats_router = NestedDefaultRouter(router, r'group_chats', lookup='group_chat')
