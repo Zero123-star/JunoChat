@@ -40,6 +40,19 @@ class RPGCombatViewSet(viewsets.ViewSet):
             return JsonResponse({"error": str(e)}, status=500)
     
     @action(detail=False, methods=['post'])
+    def set_api_key(self, request):
+        """Set OpenRouter API key"""
+        if not GAME_AVAILABLE:
+            return JsonResponse({"error": "Game modules not available"}, status=500)
+        
+        try:
+            api_key = request.data.get('api_key', '')
+            GAME.OPENROUTER_API_KEY = api_key
+            return JsonResponse({"success": True, "message": "API key set successfully"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    
+    @action(detail=False, methods=['post'])
     def player_action(self, request):
         """Execute player action"""
         if not GAME_AVAILABLE:
@@ -48,8 +61,9 @@ class RPGCombatViewSet(viewsets.ViewSet):
         try:
             action_type = request.data.get('action_type')
             ability_name = request.data.get('ability_name')
+            message = request.data.get('message')
             
-            result = GAME.player_action(action_type, ability_name)
+            result = GAME.player_action(action_type, ability_name, message)
             game_state = GAME.get_game_state()
             
             return JsonResponse({
@@ -61,23 +75,15 @@ class RPGCombatViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['post'])
     def ai_action(self, request):
-        """Execute AI action"""
+        """Execute AI action with LLM decision making"""
         if not GAME_AVAILABLE:
             return JsonResponse({"error": "Game modules not available"}, status=500)
         
         try:
-            abilities = GAME.ai_npc.list_abilities()
-            if not abilities:
-                return JsonResponse({"error": "AI has no abilities"}, status=400)
-            
-
-
-            #### TODO: REPLACE THE RANDOM AND SLAP A LLM MODEL HERE TO CHOOSE THE ABILITY
-            ability_name = random.choice(abilities)
-            result = GAME.ai_action(ability_name)
+            # Use LLM-based decision making
+            result = GAME.ai_action_with_llm()
             game_state = GAME.get_game_state()
-            ####
-
+            
             return JsonResponse({
                 "result": result,
                 "game_state": game_state
