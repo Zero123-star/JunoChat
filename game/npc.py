@@ -38,8 +38,8 @@ class NPC:
     def get_stats(self):
         return self.stats
 
-    def change_health(self, value: int):
-        self.hp += value
+    def change_health(self, value_added: int):
+        self.hp += value_added
         return self.hp
 
     def change_mana(self, value: int):
@@ -85,6 +85,7 @@ class NPC:
 
     #Unequips the item, removes its stats from the statsheet 
     def unequip(self, item:Item):
+        """Unequips an item and removes its stat effects from the statsheet."""
         unequipped_item=self.inventory.unequip_item(item)
         if unequipped_item != None : 
             self.stats.remove_source(unequipped_item.name)
@@ -93,6 +94,7 @@ class NPC:
         return None
     
     def learn_ability(self, ability: Ability):
+        """Learns a new ability and adds it to the moveset."""
         return self.moveset.add_ability(ability)
 
     def unlearn_ability(self, name: str):
@@ -106,19 +108,8 @@ class NPC:
     
     #@returns damage dealt
     def use_ability(self, name):
+        """Uses an ability from the moveset and returns the damage dealt."""
         if(self.has_ability(name)):
             return self.moveset.get_ability(name).get_damage(self.stats)
         print("(NPC_use_ability): Error, ability not found")
         return None
-            
-    def get_permanent_stat(self, stat: Stats) -> int:
-        return self.stats.get_permanent(stat)
-
-    def get_temporary_stat(self, stat_name: str) -> int:
-        return self.stats.get_temporary(stat_name)
-
-    def add_temporary_stat(self, stat_name: str, value: int, turns: int | None = None, source: str | None = None):
-        self.stats.add_temporary(stat_name, value, turns, source)
-
-    def update_stat(self, stat: Stats, value: int):
-        return self.stats.update_permanent(stat, value)

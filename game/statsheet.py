@@ -4,7 +4,6 @@ from typing import Dict, List
 
 class Statsheet:
     def __init__(self, permanents: Dict[str, int] = None, temporaries: Dict[str, List[dict]] = None):
-        # Permanents now use Stats as keys, initialize all stats to 0
         self.permanent_stats = {stat: 0 for stat in Stats.PERMANENT_VALUES}
         if permanents:
             self.permanent_stats.update(permanents)
@@ -13,18 +12,19 @@ class Statsheet:
         self.temporary_stats = defaultdict(list, temporaries or {})
     
     def get_permanent(self, stat: str) -> int:
-        # Returns the value of a permanent stat
+        """Returns the value of a permanent stat with given name."""
         return self.permanent_stats[stat]
     
     def get_temporary(self, stat: str) -> int:
-        # Returns the total value of a temporary stat with given name
+        """Returns the total value of a temporary stat with given name."""
         return sum(effect["Value"] for effect in self.temporary_stats.get(stat, []))
-    
+
     def get_permanent_and_temporary(self, stat: str) -> int:
+        """Returns the total value of a stat, including both permanent and temporary effects."""
         return self.get_temporary(stat)+self.get_permanent(stat)
 
     def add_temporary(self, stat: str, value: int, turns: int | None = None, source: str | None = None):
-        # Adds a temporary or persistent effect
+        """Adds a temporary or persistent effect."""
         effect = {"Value": value}
         if turns is not None:
             effect["Turns"] = turns
@@ -33,12 +33,12 @@ class Statsheet:
         self.temporary_stats[stat].append(effect)
     
     def update_permanent(self, stat: str, value: int):
-        # Updates a permanent stat by adding value
+        """Updates a permanent stat by adding value."""
         self.permanent_stats[stat] += value
         return self.permanent_stats
     
     def update_duration(self):
-        # Decreases the duration of temporary stats, then removes expired temporary stats
+        """Updates the durations of temporary effects, removing those that have expired. A turn is passed."""
         updated = {}
         for stat, effects in self.temporary_stats.items():
             remaining = []
@@ -57,7 +57,7 @@ class Statsheet:
         self.temporary_stats = defaultdict(list, updated)
     
     def remove_source(self, source: str):
-        # Removes all effects created by a specified source
+        """Removes all effects created by a specified source."""
         for stat in list(self.temporary_stats.keys()):
             filtered = [e for e in self.temporary_stats[stat] if e.get("Source") != source]
             if filtered:
