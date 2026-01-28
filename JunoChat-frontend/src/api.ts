@@ -107,7 +107,7 @@ export const signup = async (userData: {
 // Character management endpoints
 export const createCharacter = async (data: { 
   formData: Omit<Character, 'id' | 'creator'>, 
-  creator_id: any 
+  creator_id: number 
 }) => {
   
   console.log("Front end",data);
@@ -150,7 +150,7 @@ export const get_first_chat=async(bot_id_userid_json: {character_id: string, use
 }
 
 // Fetches the chat history for a given user id, calling the API endpoint 'chats/get_chat_history/' with the user_id
-export const getChatHistory = async (user_id: any) => {
+export const getChatHistory = async (user_id: number) => {
   console.log("(API)Fetching chat history for user ID:", user_id);
   const json = { user_id: user_id };
   const response = await API.post('chats/get_chats/', json);
@@ -159,7 +159,7 @@ export const getChatHistory = async (user_id: any) => {
 };
 
 // Fetches the chat messages for a given chat id
-export const getChatMessages = async (chat_id: any) => {
+export const getChatMessages = async (chat_id: number) => {
   const json={ chat_id: chat_id };
   console.log("(API)Fetching chat messages for chat ID:", chat_id);
   const response = await API.post('messages/get_messages_list/',json);//Generates 405. Probably some router problem
@@ -167,7 +167,7 @@ export const getChatMessages = async (chat_id: any) => {
   return response.data;
 };
 //Stores a new message in the database, given the chat id and the message content
-export const storeMessage = async (chat_id: any, message: { role: any, content: any, id: any }) => {
+export const storeMessage = async (chat_id: number, message: { role: string, content: string, id: number }) => {
   console.log("(API)Storing message in chat ID:", chat_id, "with content:", message);
   const json = { chat_id: chat_id, message: message };
   const response = await API.post('messages/store_message/', json);
@@ -179,7 +179,7 @@ export const storeMessage = async (chat_id: any, message: { role: any, content: 
 
 // User endpoints
 // Fetches the current user based on the user_id
-export const getCurrentUser = async (user_id: any) => {
+export const getCurrentUser = async (user_id: number) => {
   console.log("(API)Fetching current user with ID:", user_id);
   const json= {id: user_id};
   const response = await API.post('users/get_username/', json);
@@ -262,4 +262,107 @@ export const sendGroupChatMessage = async (
     other_bot_ids
   });
   return response.data;
+};
+
+// ============================================================================
+// OPENROUTER API CONFIGURATION - Funcții pentru configurarea conexiunii
+// ============================================================================
+
+/**
+ * TODO BACKEND: Implementează endpoint-ul pentru obținerea modelelor disponibile
+ * 
+ * Endpoint: GET /api/openrouter/models/
+ * 
+ * Returnează: { models: string[] }
+ * Exemplu: { models: ["ChatGPT-4", "Claude-Sonnet-3.5", "Gemini-Pro", ...] }
+ * 
+ * Implementare sugerată în backend (Django):
+ * - Creează un view în api/views/ (ex: openrouter_config_views.py)
+ * - Funcția va face un request la OpenRouter API pentru a obține lista de modele
+ * - Endpoint OpenRouter: https://openrouter.ai/api/v1/models
+ * - Parseaza răspunsul și returnează doar numele modelelor
+ */
+export const getAvailableModels = async (): Promise<string[]> => {
+  try {
+    const response = await API.get('openrouter/models/');
+    return response.data.models || [];
+  } catch (error) {
+    console.error('Error fetching models:', error);
+    // Return some popular models as fallback for testing
+    return [
+      'ChatGPT-4',
+      'Claude-Sonnet-3.5',
+      'Gemini-Pro',
+      'Llama-3.1-70B'
+    ];
+  }
+};
+
+/**
+ * TODO BACKEND: Implementează endpoint-ul pentru testarea conexiunii API
+ * 
+ * Endpoint: POST /api/openrouter/test-connection/
+ * 
+ * Body: { api_key: string }
+ * 
+ * Returnează: { success: boolean, message?: string }
+ * 
+ * Implementare sugerată în backend (Django):
+ * - Primește API key-ul în request body
+ * - Fă un request simplu la OpenRouter API (ex: GET /api/v1/auth/key pentru validare)
+ * - Headers: { "Authorization": f"Bearer {api_key}" }
+ * - Dacă primești 200 OK, returnează { success: true }
+ * - Dacă primești eroare (401, 403, etc.), returnează { success: false, message: "Invalid API key" }
+ */
+export const testAPIConnection = async (apiKey: string): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const response = await API.post('openrouter/test-connection/', {
+      api_key: apiKey
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error testing connection:', error);
+    return { 
+      success: false, 
+      message: 'Could not connect to server' 
+    };
+  }
+};
+
+/**
+ * TODO BACKEND: Implementează endpoint-ul pentru conectarea și salvarea configurației
+ * 
+ * Endpoint: POST /api/openrouter/connect/
+ * 
+ * Body: { api_key: string, model: string }
+ * 
+ * Returnează: { success: boolean, message?: string }
+ * 
+ * Implementare sugerată în backend (Django):
+ * - Primește API key și modelul selectat
+ * - Validează din nou API key-ul (opțional, dar recomandat)
+ * - Salvează configurația pentru utilizatorul curent (în session sau în database)
+ * - Opțiuni de salvare:
+ *   1. Session: request.session['openrouter_api_key'] = api_key
+ *   2. Database: Creează un model OpenRouterConfig cu user, api_key_encrypted, model
+ * - Atenție: Criptează API key-ul înainte de a-l salva în database!
+ * - Returnează { success: true } dacă totul e OK
+ */
+export const connectToAPI = async (
+  apiKey: string, 
+  model: string
+): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const response = await API.post('openrouter/connect/', {
+      api_key: apiKey,
+      model: model
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error connecting to API:', error);
+    return { 
+      success: false, 
+      message: 'Could not save configuration' 
+    };
+  }
 };

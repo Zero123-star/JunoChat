@@ -20,6 +20,7 @@ import UserSearchPage from './pages/UserSearchPage';
 import CreateGroupChatPage from './pages/CreateGroupChatPage';
 import GroupChatPage from './pages/GroupChatPage';
 import RPGCombatDemo from './pages/RPGCombatDemo';
+import APIConfigPage from './pages/APIConfigPage';
 
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/create-group-chat" element={<CreateGroupChatPage />} />
             <Route path="/group-chat/:groupChatId" element={<GroupChatPage />} />
             <Route path="/rpg-demo" element={<RPGCombatDemo />} />
+            <Route path="/api-config" element={<APIConfigPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

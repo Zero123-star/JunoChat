@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
-import { Plus, LogIn, User } from 'lucide-react';
+import { Plus, LogIn, User, Settings } from 'lucide-react';
 import { Users } from 'lucide-react';
 
 const Navbar: React.FC = () => {
@@ -76,6 +76,15 @@ const Navbar: React.FC = () => {
           >
             Characters
           </Link>
+          {authState.isLoggedIn && (
+            <Link 
+              to="/api-config" 
+              className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              API Config
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center space-x-3">
