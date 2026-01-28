@@ -8,43 +8,117 @@ import defaultAvatar from '../../images/icon.png';
 import CharacterCarousel from '@/components/CharacterCarousel';
 
 const UserProfilePage: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const user = localStorage.getItem('user');
-  const loggedInUsername = user ? JSON.parse(user).username : null;
-  const isOwnProfile = username === loggedInUsername;
-
+  const { username: urlUsername } = useParams<{ username: string }>();
   const navigate = useNavigate();
+  
+  const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(defaultAvatar);
-  const [name, setName] = useState<string>('Loading...');
-  const [email, setEmail] = useState<string>('Loading...');
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [createdCharacters, setCreatedCharacters] = useState([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState([]);
   const [followsCount, setFollowsCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [loggedInUsername, setLoggedInUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [profileUserId, setProfileUserId] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  
+  // Use logged-in username if URL username is missing (e.g., /profile)
+  const username = urlUsername || loggedInUsername;
+  const isOwnProfile = username === loggedInUsername;
+
+  // Get logged in user's username and ID
+  useEffect(() => {
+    const fetchLoggedInUser = async () => {
+      const userIdFromStorage = localStorage.getItem('user');
+      if (userIdFromStorage) {
+        try {
+          const parsedUserId = JSON.parse(userIdFromStorage);
+          setUserId(parsedUserId);
+          
+          // Get the username of logged-in user
+          const response = await axios.post('http://localhost:8000/api/users/get_username/', {
+            id: parsedUserId
+          });
+          setLoggedInUsername(response.data.username);
+        } catch (error) {
+          console.error('Error fetching logged in user:', error);
+        }
+      }
+    };
+    
+    fetchLoggedInUser();
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:8000/api/profile/${username}/`);
-        const { name, email, profile_image, created_characters, favorite_characters, follows_count, following_count } = response.data;
-        setName(name);
-        setEmail(email);
-        setProfileImage(profile_image || defaultAvatar);
-        setCreatedCharacters(created_characters);
-        setFavoriteCharacters(favorite_characters);
-        setFollowsCount(follows_count);
-        setFollowingCount(following_count);
+        // Get user data by username
+        const usersResponse = await axios.get(`http://localhost:8000/api/users/?search=${username}`);
+        
+        if (usersResponse.data && usersResponse.data.length > 0) {
+          const userData = usersResponse.data[0];
+          setName(userData.username);
+          setEmail(userData.email || 'No email available');
+          
+          // Handle profile picture URL - check if it's already a full URL
+          const profilePicUrl = userData.profile_picture
+            ? (userData.profile_picture.startsWith('http') 
+                ? userData.profile_picture 
+                : `http://localhost:8000${userData.profile_picture}`)
+            : defaultAvatar;
+          setProfileImage(profilePicUrl);
+          
+          setFollowsCount(userData.followers_count || 0);
+          setFollowingCount(userData.following_count || 0);
+          setProfileUserId(userData.id);
+
+          // Check if logged-in user is already following this user
+          if (userId) {
+            try {
+              const followingResponse = await axios.get(`http://localhost:8000/api/users/${userId}/following/`);
+              const isAlreadyFollowing = followingResponse.data.some((user: any) => user.username === username);
+              setIsFollowing(isAlreadyFollowing);
+            } catch (error) {
+              console.error('Error checking follow status:', error);
+            }
+          }
+
+          // Get characters created by this user
+          const charactersResponse = await axios.get(`http://localhost:8000/api/characters/`);
+          const userCharacters = charactersResponse.data.filter((char: any) => char.creator === username);
+          setCreatedCharacters(userCharacters);
+        } else {
+          setName(username || 'Unknown User');
+          setEmail('User not found');
+        }
       } catch (error) {
         console.error('Error fetching profile:', error);
+        setName(username || 'Unknown User');
+        setEmail('Error loading profile');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, [username]);
+    if (username) {
+      fetchProfile();
+    }
+  }, [username, userId]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isOwnProfile) return; // Prevent non-owners from changing image
+    
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
+      setHasUnsavedChanges(true);
+      
+      // Preview the image
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result as string);
@@ -53,23 +127,141 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
-  const handleFollow = async () => {
+  const handleSaveChanges = async () => {
+    if (!selectedFile) {
+      alert('No file selected');
+      return;
+    }
+    
+    if (!userId) {
+      alert('User ID not found. Please try logging out and back in.');
+      return;
+    }
+
+    console.log('=== PROFILE PICTURE SAVE DEBUG ===');
+    console.log('User ID:', userId);
+    console.log('File:', {
+      name: selectedFile.name,
+      size: selectedFile.size,
+      type: selectedFile.type
+    });
+
+    const formData = new FormData();
+    formData.append('profile_picture', selectedFile);
+    
+    // Log FormData contents
+    console.log('FormData entries:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    const url = `http://localhost:8000/api/users/${userId}/`;
+    console.log('Request URL:', url);
+
     try {
-      const response = await axios.post(
-        `http://localhost:8000/api/profile/${username}/follow/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
-      console.log(`Followed ${username}:`, response.data);
-      setFollowsCount((prev) => prev + 1); 
-    } catch (error) {
-      console.error('Error following user:', error);
+      console.log('Sending PATCH request...');
+      const response = await axios.patch(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Token ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      console.log('SUCCESS! Response:', response);
+      console.log('Response data:', response.data);
+      
+      // Update local state with server response
+      if (response.data.profile_picture) {
+        const imageUrl = response.data.profile_picture.startsWith('http') 
+          ? response.data.profile_picture 
+          : `http://localhost:8000${response.data.profile_picture}`;
+        console.log('Setting new profile image:', imageUrl);
+        setProfileImage(imageUrl);
+      }
+      
+      setHasUnsavedChanges(false);
+      setSelectedFile(null);
+      alert('Profile picture updated successfully!');
+      
+      // Reload the page to fetch fresh data
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error: any) {
+      console.error('=== ERROR SAVING PROFILE PICTURE ===');
+      console.error('Error object:', error);
+      console.error('Error response:', error.response);
+      console.error('Error data:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error headers:', error.response?.headers);
+      
+      const errorMsg = error.response?.data?.detail || 
+                       error.response?.data?.error || 
+                       error.response?.data || 
+                       error.message ||
+                       'Unknown error';
+      
+      alert(`Failed to update profile picture:\n${JSON.stringify(errorMsg, null, 2)}`);
     }
   };
+
+  const handleFollow = async () => {
+    if (!profileUserId || !userId) {
+      console.error('Missing user IDs - profileUserId:', profileUserId, 'userId:', userId);
+      alert('Unable to follow: Missing user information');
+      return;
+    }
+
+    console.log('=== FOLLOW/UNFOLLOW DEBUG ===');
+    console.log('Profile User ID:', profileUserId);
+    console.log('Logged-in User ID:', userId);
+    console.log('Is Following:', isFollowing);
+
+    try {
+      const url = isFollowing 
+        ? `http://localhost:8000/api/users/${profileUserId}/unfollow/`
+        : `http://localhost:8000/api/users/${profileUserId}/follow/`;
+      
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Authorization: `Token ${localStorage.getItem('token')}`,
+        'X-User-ID': userId,
+      });
+
+      const response = await axios.post(url, {}, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}`,
+          'X-User-ID': userId,
+        },
+      });
+      
+      console.log('SUCCESS! Response:', response.data);
+      
+      if (isFollowing) {
+        setIsFollowing(false);
+        setFollowsCount((prev) => prev - 1);
+      } else {
+        setIsFollowing(true);
+        setFollowsCount((prev) => prev + 1);
+      }
+    } catch (error: any) {
+      console.error('=== FOLLOW ERROR ===');
+      console.error('Error object:', error);
+      console.error('Error response:', error.response);
+      console.error('Error data:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error message:', error.message);
+      
+      const errorMsg = error.response?.data?.error || error.message || 'Unknown error';
+      alert(`Failed to update follow status: ${errorMsg}`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center">
+        <p className="text-purple-800 text-xl">Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center px-4 py-12">
@@ -85,8 +277,8 @@ const UserProfilePage: React.FC = () => {
               <img
                 src={profileImage}
                 alt="Profile"
-                className="h-32 w-32 object-cover rounded-full mx-auto cursor-pointer border-4 border-white shadow-md"
-                onClick={() => document.getElementById('profileImageInput')?.click()}
+                className={`h-32 w-32 object-cover rounded-full mx-auto border-4 border-white shadow-md ${isOwnProfile ? 'cursor-pointer hover:opacity-80 transition' : ''}`}
+                onClick={() => isOwnProfile && document.getElementById('profileImageInput')?.click()}
               />
             ) : (
               <motion.div 
@@ -98,52 +290,91 @@ const UserProfilePage: React.FC = () => {
                   stiffness: 260, 
                   damping: 20 
                 }}
-                onClick={() => document.getElementById('profileImageInput')?.click()}
+                onClick={() => isOwnProfile && document.getElementById('profileImageInput')?.click()}
               >
                 <Sparkles className="text-pink-500 h-8 w-8 mx-auto mb-2" />
               </motion.div>
             )}
-            <input
-              type="file"
-              id="profileImageInput"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageChange}
-            />
+            {isOwnProfile && (
+              <input
+                type="file"
+                id="profileImageInput"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            )}
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text">
               <p className="text-purple-800 font-medium">
                 {name}
               </p>
             </h1>
             <p className="text-purple-800 font-medium">{email}</p>
-            <p className="text-purple-700 mt-2">
-              Click on your profile picture to change it.
-            </p>
+            {isOwnProfile && (
+              <>
+                <p className="text-purple-700 mt-2 text-sm">
+                  Click on your profile picture to change it.
+                </p>
+                {hasUnsavedChanges && (
+                  <Button
+                    type="button"
+                    onClick={handleSaveChanges}
+                    gradient
+                    className="mt-3"
+                  >
+                    Save Changes
+                  </Button>
+                )}
+              </>
+            )}
           </div>
 
           <div className="space-y-5">
             <div className="flex justify-between items-center text-purple-800 font-medium">
               <p>Follows: {followsCount}</p>
               {!isOwnProfile && (
-                <Button
-                  type="button"
-                  onClick={handleFollow}
-                  gradient
-                >
-                  Follow
-                </Button>
+                <div className="flex flex-col items-center gap-2">
+                  {isFollowing && (
+                    <span className="text-xs text-green-600 font-semibold">
+                      Following
+                    </span>
+                  )}
+                  <Button
+                    type="button"
+                    onClick={handleFollow}
+                    gradient={!isFollowing}
+                    className={isFollowing 
+                      ? "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200" 
+                      : ""
+                    }
+                  >
+                    {isFollowing ? 'Unfollow' : 'Follow'}
+                  </Button>
+                </div>
               )}
               <p>Following: {followingCount}</p>
             </div>
 
             <div className="space-y-5">
-              <h2 className="text-xl font-bold text-purple-800">Created Characters</h2>
-              <CharacterCarousel characters={createdCharacters} onSelect={() => {}} />
+              <h2 className="text-xl font-bold text-purple-800">
+                Created Characters ({createdCharacters.length})
+              </h2>
+              {createdCharacters.length > 0 ? (
+                <CharacterCarousel characters={createdCharacters} onSelect={() => {}} />
+              ) : (
+                <p className="text-gray-500 text-sm">No characters created yet.</p>
+              )}
             </div>
 
             <div className="space-y-5">
-              <h2 className="text-xl font-bold text-purple-800">Favorite Characters</h2>
-              <CharacterCarousel characters={favoriteCharacters} onSelect={() => {}} />
+              <h2 className="text-xl font-bold text-purple-800">
+                Favorite Characters ({favoriteCharacters.length})
+              </h2>
+              {favoriteCharacters.length > 0 ? (
+                <CharacterCarousel characters={favoriteCharacters} onSelect={() => {}} />
+              ) : (
+                <p className="text-gray-500 text-sm">No favorite characters yet.</p>
+              )}
             </div>
 
             <div className="space-y-5">

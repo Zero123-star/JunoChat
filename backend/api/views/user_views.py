@@ -3,6 +3,7 @@ import json
 import uuid
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 from rest_framework import viewsets, filters, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
@@ -19,12 +20,50 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email']
     
+    def update(self, request, *args, **kwargs):
+        """Override update to handle profile picture uploads"""
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        
+        print(f"Updating user {instance.id} - {instance.username}")
+        print(f"Request data: {request.data}")
+        print(f"Request files: {request.FILES}")
+        
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        print(f"User updated successfully. Profile picture: {instance.profile_picture}")
+        
+        return Response(serializer.data)
+    
+    def partial_update(self, request, *args, **kwargs):
+        """Handle PATCH requests"""
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+    
 
     @action(detail=True, methods=['post'])
     def follow(self, request, pk=None):
         user_to_follow = self.get_object()
-        request.user.follow(user_to_follow)
-        return Response({'status': 'now following'})
+        follower_id = request.headers.get('X-User-ID') or request.data.get('follower_id')
+        
+        if not follower_id:
+            return Response({'error': 'Follower ID is required'}, status=400)
+        
+        try:
+            follower = CustomUser.objects.get(id=follower_id)
+            if follower.id == user_to_follow.id:
+                return Response({'error': 'You cannot follow yourself'}, status=400)
+            
+            follower.follow(user_to_follow)
+            return Response({
+                'status': 'now following',
+                'followers_count': user_to_follow.get_followers_count(),
+                'following_count': follower.get_following_count()
+            })
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
     
 
     @action(detail=False,methods=['post'])
@@ -48,41 +87,56 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         email = request.data.get('email')
         password = request.data.get('password')
         print("REGISTER", username, email, password)
+        
         if not username or not email or not password:
             return Response({'error': 'Username, email, and password are required'}, status=400)
         
         if CustomUser.objects.filter(username=username).exists():
             return Response({'error': 'Username already exists'}, status=400)
         
-        #Example of a plsql insert statement into user(Yes, TOO MANY FIELDS)
-        #insert into django.base_customuser
-        # (username,password,is_superuser,first_name,last_name,email,is_staff,is_active,date_joined,confirmed_email,blocked) 
-        # Values ('ASD','123',true,'first','last','email',true,true,'2006-10-25',false,false);
-        #
-        user = CustomUser.objects.create(
-            username=username,
-            email=email,
-            password=password,  # Note: Password should be hashed in production
-            is_superuser=False,
-            first_name='',
-            last_name='',
-            is_staff=False,
-            is_active=True,
-            date_joined='2006-10-25',  # Automatically set by Django
-            confirmed_email=False,  # Assuming you have a field for email confirmation
-            blocked=False  # Assuming you have a field for blocking users
-        )
-        print("User created:", user)
-        user.save()
-
-
-        return Response({'status': 'User created successfully', 'user_id': user.id})
+        if CustomUser.objects.filter(email=email).exists():
+            return Response({'error': 'Email already exists'}, status=400)
+        
+        try:
+            # Create user with proper datetime
+            user = CustomUser.objects.create(
+                username=username,
+                email=email,
+                password=password,  # Note: Password should be hashed in production
+                is_superuser=False,
+                first_name='',
+                last_name='',
+                is_staff=False,
+                is_active=True,
+                date_joined=timezone.now(),  # Use proper datetime
+                confirmed_email=False,
+                blocked=False
+            )
+            print("User created successfully:", user.id, user.username)
+            return Response({'status': 'User created successfully', 'user_id': user.id})
+        except Exception as e:
+            print("Error creating user:", str(e))
+            return Response({'error': f'Failed to create user: {str(e)}'}, status=500)
 
     @action(detail=True, methods=['post'])
     def unfollow(self, request, pk=None):
         user_to_unfollow = self.get_object()
-        request.user.unfollow(user_to_unfollow)
-        return Response({'status': 'unfollowed'})
+        follower_id = request.headers.get('X-User-ID') or request.data.get('follower_id')
+        
+        if not follower_id:
+            return Response({'error': 'Follower ID is required'}, status=400)
+        
+        try:
+            follower = CustomUser.objects.get(id=follower_id)
+            follower.unfollow(user_to_unfollow)
+            return Response({
+                'status': 'unfollowed',
+                'followers_count': user_to_unfollow.get_followers_count(),
+                'following_count': follower.get_following_count()
+            })
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+    
     
 
     @action(detail=True, methods=['get'])

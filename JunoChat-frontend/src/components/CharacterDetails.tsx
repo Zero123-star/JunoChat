@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { get_first_chat, getCurrentUser, getChatHistory} from '@/api';
-import { get } from 'http';
 import { Button } from '@/components/Button';
 
 interface Character {
@@ -54,12 +53,16 @@ const CharacterDetails: React.FC = () => {
       try {
           //userid from localstorage
         const userId = localStorage.getItem('user');
-        const response = await getChatHistory(userId); //TODO: Some filtering
+        if (!userId) return;
+        const response = await getChatHistory(parseInt(userId)); //TODO: Some filtering
         if (response.ok) {
           const data = await response.json();
           setChats(data);
         }
-      } catch {}
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        // Silently fail
+      }
     };
     fetchChats();
   }, [id]);
@@ -68,16 +71,16 @@ const CharacterDetails: React.FC = () => {
     const fetchUser = async () => {
       try {
         const currentUserId = localStorage.getItem('user');
-        const response = await getCurrentUser(currentUserId); 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user details');
-        }
-          console.log("Response from getCurrentUser:", response);
-          const data = await response.json();
-          setUser(data.username);
-          console.log("Current user:", data.username);
+        if (!currentUserId) return;
         
-      } catch {}
+        const response = await getCurrentUser(parseInt(currentUserId)); 
+        console.log("Response from getCurrentUser:", response);
+        setUser({ username: response.username });
+        console.log("Current user:", response.username);
+        
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
     };
     fetchUser();
   }, []);
@@ -88,7 +91,7 @@ const CharacterDetails: React.FC = () => {
   };
 
   const handleStartChat = () => {
-          const navigate_to_firstChat = async (data2: { user_id: any; character_id: any }) => {
+          const navigate_to_firstChat = async (data2: { user_id: string; character_id: string }) => {
           const first_id = await get_first_chat(data2);
           console.log("First chat ID:", first_id.chat_id);
           navigate(`/chat/${id}`, {
@@ -97,6 +100,10 @@ const CharacterDetails: React.FC = () => {
         }
         const character_id=id;
         const user_id=localStorage.getItem('user'); 
+        if (!user_id || !character_id) {
+          console.error("Missing user_id or character_id");
+          return;
+        }
         const data2={ user_id, character_id };
         console.log("Data to send:", data2);
         navigate_to_firstChat(data2);

@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
-import { Plus, LogIn, User, Settings } from 'lucide-react';
+import { Plus, LogIn, Settings } from 'lucide-react';
 import { Users } from 'lucide-react';
+import defaultAvatar from '../../images/icon.png';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -10,21 +11,105 @@ const Navbar: React.FC = () => {
 
   const [authState, setAuthState] = React.useState({
     isLoggedIn: !!localStorage.getItem('token'),
-    username: (() => {
-      const user = localStorage.getItem('user');
-      const parsedUser = user ? JSON.parse(user) : null;
-      return parsedUser && parsedUser.username ? parsedUser.username : null;
-    })()
+    username: null as string | null,
+    profilePicture: null as string | null
   });
 
   React.useEffect(() => {
-    const handleStorage = () => {
-      const user = localStorage.getItem('user');
-      const parsedUser = user ? JSON.parse(user) : null;
-      setAuthState({
-        isLoggedIn: !!localStorage.getItem('token'),
-        username: parsedUser && parsedUser.username ? parsedUser.username : null
-      });
+    const fetchUsername = async () => {
+      const userId = localStorage.getItem('user');
+      if (userId) {
+        try {
+          const parsedUserId = JSON.parse(userId);
+          const response = await fetch('http://localhost:8000/api/users/get_username/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: parsedUserId })
+          });
+          const data = await response.json();
+          
+          // Also fetch the full user data to get profile picture
+          const userResponse = await fetch(`http://localhost:8000/api/users/${parsedUserId}/`);
+          const userData = await userResponse.json();
+          
+          const profilePicUrl = userData.profile_picture
+            ? (userData.profile_picture.startsWith('http') 
+                ? userData.profile_picture 
+                : `http://localhost:8000${userData.profile_picture}`)
+            : defaultAvatar;
+          
+          setAuthState({
+            isLoggedIn: true,
+            username: data.username,
+            profilePicture: profilePicUrl
+          });
+        } catch (error) {
+          console.error('Error fetching username:', error);
+          setAuthState({
+            isLoggedIn: !!localStorage.getItem('token'),
+            username: null,
+            profilePicture: null
+          });
+        }
+      } else {
+        setAuthState({
+          isLoggedIn: false,
+          username: null,
+          profilePicture: null
+        });
+      }
+    };
+    
+    fetchUsername();
+  }, []);
+
+  React.useEffect(() => {
+    const handleStorage = async () => {
+      const userId = localStorage.getItem('user');
+      if (userId) {
+        try {
+          const parsedUserId = JSON.parse(userId);
+          const response = await fetch('http://localhost:8000/api/users/get_username/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: parsedUserId })
+          });
+          const data = await response.json();
+          
+          // Also fetch the full user data to get profile picture
+          const userResponse = await fetch(`http://localhost:8000/api/users/${parsedUserId}/`);
+          const userData = await userResponse.json();
+          
+          const profilePicUrl = userData.profile_picture
+            ? (userData.profile_picture.startsWith('http') 
+                ? userData.profile_picture 
+                : `http://localhost:8000${userData.profile_picture}`)
+            : defaultAvatar;
+          
+          setAuthState({
+            isLoggedIn: true,
+            username: data.username,
+            profilePicture: profilePicUrl
+          });
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+          setAuthState({
+            isLoggedIn: false,
+            username: null,
+            profilePicture: null
+          });
+        }
+      } else {
+        setAuthState({
+          isLoggedIn: false,
+          username: null,
+          profilePicture: null
+        });
+      }
     };
     window.addEventListener('storage', handleStorage);
     window.addEventListener('authChange', handleStorage);
@@ -38,7 +123,7 @@ const Navbar: React.FC = () => {
     if (window.confirm('Are you sure you want to log out?')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      setAuthState({ isLoggedIn: false, username: null });
+      setAuthState({ isLoggedIn: false, username: null, profilePicture: null });
       navigate('/login');
     }
   };
@@ -122,7 +207,14 @@ const Navbar: React.FC = () => {
                 glassEffect
                 className="flex items-center space-x-2"
               >
-                <User className="h-4 w-4" />
+                <img 
+                  src={authState.profilePicture || defaultAvatar} 
+                  alt="Profile" 
+                  className="h-8 w-8 rounded-full object-cover border-2 border-white"
+                  onError={(e) => {
+                    e.currentTarget.src = defaultAvatar;
+                  }}
+                />
                 <span>{authState.username}</span>
               </Button>
             )
