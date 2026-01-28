@@ -57,10 +57,24 @@ const EditCharacterPage: React.FC = () => {
     setError(null);
 
     try {
-      await updateCharacter(id, formData);
+      // Only send the fields that should be updated
+      const updateData: any = {
+        name: formData.name,
+        description: formData.description,
+      };
+
+      // Include avatar only if it was changed
+      if (formData.avatar) {
+        updateData.avatar = formData.avatar;
+      }
+
+      console.log('Submitting character update:', updateData);
+      const response = await updateCharacter(id, updateData);
+      console.log('Update response:', response);
       toast.success('Character updated successfully!');
-      navigate('/characters');
+      navigate('/my-characters');
     } catch (err) {
+      console.error('Error updating character:', err);
       setError('Failed to update character. Please try again.');
       toast.error('Failed to update character');
     } finally {
@@ -206,25 +220,10 @@ const EditCharacterPage: React.FC = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="color" className="text-purple-800 font-medium">Color</Label>
-              <div className="flex items-center space-x-4">
-                <input
-                  type="color"
-                  id="color"
-                  name="color"
-                  value={formData.color || '#000000'}
-                  onChange={handleChange}
-                  className="h-10 w-20 rounded-lg cursor-pointer"
-                />
-                <span className="text-purple-700">{formData.color || '#000000'}</span>
-              </div>
-            </div>
-
             <div className="flex justify-end space-x-4 pt-4">
               <Button
                 type="button"
-                onClick={() => navigate('/characters')}
+                onClick={() => navigate('/my-characters')}
                 glassEffect
               >
                 Cancel

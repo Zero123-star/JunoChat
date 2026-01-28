@@ -163,6 +163,14 @@ const Navbar: React.FC = () => {
           </Link>
           {authState.isLoggedIn && (
             <Link 
+              to="/rpg-demo" 
+              className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium"
+            >
+              RPG Demo
+            </Link>
+          )}
+          {authState.isLoggedIn && (
+            <Link 
               to="/api-config" 
               className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 px-4 py-2 rounded-lg font-medium flex items-center gap-2"
             >
@@ -175,12 +183,12 @@ const Navbar: React.FC = () => {
         <div className="flex items-center space-x-3">
           {authState.isLoggedIn && (
             <Button
-              onClick={() => navigate('/characters/add')}
+              onClick={() => navigate('/my-characters')}
               glassEffect
               className="flex items-center space-x-2"
             >
               <Plus className="h-4 w-4" />
-              <span>New Character</span>
+              <span>My Characters</span>
             </Button>
           )}
 
