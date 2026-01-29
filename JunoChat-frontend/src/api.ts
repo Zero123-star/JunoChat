@@ -144,14 +144,14 @@ export const createCharacter = async (data: {
     uploadData.append('creator_id', String(data.creator_id));
     uploadData.append('name', data.formData.name);
     uploadData.append('description', data.formData.description);
-    uploadData.append('source', data.formData.source);
     uploadData.append('tags', data.formData.tags);
     
     // Handle avatar - could be File or string
-    if (data.formData.avatar instanceof File) {
-      uploadData.append('avatar', data.formData.avatar);
-    } else if (typeof data.formData.avatar === 'string' && data.formData.avatar) {
-      uploadData.append('avatar', data.formData.avatar);
+    const avatar = data.formData.avatar as any;
+    if (avatar && typeof avatar === 'object' && avatar instanceof File) {
+      uploadData.append('avatar', avatar);
+    } else if (typeof avatar === 'string' && avatar) {
+      uploadData.append('avatar', avatar);
     }
     
     const response = await API.post<Character>('characters/create_character/', uploadData, {
