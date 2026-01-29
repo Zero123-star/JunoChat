@@ -5,6 +5,7 @@ from .models import CustomUser, Follow, Tag, Character, Message, Chat, GroupChat
 class CustomUserSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
     
     class Meta:
         model = CustomUser
@@ -19,6 +20,15 @@ class CustomUserSerializer(serializers.ModelSerializer):
         
     def get_following_count(self, obj):
         return obj.get_following_count()
+    
+    def get_profile_picture(self, obj):
+        request = self.context.get('request')
+        if obj.profile_picture:
+            if request:
+                return request.build_absolute_uri(obj.profile_picture.url)
+            else:
+                return obj.profile_picture.url
+        return None
 
 class FollowSerializer(serializers.ModelSerializer):
     follower_username = serializers.ReadOnlyField(source='follower.username')
@@ -40,11 +50,21 @@ class CharacterSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     favorites_count = serializers.ReadOnlyField(source='get_favorites_count')
     is_favorited = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
     
     class Meta:
         model = Character
         fields = ['id', 'name', 'avatar', 'source', 'description', 'tags', 'creator', 'creator_username', 'favorites_count', 'is_favorited']
         read_only_fields = ['id']
+    
+    def get_avatar(self, obj):
+        request = self.context.get('request')
+        if obj.avatar:
+            if request:
+                return request.build_absolute_uri(obj.avatar.url)
+            else:
+                return obj.avatar.url
+        return None
     
     def get_is_favorited(self, obj):
         request = self.context.get('request')
