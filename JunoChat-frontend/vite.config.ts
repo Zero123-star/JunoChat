@@ -17,6 +17,12 @@ export default defineConfig({
                 '@': path.resolve(__dirname, './src'), // Alias pentru directorul `src`
               },
             },
-  
+  preview: {
+    host: true,
+    allowedHosts: ['talented-spontaneity-production.up.railway.app', '.railway.app'],
+  },
+  server: {
+    host: true,
+  },
 })
 
