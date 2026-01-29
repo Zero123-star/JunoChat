@@ -9,7 +9,7 @@ interface Character {
   avatar: string;
   source: string;
   description: string;
-  creator?: string;
+  creator_username?: string;
 }
 
 interface Chat {
@@ -116,7 +116,7 @@ const CharacterDetails: React.FC = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
-  const isCreator = user && character && user.username === character.creator;
+  const isCreator = user && character && user.username === character.creator_username;
 
   return (
     <div className="p-6 bg-gray-100 flex items-center justify-center h-full">
@@ -132,7 +132,17 @@ const CharacterDetails: React.FC = () => {
         <div className={`flex-1 p-8 flex flex-col`}>
           <h1 className="text-3xl font-bold mb-2">{character?.name}</h1>
           <p className="text-gray-700 mb-3">{character?.description}</p>
-          <p className="text-gray-500 mb-6">Source: {character?.source}</p>
+          <p className="text-gray-500 mb-2">Source: {character?.source}</p>
+          {character?.creator_username && (
+            <div className="mb-4">
+              <button
+                onClick={() => navigate(`/profile/${character.creator_username}`)}
+                className="text-sm px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition border border-purple-300"
+              >
+                Created by: {character.creator_username}
+              </button>
+            </div>
+          )}
           <div className="flex gap-3 mb-6">
             <Button
               onClick={handleStartChat}

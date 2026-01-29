@@ -16,7 +16,7 @@ const UserProfilePage: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [createdCharacters, setCreatedCharacters] = useState([]);
-  const [favoriteCharacters, setFavoriteCharacters] = useState([]);
+  const [favoriteCharacters] = useState([]);
   const [followsCount, setFollowsCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [loggedInUsername, setLoggedInUsername] = useState<string | null>(null);
@@ -81,7 +81,7 @@ const UserProfilePage: React.FC = () => {
           if (userId) {
             try {
               const followingResponse = await axios.get(`http://localhost:8000/api/users/${userId}/following/`);
-              const isAlreadyFollowing = followingResponse.data.some((user: any) => user.username === username);
+              const isAlreadyFollowing = followingResponse.data.some((user: { username: string }) => user.username === username);
               setIsFollowing(isAlreadyFollowing);
             } catch (error) {
               console.error('Error checking follow status:', error);
@@ -90,7 +90,9 @@ const UserProfilePage: React.FC = () => {
 
           // Get characters created by this user
           const charactersResponse = await axios.get(`http://localhost:8000/api/characters/`);
-          const userCharacters = charactersResponse.data.filter((char: any) => char.creator === username);
+          console.log('All characters:', charactersResponse.data);
+          const userCharacters = charactersResponse.data.filter((char: { creator_username: string }) => char.creator_username === username);
+          console.log('Filtered user characters:', userCharacters);
           setCreatedCharacters(userCharacters);
         } else {
           setName(username || 'Unknown User');
@@ -151,7 +153,7 @@ const UserProfilePage: React.FC = () => {
     
     // Log FormData contents
     console.log('FormData entries:');
-    for (let pair of formData.entries()) {
+    for (const pair of formData.entries()) {
       console.log(pair[0], pair[1]);
     }
 
@@ -185,19 +187,25 @@ const UserProfilePage: React.FC = () => {
       
       // Reload the page to fetch fresh data
       setTimeout(() => window.location.reload(), 1000);
-    } catch (error: any) {
+    } catch (error) {
       console.error('=== ERROR SAVING PROFILE PICTURE ===');
       console.error('Error object:', error);
-      console.error('Error response:', error.response);
-      console.error('Error data:', error.response?.data);
-      console.error('Error status:', error.response?.status);
-      console.error('Error headers:', error.response?.headers);
       
-      const errorMsg = error.response?.data?.detail || 
-                       error.response?.data?.error || 
-                       error.response?.data || 
-                       error.message ||
-                       'Unknown error';
+      let errorMsg = 'Unknown error';
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: unknown; status?: number; headers?: unknown }; message?: string };
+        console.error('Error response:', axiosError.response);
+        console.error('Error data:', axiosError.response?.data);
+        console.error('Error status:', axiosError.response?.status);
+        console.error('Error headers:', axiosError.response?.headers);
+        
+        const responseData = axiosError.response?.data as Record<string, unknown> | undefined;
+        errorMsg = (responseData?.detail as string) || 
+                   (responseData?.error as string) || 
+                   JSON.stringify(axiosError.response?.data) || 
+                   axiosError.message ||
+                   'Unknown error';
+      }
       
       alert(`Failed to update profile picture:\n${JSON.stringify(errorMsg, null, 2)}`);
     }
@@ -242,15 +250,21 @@ const UserProfilePage: React.FC = () => {
         setIsFollowing(true);
         setFollowsCount((prev) => prev + 1);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('=== FOLLOW ERROR ===');
       console.error('Error object:', error);
-      console.error('Error response:', error.response);
-      console.error('Error data:', error.response?.data);
-      console.error('Error status:', error.response?.status);
-      console.error('Error message:', error.message);
       
-      const errorMsg = error.response?.data?.error || error.message || 'Unknown error';
+      let errorMsg = 'Unknown error';
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { error?: string }; status?: number }; message?: string };
+        console.error('Error response:', axiosError.response);
+        console.error('Error data:', axiosError.response?.data);
+        console.error('Error status:', axiosError.response?.status);
+        console.error('Error message:', axiosError.message);
+        
+        errorMsg = axiosError.response?.data?.error || axiosError.message || 'Unknown error';
+      }
+      
       alert(`Failed to update follow status: ${errorMsg}`);
     }
   };

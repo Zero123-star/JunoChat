@@ -22,13 +22,22 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only redirect to login for authentication 401s, not OpenRouter API errors
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      const errorData = error.response?.data;
+      // Check if this is an OpenRouter API key issue
+      if (errorData?.error?.includes('OpenRouter') || errorData?.details?.includes('cookie auth')) {
+        console.error('OpenRouter API key missing or invalid. Please add your API key.');
+        // Don't redirect to login - this is an API configuration issue, not an auth issue
+      } else {
+        // This is a real authentication issue with Django
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
-  } //Openrouter API used to send a 401 error when no key was given. Hence great confusion as to why we got redirected to login when sending a message
+  }
 );
 
 // Tipuri pentru datele API
@@ -75,7 +84,7 @@ export const fetchCharacterChat = async (characterId: string) => {
 export const openrouter_chat = async (messages: {role: string; content: string}[],id: string | undefined) => {
   console.log("Reply from frontend apy:",messages,id);
   const m={messages,id};
-  const response = await API.post('api/chat/', m);
+  const response = await API.post('chat/openrouter_chat/', m);
   return response.data;
 }
 

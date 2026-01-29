@@ -106,9 +106,14 @@ const ChatPage: React.FC = () => {
       
       await storeMessage(chatId, { role: 'assistant', content: botReply, id: characterId });
       setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
-      setError("Failed to send message. Please try again.");
+      // Check if it's an OpenRouter API key issue
+      if (error.response?.status === 401 && error.response?.data?.error?.includes('OpenRouter')) {
+        setError("OpenRouter API key is not configured. Please contact your administrator to add the API key.");
+      } else {
+        setError("Failed to send message. Please try again.");
+      }
     }
     
     setInput('');

@@ -22,16 +22,17 @@ const CharacterCarousel: React.FC<CharacterCarouselProps> = ({ characters, onSel
 
   if (!characters.length) return null;
 
-  // Calculăm indexurile pentru cele 3 personaje afișate
+  // Show only available unique characters (max 3)
+  const displayCount = Math.min(characters.length, 3);
   const getCharacterIndex = (offset: number) => (activeIndex + offset + characters.length) % characters.length;
-  const characterIndexes = [0, 1, 2].map((offset) => getCharacterIndex(offset));
+  const characterIndexes = Array.from({ length: displayCount }, (_, i) => getCharacterIndex(i));
 
   return (
     <div className="relative overflow-hidden  ">
       {/* Personaje afișate */}
       <div className="flex justify-center items-center gap-4">
         {characterIndexes.map((index) => (
-          <div key={index} className="relative">
+          <div key={`${characters[index].id}-${index}`} className="relative">
             <CharacterCard 
               character={characters[index]} 
               onSelect={onSelect} 
