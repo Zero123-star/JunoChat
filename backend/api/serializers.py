@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Follow, Tag, Character, Message, Chat
+from .models import CustomUser, Follow, Tag, Character, Message, Chat, GroupChatMessage, GroupChat
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'profile_picture', 'confirmed_email', 'blocked', 'followers_count', 'following_count', 'code']
+        fields = ['id', 'username', 'email', 'profile_picture', 'confirmed_email', 'blocked', 'followers_count', 'following_count', 'code']
         read_only_fields = ['followers_count', 'following_count', 'code']
         extra_kwargs = {
             'password': {'write_only': True}
@@ -38,11 +38,19 @@ class TagSerializer(serializers.ModelSerializer):
 class CharacterSerializer(serializers.ModelSerializer):
     creator_username = serializers.ReadOnlyField(source='creator.username')
     tags = TagSerializer(many=True, read_only=True)
+    favorites_count = serializers.ReadOnlyField(source='get_favorites_count')
+    is_favorited = serializers.SerializerMethodField()
     
     class Meta:
         model = Character
-        fields = ['id', 'name', 'avatar', 'source', 'description', 'tags', 'creator', 'creator_username']
+        fields = ['id', 'name', 'avatar', 'source', 'description', 'tags', 'creator', 'creator_username', 'favorites_count', 'is_favorited']
         read_only_fields = ['id']
+    
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.favorited_by.filter(id=request.user.id).exists()
+        return False
     
     def create(self, validated_data):
         tags_data = self.context.get('request').data.get('tags', [])
@@ -95,3 +103,31 @@ class ChatListSerializer(serializers.ModelSerializer):
         if last_message:
             return MessageSerializer(last_message).data
         return None
+
+
+class GroupChatMessageSerializer(serializers.ModelSerializer):
+    sender_username = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = GroupChatMessage
+        fields = ['id', 'description', 'timestamp', 'group_chat', 'sender_user', 'sender_bot', 'number', 'sender_username']
+        read_only_fields = ['timestamp', 'number', 'sender_username']
+    
+    def get_sender_username(self, obj):
+        if obj.sender_user:
+            return obj.sender_user.username
+        elif obj.sender_bot:
+            return obj.sender_bot.name
+        return None
+
+class GroupChatSerializer(serializers.ModelSerializer):
+    user_username = serializers.ReadOnlyField(source='user.username')
+    chatbot_names = serializers.SerializerMethodField()
+    messages = GroupChatMessageSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = GroupChat
+        fields = ['id', 'user', 'chatbots', 'user_username', 'chatbot_names', 'messages', 'created_at']
+    
+    def get_chatbot_names(self, obj):
+        return [bot.name for bot in obj.chatbots.all()]

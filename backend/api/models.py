@@ -76,9 +76,13 @@ class Character(models.Model):
     description = models.TextField(null=True)
     tags = models.ManyToManyField(Tag, related_name='characters', blank=True)
     creator = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='card_characters')
+    favorited_by = models.ManyToManyField('CustomUser', related_name='favorite_characters', blank=True)
 
     class Meta:
         ordering = ['name']
+    
+    def get_favorites_count(self):
+        return self.favorited_by.count()
         
     def __str__(self):
         return f"{self.name} ({self.id})"  
@@ -115,3 +119,38 @@ class Chat(models.Model):
 
     def __str__(self):
         return f"Chat between {self.user} and {self.chatbot}."
+
+
+class GroupChat(models.Model):
+    user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='group_chats')
+    chatbots = models.ManyToManyField('Character', related_name='group_chats')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        bot_names = ", ".join([bot.name for bot in self.chatbots.all()])
+        return f"Group chat between {self.user} and [{bot_names}]"
+
+
+class GroupChatMessage(models.Model):
+    description = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    group_chat = models.ForeignKey('GroupChat', on_delete=models.CASCADE, related_name='messages')
+    sender_user = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='group_chat_messages')
+    sender_bot = models.ForeignKey('Character', on_delete=models.SET_NULL, null=True, blank=True, related_name='group_chat_bot_messages')
+    number = models.PositiveIntegerField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.number is None:
+            self.number = GroupChatMessage.objects.filter(group_chat=self.group_chat).count() + 1
+        super().save(*args, **kwargs)
+    
+    def delete(self, *args, **kwargs):
+        number = self.number
+        super().delete(*args, **kwargs)
+        GroupChatMessage.objects.filter(group_chat=self.group_chat, number__gt=number).update(number=models.F('number') - 1)
+    
+    class Meta:
+        ordering = ['group_chat', 'number']
+            
+    def __str__(self):
+        return f"Group message from {self.sender_user or self.sender_bot} in {self.group_chat}"

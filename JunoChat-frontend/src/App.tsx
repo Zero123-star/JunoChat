@@ -13,11 +13,16 @@ import ChatPage from './pages/ChatPage';
 import CharacterDetails from './components/CharacterDetails';
 import AddCharacterPage from './pages/AddCharacterPage';
 import EditCharacterPage from './pages/EditCharacterPage';
+import MyCharactersPage from './pages/MyCharactersPage';
 import UserProfilePage from './pages/UserProfilePage';
 import Debug from './pages/debug';
 import ChatsHistoryPage from './pages/ChatsHistoryPage';
 import UserSearchPage from './pages/UserSearchPage';
 import PhotoboothPage from './pages/PhotoboothPage';
+import CreateGroupChatPage from './pages/CreateGroupChatPage';
+import GroupChatPage from './pages/GroupChatPage';
+import RPGCombatDemo from './pages/RPGCombatDemo';
+import APIConfigPage from './pages/APIConfigPage';
 
 const queryClient = new QueryClient();
 
@@ -35,6 +40,7 @@ const App = () => (
             <Route path="/characters" element={<CharactersPage />} />
             <Route path="/characters/add" element={<AddCharacterPage />} />
             <Route path="/characters/edit/:id" element={<EditCharacterPage />} />
+            <Route path="/my-characters" element={<MyCharactersPage />} />
             <Route path="/chat/:characterId" element={<ChatPage />} />            
             <Route path="/character/:id" element={<CharacterDetails />} /> 
             <Route path="/login" element={<LoginPage />} />
@@ -44,6 +50,10 @@ const App = () => (
             <Route path="/chats" element={<ChatsHistoryPage />} />
             <Route path="/search-users" element={<UserSearchPage />} />
             <Route path="/photobooth" element={<PhotoboothPage />} />
+            <Route path="/create-group-chat" element={<CreateGroupChatPage />} />
+            <Route path="/group-chat/:groupChatId" element={<GroupChatPage />} />
+            <Route path="/rpg-demo" element={<RPGCombatDemo />} />
+            <Route path="/api-config" element={<APIConfigPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

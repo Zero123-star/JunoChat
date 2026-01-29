@@ -49,6 +49,20 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174", # Dacă folosești Vite
 ]
 
+# Allow custom headers for CORS
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-user-id',  # Custom header for user identification
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,6 +73,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'api',
     'corsheaders',
     'drf_yasg',
@@ -200,15 +215,18 @@ WSGI_APPLICATION = 'Django_MDS.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'OPTIONS': {
                 'options': '-c search_path=django'
         },
-        'NAME': 'postgres',
+        'NAME': 'Django_MDS',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'mongo',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -264,6 +282,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
 
