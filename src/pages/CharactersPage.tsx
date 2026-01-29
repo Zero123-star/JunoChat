@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Character } from '@/types/character';
-import { fetchCharacters } from '../api';
+import { fetchCharacters, fetchAIAppCharacters } from '../api';
 import CharacterGrid from '../components/CharacterGrid';
 import { Search, Sparkles, Heart } from 'lucide-react';
 import { Input } from '../components/ui/input';
@@ -15,15 +15,25 @@ const CharactersPage: React.FC = () => {
   // Fetch personajele din API la montarea componentei
   useEffect(() => {
     const getCharacters = async () => {
+      setLoading(true);
       try {
-        const data = await fetchCharacters();
-        setCharacters(data); // Setează personajele în state
-        console.log('Personaje:', data); // Verifică datele în consolă
+        // Fetch both local and AI app characters
+        const [localChars, aiChars] = await Promise.all([
+          fetchCharacters(),
+          fetchAIAppCharacters(),
+        ]);
+        // Merge, deduplicate by id/name
+        const merged = [
+          ...localChars,
+          ...aiChars.filter((ai) => !localChars.some((lc) => lc.id === ai.id)),
+        ];
+        setCharacters(merged);
+        console.log('Personaje:', merged);
       } catch (error) {
         console.error('Eroare la obținerea personajelor:', error);
         toast.error('Nu am putut încărca personajele. Încearcă din nou!');
       } finally {
-        setLoading(false); // Dezactivează loader-ul
+        setLoading(false);
       }
     };
 
@@ -63,7 +73,7 @@ const CharactersPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6 flex items-center justify-center">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 animate-fade-in">

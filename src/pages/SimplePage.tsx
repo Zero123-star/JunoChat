@@ -4,9 +4,12 @@ import { Character } from '@/types/character';
 import { fetchCharacters } from '../api';
 import { Search } from 'lucide-react';
 import { CharacterCard } from '@/components/CharacterCard';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const SimplePage: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [allCharacters, setAllCharacters] = useState<Character[]>([]); // for search reset
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -15,6 +18,7 @@ const SimplePage: React.FC = () => {
       try {
         const data = await fetchCharacters();
         setCharacters(data);
+        setAllCharacters(data);
         console.log('Personaje:', data);
       } catch (error) {
         console.error('Eroare la obținerea personajelor:', error);
@@ -27,34 +31,41 @@ const SimplePage: React.FC = () => {
     getCharacters();
   }, []);
 
-  if (loading) {
-    return <p>Loading characters...</p>;
-  }
-
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
 
     if (!query.trim()) {
-      setCharacters(characters);
+      setCharacters(allCharacters);
     } else {
-      const filtered = characters.filter(character =>
+      const filtered = allCharacters.filter(character =>
         character.name.toLowerCase().includes(query.toLowerCase())
       );
       setCharacters(filtered);
     }
   };
 
+  // Helper function to get color class based on emotion
+  function getEmotionColorClass(description: string) {
+    if (/happy|joy|excited|cheerful|optimist/i.test(description)) return 'text-yellow-500';
+    if (/sad|cry|lonely|depressed|blue|melancholy/i.test(description)) return 'text-blue-500';
+    if (/angry|mad|furious|rage|irritat/i.test(description)) return 'text-red-500';
+    if (/love|romantic|heart|affection/i.test(description)) return 'text-pink-500';
+    if (/scared|afraid|fear|anxious|nervous/i.test(description)) return 'text-purple-500';
+    if (/surprise|shocked|amazed|wow/i.test(description)) return 'text-green-500';
+    return 'text-purple-700'; // default
+  }
+
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6 flex items-center justify-center">
       {/* Header */}
       <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-purple-600 mb-2">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-500 bg-clip-text text-transparent mb-2">
           <span className="inline-block animate-bounce mr-2">✨</span>
           Anime Chat
           <span className="inline-block animate-bounce ml-2">✨</span>
         </h1>
-        <p className="text-lg text-purple-500">
+        <p className="text-lg bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent">
           Vorbește cu personajele tale preferate din anime și desene animate!
         </p>
       </header>
@@ -75,17 +86,27 @@ const SimplePage: React.FC = () => {
 
       {/* Character Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {characters.map((character) => (
-          <CharacterCard key={character.id} character={character} />
-        ))}
-
-        {characters.length === 0 && (
+        {loading ? (
+          Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-64">
+              <Skeleton height={256} borderRadius={16} />
+            </div>
+          ))
+        ) : characters.length > 0 ? (
+          characters.map((character) => (
+            <CharacterCard
+              key={character.id}
+              character={character}
+              textClassName={getEmotionColorClass(character.description)}
+            />
+          ))
+        ) : (
           <div className="col-span-full text-center py-10">
             <p className="text-xl text-purple-600">Nu am găsit personaje... 😢</p>
             <button 
               onClick={() => {
                 setSearchQuery('');
-                setCharacters(characters);
+                setCharacters(allCharacters);
               }}
               className="mt-4 bg-purple-500 text-white py-2 px-6 rounded-lg"
             >

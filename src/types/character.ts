@@ -8,5 +8,5 @@ export interface Character {
     creator: string; // User ID or username
     created_at?: string;
     updated_at?: string;
+    public?: boolean; // Add public/private field for visibility
 }
-  

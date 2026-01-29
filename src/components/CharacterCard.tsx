@@ -9,10 +9,10 @@ import { useNavigate } from 'react-router-dom';
 interface CharacterCardProps {
   character: Character;
   onSelect?: (character: Character) => void; // Funcție pentru a selecta un personaj
-  
+  textClassName?: string; // Optional class for text color
 }
 
-export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
+export const CharacterCard: React.FC<CharacterCardProps> = ({ character, textClassName }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate(); // Hook pentru navigare
 
@@ -61,14 +61,14 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
       </div>
       
       <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-        <h3 className="text-xl font-bold text-white mb-1 flex items-center">
+        <h3 className={`text-xl font-bold mb-1 flex items-center ${textClassName || 'text-white'}`}>
           {character.name}
           {isHovered && (
             <Sparkles className="ml-2 h-4 w-4 text-yellow-300" />
           )}
         </h3>
         
-        <p className={`text-white/80 text-sm mb-4 line-clamp-2 transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-80'}`}>
+        <p className={`text-sm mb-4 line-clamp-2 transition-all duration-300 ${textClassName || 'text-white/80'} ${isHovered ? 'opacity-100' : 'opacity-80'}`}>
           {character.description}
         </p>
         

@@ -1,6 +1,6 @@
 export default {
   plugins: {
-    '@tailwindcss/postcss': {}, // Folosește pluginul corect
-    autoprefixer: {}, // Adaugă suport pentru prefixe automate
+    '@tailwindcss/postcss': {}, // Use the correct plugin for your Tailwind version
+    autoprefixer: {},
   },
 };

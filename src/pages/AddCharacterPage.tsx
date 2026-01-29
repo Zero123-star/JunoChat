@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createCharacter } from '@/api';
 import { Character } from '@/types/character';
@@ -21,15 +21,6 @@ const AddCharacterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-
-  // Check authentication on component mount
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error('Please log in to create a character');
-      navigate('/login');
-    }
-  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +62,7 @@ const AddCharacterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6 flex items-center justify-center">
       <motion.div 
         className="w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
@@ -117,7 +108,7 @@ const AddCharacterPage: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Enter character name" 
                 required 
-                className="bg-white/50 border-pink-200 focus:border-purple-400"
+                className="bg-white/50 border-pink-200 focus:border-purple-400 text-purple-700 placeholder:text-purple-300"
               />
             </div>
 
@@ -170,8 +161,8 @@ const AddCharacterPage: React.FC = () => {
                 type="text" 
                 value={formData.tags}
                 onChange={handleTagsChange}
-                placeholder="Enter tags (comma-separated)" 
-                className="bg-white/50 border-pink-200 focus:border-purple-400"
+                placeholder="Add tags (comma separated)"
+                className="bg-white/50 border-pink-200 focus:border-purple-400 text-purple-700 placeholder:text-purple-300"
               />
             </div>
 
@@ -187,6 +178,34 @@ const AddCharacterPage: React.FC = () => {
                   className="h-10 w-20 rounded-lg cursor-pointer"
                 />
                 <span className="text-purple-700">{formData.color}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="public" className="text-purple-800 font-medium">Visibility</Label>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="public"
+                    name="visibility"
+                    value="public"
+                    checked={formData.public !== false}
+                    onChange={() => setFormData(prev => ({ ...prev, public: true }))}
+                  />
+                  <span>Public</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="private"
+                    name="visibility"
+                    value="private"
+                    checked={formData.public === false}
+                    onChange={() => setFormData(prev => ({ ...prev, public: false }))}
+                  />
+                  <span>Private</span>
+                </label>
               </div>
             </div>
 
@@ -213,4 +232,7 @@ const AddCharacterPage: React.FC = () => {
   );
 };
 
-export default AddCharacterPage; 
+export default AddCharacterPage;
+
+  // Allow guests to create characters and chat (no token required)
+  // If you want to restrict guests from certain actions, add checks here

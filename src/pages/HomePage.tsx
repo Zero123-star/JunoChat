@@ -41,7 +41,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6">
       {loading ? (
         <div className="flex justify-center items-center h-screen">
           <p>Loading characters...</p>

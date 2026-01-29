@@ -4,12 +4,13 @@ import { login, getCurrentUser } from '@/api';
 import { Button } from '@/components/ui/uiButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
 import { Sparkles, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { setToken, setUser } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -32,12 +33,10 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await login(formData);
-      // Store the auth token
-      localStorage.setItem('token', response.auth_token);
-      
+      setToken(response.auth_token);
       // Get user data
       const userData = await getCurrentUser();
-      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
       
       navigate('/characters');
     } catch (err) {
@@ -52,8 +51,15 @@ const LoginPage: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Guest login handler
+  const handleGuest = () => {
+    setToken(null); // No token for guest
+    setUser({ username: 'Guest', is_guest: true });
+    navigate('/characters/add'); // Go directly to character creation
+  };
+
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6 flex items-center justify-center">
       <motion.div 
         className="w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
@@ -134,6 +140,18 @@ const LoginPage: React.FC = () => {
               <Heart className="ml-2 h-4 w-4" />
             </Button>
           </form>
+
+          <div className="mt-4 flex flex-col items-center">
+            <span className="text-gray-500 mb-2">or</span>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+              onClick={handleGuest}
+            >
+              Proceed as Guest
+            </Button>
+          </div>
 
           <div className="mt-6 text-center">
             <p className="text-purple-700">

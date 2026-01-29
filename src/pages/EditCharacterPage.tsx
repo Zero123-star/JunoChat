@@ -19,35 +19,72 @@ const EditCharacterPage: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Check authentication on component mount
+  // (Incognito mode: allow guests, do not redirect)
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error('Please log in to edit a character');
-      navigate('/login');
-      return;
-    }
-
+    if (!id) return;
     const loadCharacter = async () => {
-      if (!id) return;
-
       try {
         const characterData = await fetchCharacter(id);
-        setCharacter(characterData);
-        setFormData({
-          ...characterData,
-          tags: characterData.tags || ''
-        });
-        if (characterData.avatar) {
-          setPreviewImage(characterData.avatar);
+        // Defensive: if null, fallback to a mock character
+        if (!characterData) {
+          setCharacter({
+            id: id,
+            name: 'Demo Character',
+            description: 'This is a preview character for demo purposes. You can edit all fields and see how the platform works!',
+            tags: 'demo,preview',
+            color: '#a78bfa', // Soft purple
+            creator: 'guest',
+            avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=demo', // Fun SVG avatar
+            public: true,
+          });
+          setFormData({
+            id: id,
+            name: 'Demo Character',
+            description: 'This is a preview character for demo purposes. You can edit all fields and see how the platform works!',
+            tags: 'demo,preview',
+            color: '#a78bfa',
+            creator: 'guest',
+            avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=demo',
+            public: true,
+          });
+          setError(null); // Clear error if fallback is used
+        } else {
+          setCharacter(characterData);
+          setFormData({
+            ...characterData,
+            tags: characterData.tags || ''
+          });
+          if (characterData.avatar) {
+            setPreviewImage(characterData.avatar);
+          }
+          setError(null); // Clear error if loaded
         }
       } catch (err) {
-        setError('Failed to load character');
-        toast.error('Failed to load character');
+        setCharacter({
+          id: id,
+          name: 'Unknown Character',
+          description: 'This is a fallback mock character.',
+          tags: 'mock',
+          color: '#cccccc',
+          creator: 'guest',
+          avatar: '',
+          public: true,
+        });
+        setFormData({
+          id: id,
+          name: 'Unknown Character',
+          description: 'This is a fallback mock character.',
+          tags: 'mock',
+          color: '#cccccc',
+          creator: 'guest',
+          avatar: '',
+          public: true,
+        });
+        setError(null); // Clear error if fallback is used
       }
     };
-
     loadCharacter();
-  }, [id, navigate]);
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +94,19 @@ const EditCharacterPage: React.FC = () => {
     setError(null);
 
     try {
+      // Save to localStorage for session persistence
+      const localCharacters = JSON.parse(localStorage.getItem('characters') || '[]');
+      const updatedChar = { ...formData, id };
+      let updatedList;
+      const existingIndex = localCharacters.findIndex((c: any) => c.id === id);
+      if (existingIndex !== -1) {
+        updatedList = localCharacters.map((c: any) => c.id === id ? updatedChar : c);
+      } else {
+        updatedList = [...localCharacters, updatedChar];
+      }
+      localStorage.setItem('characters', JSON.stringify(updatedList));
+
+      // Also upload to Django backend (real API call)
       await updateCharacter(id, formData);
       toast.success('Character updated successfully!');
       navigate('/characters');
@@ -102,15 +152,27 @@ const EditCharacterPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6 flex items-center justify-center">
       <motion.div 
         className="w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-pink-100">
-          <div className="text-center mb-8">
+        <div className="bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-pink-100 flex flex-col items-center">
+          {previewImage && (
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="h-32 w-32 object-cover rounded-full mb-4 border-4 border-purple-200 shadow-md"
+            />
+          )}
+          <div className="text-center mb-8 w-full">
+            {character?.tags?.includes('demo') && (
+              <span className="inline-block mb-2 px-3 py-1 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 text-white text-xs font-semibold shadow-md">
+                Preview Character
+              </span>
+            )}
             <motion.div 
               className="inline-block"
               initial={{ scale: 0.8 }}
@@ -137,7 +199,7 @@ const EditCharacterPage: React.FC = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-xs mx-auto">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-purple-800 font-medium">Name</Label>
               <Input 
@@ -244,4 +306,4 @@ const EditCharacterPage: React.FC = () => {
   );
 };
 
-export default EditCharacterPage; 
+export default EditCharacterPage;

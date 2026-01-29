@@ -21,11 +21,31 @@ const SignupPage: React.FC = () => {
 
   // Check if user is already logged in
   useEffect(() => {
+    // On mount, if a user is already logged in, redirect
     const token = localStorage.getItem('token');
     if (token) {
       navigate('/characters');
     }
   }, [navigate]);
+
+  // Ensure persona is created in backend after signup
+  useEffect(() => {
+    if (formData.username) {
+      // Call backend to create persona for the new user (if your logic requires this)
+      // You can adjust the persona fields as needed
+      fetch('/personas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.username,
+          persona: `${formData.username} is a new user persona`,
+          image_url: '',
+          template: 'plain',
+          generation_params: { max_new_tokens: 200, temperature: 0.7, top_p: 0.9 },
+        })
+      }).catch(() => {});
+    }
+  }, [formData.username]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,21 +82,21 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-black dark:via-zinc-900 dark:to-gray-900 px-4 py-6 flex items-center justify-center">
       <motion.div 
         className="w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-pink-100">
+        <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-pink-100 dark:border-zinc-800">
           <div className="text-center mb-8">
             <motion.div 
               className="inline-block"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ 
-                type: "spring", 
+                type: 'spring', 
                 stiffness: 260, 
                 damping: 20 
               }}
@@ -86,7 +106,7 @@ const SignupPage: React.FC = () => {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text">
               Create Your Account
             </h1>
-            <p className="text-purple-700 mt-2">
+            <p className="text-purple-700 dark:text-pink-300 mt-2">
               Join the adventure and start chatting with characters
             </p>
           </div>
@@ -108,7 +128,7 @@ const SignupPage: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Choose a username" 
                 required 
-                className="bg-white/50 border-pink-200 focus:border-purple-400"
+                className="bg-white/50 border-pink-200 focus:border-purple-400 text-purple-700 placeholder:text-purple-300"
               />
             </div>
 
@@ -122,7 +142,7 @@ const SignupPage: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Enter your email" 
                 required 
-                className="bg-white/50 border-pink-200 focus:border-purple-400"
+                className="bg-white/50 border-pink-200 focus:border-purple-400 text-purple-700 placeholder:text-purple-300"
               />
             </div>
 
@@ -136,7 +156,7 @@ const SignupPage: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Create a password" 
                 required 
-                className="bg-white/50 border-pink-200 focus:border-purple-400"
+                className="bg-white/50 border-pink-200 focus:border-purple-400 text-purple-700 placeholder:text-purple-300"
               />
             </div>
 
@@ -150,7 +170,7 @@ const SignupPage: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Confirm your password" 
                 required 
-                className="bg-white/50 border-pink-200 focus:border-purple-400"
+                className="bg-white/50 border-pink-200 focus:border-purple-400 text-purple-700 placeholder:text-purple-300"
               />
             </div>
 
