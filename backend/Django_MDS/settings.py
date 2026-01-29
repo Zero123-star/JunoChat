@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-raqb@^v#q%&uapir=m4@ne(+_e^6)_k196(3f4l=@haic(#2++
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1'] ####For debugging
+ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1', '0.0.0.0'] ####For debugging
 
 #ADMINS = [
 #      ('Brain', 'lightbrain2018@gmail.com'),
@@ -47,6 +47,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Dacă folosești Create React App
     "http://localhost:5173", 
     "http://localhost:5174", # Dacă folosești Vite
+    "http://localhost:4173", # Vite preview mode
 ]
 
 # Allow custom headers for CORS
