@@ -29,13 +29,13 @@ const MyCharactersPage: React.FC = () => {
         }
 
         // Get current user's username
-        const userResponse = await axios.post('http://localhost:8000/api/users/get_username/', {
+        const userResponse = await axios.post(`${API_BASE_URL}/api/users/get_username/`, {
           id: JSON.parse(userId)
         });
         const currentUsername = userResponse.data.username;
 
         // Get all characters and filter by creator
-        const charactersResponse = await axios.get('http://localhost:8000/api/characters/');
+        const charactersResponse = await axios.get(`${API_BASE_URL}/api/characters/`);
         
         const myCharacters = charactersResponse.data.filter(
           (char: Character) => char.creator_username === currentUsername
@@ -57,7 +57,7 @@ const MyCharactersPage: React.FC = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:8000/api/characters/${characterId}/`);
+      await axios.delete(`${API_BASE_URL}/api/characters/${characterId}/`);
       setCharacters(characters.filter(char => char.id !== characterId));
     } catch (error) {
       console.error('Error deleting character:', error);

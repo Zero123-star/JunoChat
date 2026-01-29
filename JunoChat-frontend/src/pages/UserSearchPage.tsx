@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Users } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 interface User {
   id: number;
@@ -23,7 +24,7 @@ const UserSearchPage: React.FC = () => {
     // Fetch top users on component mount
     const fetchTopUsers = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/users/top_users/');
+        const response = await fetch(`${API_BASE_URL}/api/users/top_users/`);
         if (!response.ok) throw new Error('Failed to fetch top users');
         const data = await response.json();
         setTopUsers(data);
@@ -40,7 +41,7 @@ const UserSearchPage: React.FC = () => {
     setError(null);
     setHasSearched(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/users/?search=${encodeURIComponent(query)}`);
+      const response = await fetch(`${API_BASE_URL}/api/users/?search=${encodeURIComponent(query)}`);
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       setResults(data);
@@ -120,7 +121,7 @@ const UserSearchPage: React.FC = () => {
                     </div>
                     {user.profile_picture ? (
                       <img
-                        src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`}
+                        src={user.profile_picture.startsWith('http') ? user.profile_picture : `${API_BASE_URL}${user.profile_picture}`}
                         alt={user.username}
                         className="h-12 w-12 rounded-full object-cover border-2 border-purple-300"
                       />

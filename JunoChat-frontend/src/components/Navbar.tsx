@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { Plus, LogIn, Settings } from 'lucide-react';
 import { Users } from 'lucide-react';
+import { API_BASE_URL } from '@/config';
 import defaultAvatar from '../../images/icon.png';
 
 const Navbar: React.FC = () => {

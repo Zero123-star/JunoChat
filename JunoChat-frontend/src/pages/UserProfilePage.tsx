@@ -70,7 +70,7 @@ const UserProfilePage: React.FC = () => {
           setUserId(parsedUserId);
           
           // Get the username of logged-in user
-          const response = await axios.post('http://localhost:8000/api/users/get_username/', {
+          const response = await axios.post(`${API_BASE_URL}/api/users/get_username/`, {
             id: parsedUserId
           });
           setLoggedInUsername(response.data.username);
@@ -88,7 +88,7 @@ const UserProfilePage: React.FC = () => {
       setLoading(true);
       try {
         // Get user data by username
-        const usersResponse = await axios.get(`http://localhost:8000/api/users/?search=${username}`);
+        const usersResponse = await axios.get(`${API_BASE_URL}/api/users/?search=${username}`);
         
         if (usersResponse.data && usersResponse.data.length > 0) {
           const userData = usersResponse.data[0];

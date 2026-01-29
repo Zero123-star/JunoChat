@@ -32,7 +32,7 @@ const CharacterDetails: React.FC = () => {
     const fetchCharacter = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8000/api/characters/${id}/`);
+        const response = await fetch(`${API_BASE_URL}/api/characters/${id}/`);
         if (!response.ok) {
           throw new Error('Failed to fetch character details');
         }
