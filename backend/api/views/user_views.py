@@ -8,6 +8,7 @@ from rest_framework import viewsets, filters, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from api.models import CustomUser, Follow, Tag, Character, Message, Chat
 from api.serializers import CustomUserSerializer, FollowSerializer, TagSerializer, CharacterSerializer, MessageSerializer, ChatSerializer, ChatListSerializer
 import logging
@@ -69,15 +70,42 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     @action(detail=False,methods=['post'])
     def check_credentials(self,request):
         ###Checks the credentials given, returns the id of the user if found. request={username: string, password: string}
-        user=request.data.get('username') ###not working crashes
+        from django.contrib.auth.hashers import check_password
+        
+        user=request.data.get('username')
         password=request.data.get('password')
+        
+        print(f"Login attempt - Username: {user}")
+        print(f"All users in DB: {[u.username for u in CustomUser.objects.all()]}")
+        
         for i in CustomUser.objects.all():
+            print(f"Checking user: {i.username}")
             if i.username==user:
-                if i.password==password:
-                    return Response({'status' : i.pk, 'worked' : True})
+                print(f"Username match found! Checking password...")
+                print(f"Stored password hash: {i.password}")
+                print(f"Provided password: {password}")
+                
+                # Try both plain text and hashed password comparison
+                # Plain text for old accounts, hashed for superusers
+                plain_match = i.password==password
+                hashed_match = check_password(password, i.password)
+                
+                print(f"Plain text match: {plain_match}")
+                print(f"Hashed match: {hashed_match}")
+                
+                if plain_match or hashed_match:
+                    # Create or get authentication token
+                    token, created = Token.objects.get_or_create(user=i)
+                    print(f"Login successful for {user}. Token: {token.key}")
+                    return Response({
+                        'status': i.pk, 
+                        'worked': True,
+                        'state': token.key  # Return the actual token
+                    })
+                print("Password mismatch!")
                 return Response({'status' : 'Bad password!','worked' : False})
-        return Response({'status': 'Username not found!', 'worked' : False}) ###returns "<rest_framework.request.Request: POST '/api/users/check_credentials/'>"
-        #user=self.get_object(name=request.data.get(username))
+        print(f"User {user} not found in database")
+        return Response({'status': 'Username not found!', 'worked' : False})
 
 
     #Registers a users. The post request has the following format: { username: string, email: string, password: string;}
@@ -167,6 +195,30 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return JsonResponse({'username': user.username})
         except CustomUser.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
+    
+    @action(detail=True, methods=['get'])
+    def favorite_characters(self, request, pk=None):
+        """Get all characters favorited by a specific user"""
+        try:
+            user = self.get_object()
+            favorite_chars = user.favorite_characters.all()
+            from api.serializers import CharacterSerializer
+            serializer = CharacterSerializer(favorite_chars, many=True, context={'request': request})
+            return Response(serializer.data)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+    
+    @action(detail=False, methods=['get'])
+    def top_users(self, request):
+        """Get top 10 users with the most followers"""
+        from django.db.models import Count
+        
+        top_users = CustomUser.objects.annotate(
+            followers_count=Count('followers')
+        ).order_by('-followers_count')[:10]
+        
+        serializer = CustomUserSerializer(top_users, many=True)
+        return Response(serializer.data)
 
 
 class FollowViewSet(viewsets.ModelViewSet):

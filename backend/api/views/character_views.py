@@ -158,3 +158,39 @@ class CharacterViewSet(viewsets.ModelViewSet):
         except Exception as e:
             print(f"Error updating character: {str(e)}")
             return Response({'error': str(e)}, status=500)
+
+    @action(detail=True, methods=['post'])
+    def favorite(self, request, pk=None):
+        """Add character to user's favorites"""
+        character = self.get_object()
+        user = request.user
+        
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        if character.favorited_by.filter(id=user.id).exists():
+            return Response({'message': 'Already in favorites'}, status=200)
+        
+        character.favorited_by.add(user)
+        return Response({
+            'message': 'Added to favorites',
+            'favorites_count': character.get_favorites_count()
+        })
+
+    @action(detail=True, methods=['post'])
+    def unfavorite(self, request, pk=None):
+        """Remove character from user's favorites"""
+        character = self.get_object()
+        user = request.user
+        
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        if not character.favorited_by.filter(id=user.id).exists():
+            return Response({'message': 'Not in favorites'}, status=200)
+        
+        character.favorited_by.remove(user)
+        return Response({
+            'message': 'Removed from favorites',
+            'favorites_count': character.get_favorites_count()
+        })

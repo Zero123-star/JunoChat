@@ -25,12 +25,16 @@ API.interceptors.response.use(
     // Only redirect to login for authentication 401s, not OpenRouter API errors
     if (error.response?.status === 401) {
       const errorData = error.response?.data;
+      const currentPath = window.location.pathname;
+      
       // Check if this is an OpenRouter API key issue
       if (errorData?.error?.includes('OpenRouter') || errorData?.details?.includes('cookie auth')) {
         console.error('OpenRouter API key missing or invalid. Please add your API key.');
         // Don't redirect to login - this is an API configuration issue, not an auth issue
-      } else {
+      } else if (currentPath !== '/login' && currentPath !== '/register') {
+        // Only redirect if not already on login/register page
         // This is a real authentication issue with Django
+        console.log('Authentication failed, redirecting to login');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/login';
@@ -87,6 +91,17 @@ export const openrouter_chat = async (messages: {role: string; content: string}[
   const response = await API.post('chat/openrouter_chat/', m);
   return response.data;
 }
+
+// Favorites
+export const favoriteCharacter = async (characterId: string) => {
+  const response = await API.post(`characters/${characterId}/favorite/`);
+  return response.data;
+};
+
+export const unfavoriteCharacter = async (characterId: string) => {
+  const response = await API.post(`characters/${characterId}/unfavorite/`);
+  return response.data;
+};
 
 
 

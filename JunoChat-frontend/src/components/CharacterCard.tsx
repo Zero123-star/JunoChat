@@ -4,23 +4,57 @@ import { Button } from '@/components/Button';
 import { MessageCircle, Star, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { get_first_chat } from '@/api';
+import { get_first_chat, favoriteCharacter, unfavoriteCharacter } from '@/api';
 
 interface CharacterCardProps {
   character: Character;
-  onSelect?: (character: Character) => void; // Funcție pentru a selecta un personaj
-
+  onSelect?: (character: Character) => void;
+  onFavoriteChange?: () => void; // Callback to refresh data after favorite change
 }
 
 
 
-export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
+export const CharacterCard: React.FC<CharacterCardProps> = ({ character, onFavoriteChange }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate(); // Hook pentru navigare
+  const [isFavorited, setIsFavorited] = useState(character.is_favorited || false);
+  const [favoritesCount, setFavoritesCount] = useState(character.favorites_count || 0);
+  const navigate = useNavigate();
 
 
   const handleCardClick = () => {
-    navigate(`/character/${character.id}`); // Navighează la pagina de detalii
+    navigate(`/character/${character.id}`);
+  };
+
+  const handleFavoriteClick = async (event: React.MouseEvent) => {
+    event.stopPropagation();
+    
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in to favorite characters');
+      return;
+    }
+    
+    try {
+      if (isFavorited) {
+        const response = await unfavoriteCharacter(character.id);
+        setIsFavorited(false);
+        setFavoritesCount(response.favorites_count);
+      } else {
+        const response = await favoriteCharacter(character.id);
+        setIsFavorited(true);
+        setFavoritesCount(response.favorites_count);
+      }
+      onFavoriteChange?.();
+    } catch (error: any) {
+      console.error('Error toggling favorite:', error);
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please log in again.');
+        // Don't redirect here, let the interceptor handle it
+      } else {
+        alert('Failed to update favorite. Please try again.');
+      }
+    }
   };
 
 
@@ -31,13 +65,12 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
       console.log("First chat ID:", first_id.chat_id);
       navigate(`/chat/${character.id}`, {
       state: { chatId: first_id.chat_id }
-    }); // Get to the first chat with the character
+    });
     }
 
 
 
     event.stopPropagation();
-    //Get userid from localstorage
     const userId = localStorage.getItem('user');
     if (!userId) {
       console.error("User ID not found in local storage");
@@ -46,7 +79,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
     }
 
     console.log("User ID:", userId);
-    // Quickly create a json object with the user id and character id
     const data = {
       user_id: userId,
       character_id: character.id
@@ -69,14 +101,23 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
     >
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 z-10" />
 
-      <div
-        className="absolute top-3 right-3 z-20 bg-white/20 backdrop-blur-md p-1.5 rounded-full"
+      <button
+        onClick={handleFavoriteClick}
+        className="absolute top-3 right-3 z-20 bg-white/20 backdrop-blur-md p-1.5 rounded-full hover:bg-white/30 transition cursor-pointer"
         style={{
-          backgroundColor: `${character.color || 'rgba(99, 102, 241, 0.2)'}`
+          backgroundColor: isFavorited ? 'rgba(255, 215, 0, 0.3)' : 'rgba(255, 255, 255, 0.2)'
         }}
       >
-        <Star className="h-4 w-4 text-white" fill="white" />
-      </div>
+        <Star 
+          className={`h-4 w-4 ${isFavorited ? 'text-yellow-400' : 'text-white'}`} 
+          fill={isFavorited ? 'currentColor' : 'none'} 
+        />
+      </button>
+      {favoritesCount > 0 && (
+        <div className="absolute top-3 right-14 z-20 bg-black/50 backdrop-blur-md px-2 py-1 rounded-full text-white text-xs">
+          {favoritesCount}
+        </div>
+      )}
 
       <div className="h-72 overflow-hidden">
         <img

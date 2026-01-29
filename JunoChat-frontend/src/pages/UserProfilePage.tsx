@@ -2,10 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import axios from 'axios';
 import defaultAvatar from '../../images/icon.png'; 
 import CharacterCarousel from '@/components/CharacterCarousel';
+import CharacterCard from '@/components/CharacterCard';
+
+interface User {
+  id: number;
+  username: string;
+  email?: string;
+  profile_picture?: string;
+}
+
+interface Character {
+  id: string;
+  name: string;
+  description: string;
+  avatar?: string;
+  tags: string;
+  color?: string;
+  creator: string;
+  creator_username?: string;
+  favorites_count?: number;
+  is_favorited?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
 
 const UserProfilePage: React.FC = () => {
   const { username: urlUsername } = useParams<{ username: string }>();
@@ -15,16 +38,23 @@ const UserProfilePage: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(defaultAvatar);
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [createdCharacters, setCreatedCharacters] = useState([]);
-  const [favoriteCharacters] = useState([]);
+  const [createdCharacters, setCreatedCharacters] = useState<Character[]>([]);
+  const [favoriteCharacters, setFavoriteCharacters] = useState<Character[]>([]);
   const [followsCount, setFollowsCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [followers, setFollowers] = useState<User[]>([]);
+  const [following, setFollowing] = useState<User[]>([]);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
   const [loggedInUsername, setLoggedInUsername] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [profileUserId, setProfileUserId] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editedName, setEditedName] = useState<string>('');
+  const [editedEmail, setEditedEmail] = useState<string>('');
   
   // Use logged-in username if URL username is missing (e.g., /profile)
   const username = urlUsername || loggedInUsername;
@@ -94,6 +124,30 @@ const UserProfilePage: React.FC = () => {
           const userCharacters = charactersResponse.data.filter((char: { creator_username: string }) => char.creator_username === username);
           console.log('Filtered user characters:', userCharacters);
           setCreatedCharacters(userCharacters);
+          
+          // Get favorite characters for this user
+          if (userData.id) {
+            try {
+              const favResponse = await axios.get(`http://localhost:8000/api/users/${userData.id}/favorite_characters/`);
+              console.log('Favorite characters:', favResponse.data);
+              setFavoriteCharacters(favResponse.data);
+            } catch (error) {
+              console.error('Error fetching favorites:', error);
+            }
+          }
+          
+          // Get followers and following lists
+          if (userData.id) {
+            try {
+              const followersResponse = await axios.get(`http://localhost:8000/api/users/${userData.id}/followers/`);
+              setFollowers(followersResponse.data);
+              
+              const followingResponse = await axios.get(`http://localhost:8000/api/users/${userData.id}/following/`);
+              setFollowing(followingResponse.data);
+            } catch (error) {
+              console.error('Error fetching followers/following:', error);
+            }
+          }
         } else {
           setName(username || 'Unknown User');
           setEmail('User not found');
@@ -126,6 +180,47 @@ const UserProfilePage: React.FC = () => {
         setProfileImage(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditProfile = () => {
+    setIsEditingProfile(true);
+    setEditedName(name);
+    setEditedEmail(email);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!userId) {
+      alert('User ID not found. Please try logging out and back in.');
+      return;
+    }
+
+    try {
+      const updateData: Record<string, string> = {};
+      if (editedName !== name) updateData.username = editedName;
+      if (editedEmail !== email) updateData.email = editedEmail;
+
+      if (Object.keys(updateData).length > 0) {
+        await axios.patch(`http://localhost:8000/api/users/${userId}/`, updateData);
+        setName(editedName);
+        setEmail(editedEmail);
+        
+        // Update localStorage if username changed
+        if (editedName !== name) {
+          const userData = localStorage.getItem('user');
+          if (userData) {
+            localStorage.setItem('user', editedName);
+          }
+          // Update loggedInUsername in state
+          setLoggedInUsername(editedName);
+        }
+      }
+
+      setIsEditingProfile(false);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile. Please try again.');
     }
   };
 
@@ -280,7 +375,7 @@ const UserProfilePage: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 flex items-center justify-center px-4 py-12">
       <motion.div 
-        className="w-full max-w-md"
+        className="w-full max-w-4xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -318,26 +413,84 @@ const UserProfilePage: React.FC = () => {
                 onChange={handleImageChange}
               />
             )}
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text">
-              <p className="text-purple-800 font-medium">
-                {name}
-              </p>
-            </h1>
-            <p className="text-purple-800 font-medium">{email}</p>
-            {isOwnProfile && (
+            {isOwnProfile && isEditingProfile ? (
               <>
-                <p className="text-purple-700 mt-2 text-sm">
-                  Click on your profile picture to change it.
-                </p>
-                {hasUnsavedChanges && (
+                <input
+                  type="text"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="text-center text-2xl font-bold text-purple-800 bg-white/50 rounded-lg px-4 py-2 border-2 border-purple-300 focus:outline-none focus:border-purple-500"
+                  placeholder="Username"
+                />
+                <input
+                  type="email"
+                  value={editedEmail}
+                  onChange={(e) => setEditedEmail(e.target.value)}
+                  className="text-center text-purple-800 font-medium bg-white/50 rounded-lg px-4 py-2 border-2 border-purple-300 focus:outline-none focus:border-purple-500"
+                  placeholder="Email"
+                />
+                <div className="flex gap-3 mt-3">
                   <Button
                     type="button"
-                    onClick={handleSaveChanges}
+                    onClick={handleSaveProfile}
                     gradient
-                    className="mt-3"
                   >
-                    Save Changes
+                    Save Profile
                   </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setIsEditingProfile(false)}
+                    className="bg-gray-300 hover:bg-gray-400"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text">
+                  <p className="text-purple-800 font-medium">
+                    {name}
+                  </p>
+                </h1>
+                <p className="text-purple-800 font-medium">{email}</p>
+                {isOwnProfile && (
+                  <>
+                    <p className="text-purple-700 mt-2 text-sm">
+                      Click on your profile picture to change it.
+                    </p>
+                    <div className="flex gap-3 mt-3 justify-center">
+                      {hasUnsavedChanges && (
+                        <Button
+                          type="button"
+                          onClick={handleSaveChanges}
+                          gradient
+                        >
+                          Save Picture
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        onClick={handleEditProfile}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+                      >
+                        Edit Profile
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to log out?')) {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user');
+                            navigate('/login');
+                          }
+                        }}
+                        className="bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600"
+                      >
+                        Logout
+                      </Button>
+                    </div>
+                  </>
                 )}
               </>
             )}
@@ -345,14 +498,9 @@ const UserProfilePage: React.FC = () => {
 
           <div className="space-y-5">
             <div className="flex justify-between items-center text-purple-800 font-medium">
-              <p>Follows: {followsCount}</p>
+
               {!isOwnProfile && (
                 <div className="flex flex-col items-center gap-2">
-                  {isFollowing && (
-                    <span className="text-xs text-green-600 font-semibold">
-                      Following
-                    </span>
-                  )}
                   <Button
                     type="button"
                     onClick={handleFollow}
@@ -366,7 +514,74 @@ const UserProfilePage: React.FC = () => {
                   </Button>
                 </div>
               )}
-              <p>Following: {followingCount}</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <button
+                  onClick={() => setShowFollowers(!showFollowers)}
+                  className="w-full flex items-center justify-between p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition"
+                >
+                  <h2 className="text-xl font-bold text-purple-800">
+                    Followers ({followsCount})
+                  </h2>
+                  {showFollowers ? (
+                    <ChevronUp className="h-5 w-5 text-purple-800" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-purple-800" />
+                  )}
+                </button>
+                {showFollowers && (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {followers.length > 0 ? (
+                      followers.map((follower: User) => (
+                        <div 
+                          key={follower.id}
+                          onClick={() => navigate(`/profile/${follower.username}`)}
+                          className="p-3 bg-purple-100 rounded-lg cursor-pointer hover:bg-purple-200 transition"
+                        >
+                          <p className="font-medium text-purple-800">{follower.username}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm p-3">No followers yet.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => setShowFollowing(!showFollowing)}
+                  className="w-full flex items-center justify-between p-4 bg-pink-50 rounded-lg hover:bg-pink-100 transition"
+                >
+                  <h2 className="text-xl font-bold text-pink-800">
+                    Following ({followingCount})
+                  </h2>
+                  {showFollowing ? (
+                    <ChevronUp className="h-5 w-5 text-pink-800" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-pink-800" />
+                  )}
+                </button>
+                {showFollowing && (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {following.length > 0 ? (
+                      following.map((user: User) => (
+                        <div 
+                          key={user.id}
+                          onClick={() => navigate(`/profile/${user.username}`)}
+                          className="p-3 bg-pink-100 rounded-lg cursor-pointer hover:bg-pink-200 transition"
+                        >
+                          <p className="font-medium text-pink-800">{user.username}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm p-3">Not following anyone yet.</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="space-y-5">
@@ -385,32 +600,17 @@ const UserProfilePage: React.FC = () => {
                 Favorite Characters ({favoriteCharacters.length})
               </h2>
               {favoriteCharacters.length > 0 ? (
-                <CharacterCarousel characters={favoriteCharacters} onSelect={() => {}} />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {favoriteCharacters.map((character: Character) => (
+                    <CharacterCard key={character.id} character={character} />
+                  ))}
+                </div>
               ) : (
                 <p className="text-gray-500 text-sm">No favorite characters yet.</p>
               )}
             </div>
 
-            <div className="space-y-5">
-            </div>
 
-            <div className="flex justify-end space-x-4 pt-4">
-              {isOwnProfile && (
-                <Button
-                  type="button"
-                  onClick={() => {
-                    if (window.confirm('Are you sure you want to log out?')) {
-                      localStorage.removeItem('token');
-                      localStorage.removeItem('user');
-                      navigate('/login');
-                    }
-                  }}
-                  className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 shadow-lg hover:from-red-600 hover:to-pink-600 transition-all duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
-                >
-                  Logout
-                </Button>
-              )}
-            </div>
           </div>
           {!isOwnProfile && (
             <>

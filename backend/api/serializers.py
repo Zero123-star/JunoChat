@@ -38,11 +38,19 @@ class TagSerializer(serializers.ModelSerializer):
 class CharacterSerializer(serializers.ModelSerializer):
     creator_username = serializers.ReadOnlyField(source='creator.username')
     tags = TagSerializer(many=True, read_only=True)
+    favorites_count = serializers.ReadOnlyField(source='get_favorites_count')
+    is_favorited = serializers.SerializerMethodField()
     
     class Meta:
         model = Character
-        fields = ['id', 'name', 'avatar', 'source', 'description', 'tags', 'creator', 'creator_username']
+        fields = ['id', 'name', 'avatar', 'source', 'description', 'tags', 'creator', 'creator_username', 'favorites_count', 'is_favorited']
         read_only_fields = ['id']
+    
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.favorited_by.filter(id=request.user.id).exists()
+        return False
     
     def create(self, validated_data):
         tags_data = self.context.get('request').data.get('tags', [])

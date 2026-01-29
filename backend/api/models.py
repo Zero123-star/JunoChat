@@ -76,9 +76,13 @@ class Character(models.Model):
     description = models.TextField(null=True)
     tags = models.ManyToManyField(Tag, related_name='characters', blank=True)
     creator = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='card_characters')
+    favorited_by = models.ManyToManyField('CustomUser', related_name='favorite_characters', blank=True)
 
     class Meta:
         ordering = ['name']
+    
+    def get_favorites_count(self):
+        return self.favorited_by.count()
         
     def __str__(self):
         return f"{self.name} ({self.id})"  

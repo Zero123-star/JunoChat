@@ -21,8 +21,6 @@ const ChatPage: React.FC = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [characterLoading, setCharacterLoading] = useState(true);
-  const [messagesLoading, setMessagesLoading] = useState(true);
   const location = useLocation();
   const chatId = location.state?.chatId;
   
@@ -98,19 +96,29 @@ const ChatPage: React.FC = () => {
     
     try {
       const userId = localStorage.getItem('user');
-      await storeMessage(chatId, { role: 'user', content: input, id: userId });
+      if (characterId && userId) {
+        await storeMessage(chatId, { role: 'user', content: input, id: parseInt(userId) });
+      }
       
       const response = await openrouter_chat([...messages, userMessage], characterId);
       const botReply = response.choices[0].message.content;
       const botMessage: Message = { role: 'assistant', content: botReply };
       
-      await storeMessage(chatId, { role: 'assistant', content: botReply, id: characterId });
+      const charId = characterId ? parseInt(characterId) : 0;
+      if (charId) {
+        await storeMessage(chatId, { role: 'assistant', content: botReply, id: charId });
+      }
       setMessages(prev => [...prev, botMessage]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error:", error);
       // Check if it's an OpenRouter API key issue
-      if (error.response?.status === 401 && error.response?.data?.error?.includes('OpenRouter')) {
-        setError("OpenRouter API key is not configured. Please contact your administrator to add the API key.");
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number; data?: { error?: string } } };
+        if (axiosError.response?.status === 401 && axiosError.response?.data?.error?.includes('OpenRouter')) {
+          setError("OpenRouter API key is not configured. Please contact your administrator to add the API key.");
+        } else {
+          setError("Failed to send message. Please try again.");
+        }
       } else {
         setError("Failed to send message. Please try again.");
       }
@@ -195,7 +203,7 @@ const ChatPage: React.FC = () => {
                     className={`${message.role === 'user'
                       ? 'bg-purple-500 text-white'
                       : 'bg-gray-200 text-gray-800'
-                    } px-4 py-2 rounded-lg max-w-xs relative break-words overflow-wrap-anywhere`}
+                    } px-4 py-2 rounded-lg max-w-xs relative break-words break-all`}
                   >
                     {message.content}
                     <div className={`flex gap-2 mt-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
