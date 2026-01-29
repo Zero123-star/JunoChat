@@ -9,10 +9,75 @@ from rest_framework.response import Response
 from api.models import Character
 from api.serializers import CharacterSerializer  # Borrow this
 
+# Global storage for API key (in production, use database or environment variables)
+OPENROUTER_API_KEY = None
+
 
 class CustomOpenrouterViewset(viewsets.ViewSet):
     permission_classes = [AllowAny]
     serializer_class = CharacterSerializer
+
+    @action(detail=False, methods=['get'], url_path='models')
+    def get_models(self, request):
+        """Get available models from OpenRouter"""
+        global OPENROUTER_API_KEY
+        
+        # Return popular models (could fetch from OpenRouter API if key is set)
+        models = [
+            "google/gemini-2.0-flash-001",
+            "anthropic/claude-3.5-sonnet",
+            "openai/gpt-4o-mini",
+            "meta-llama/llama-3.1-70b-instruct",
+            "mistralai/mistral-7b-instruct",
+            "google/gemma-2-9b-it"
+        ]
+        return JsonResponse({'models': models})
+
+    @action(detail=False, methods=['post'], url_path='test-connection')
+    def test_connection(self, request):
+        """Test if the API key is valid"""
+        api_key = request.data.get('api_key', '')
+        
+        if not api_key:
+            return JsonResponse({'success': False, 'message': 'API key is required'})
+        
+        try:
+            # Test the API key with a simple request
+            response = requests.get(
+                url="https://openrouter.ai/api/v1/models",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                },
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                return JsonResponse({'success': True, 'message': 'API key is valid'})
+            else:
+                return JsonResponse({'success': False, 'message': f'Invalid API key (status: {response.status_code})'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Connection error: {str(e)}'})
+
+    @action(detail=False, methods=['post'], url_path='connect')
+    def connect(self, request):
+        """Save the API key and selected model"""
+        global OPENROUTER_API_KEY
+        
+        api_key = request.data.get('api_key', '')
+        model = request.data.get('model', '')
+        
+        if not api_key:
+            return JsonResponse({'success': False, 'message': 'API key is required'})
+        
+        # Store the API key globally
+        OPENROUTER_API_KEY = api_key
+        
+        # Store in session as well
+        request.session['openrouter_api_key'] = api_key
+        request.session['openrouter_model'] = model
+        
+        return JsonResponse({'success': True, 'message': 'Configuration saved'})
 
     @staticmethod
     def return_character_description(bot_id):
@@ -112,15 +177,25 @@ class CustomOpenrouterViewset(viewsets.ViewSet):
 
         print(system_messages)
 
+        # Get API key from request body, session, or global storage
+        global OPENROUTER_API_KEY
+        api_key = request.data.get('api_key') or request.session.get('openrouter_api_key') or OPENROUTER_API_KEY
+        model = request.data.get('model') or request.session.get('openrouter_model') or 'google/gemini-2.0-flash-001'
+        
+        if not api_key:
+            return JsonResponse({
+                "error": "OpenRouter API key is not configured. Please go to API Config page to set it up."
+            }, status=400)
+
         # Call OpenRouter API
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": f"Bearer",  # ADD YOUR KEY
+                "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json"
             },
             data=json.dumps({
-                "model": "z-ai/glm-4.5-air",
+                "model": model,
                 "messages": system_messages,
                 "max_tokens": 500,
                 "streaming": False

@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 # Main router
 router = DefaultRouter()
 router.register(r'chat', CustomOpenrouterViewset, basename='openrouter-chat')
+router.register(r'openrouter', CustomOpenrouterViewset, basename='openrouter')  # Frontend expects this prefix
 router.register(r'users', CustomUserViewSet)
 router.register(r'follows', FollowViewSet)
 router.register(r'tags', TagViewSet)
