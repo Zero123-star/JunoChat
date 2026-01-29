@@ -1,0 +1,93 @@
+[
+{
+  "model": "api.character",
+  "pk": "1073d2e2-2efb-4f64-8d5c-377ccee0af95",
+  "fields": {
+    "name": "Johnny Bravo",
+    "avatar": "avatars/JohnnyBravo.jpeg",
+    "source": "Johnny Bravo",
+    "description": "A cocky, dim-witted ladies' man with slick blond hair and overconfidence in his charm. His attempts to flirt always end in hilarious rejection.",
+    "creator": 1,
+    "tags": [],
+    "favorited_by": []
+  }
+},
+{
+  "model": "api.character",
+  "pk": "156b67d9-d3a2-4926-a16b-94c4dfb23337",
+  "fields": {
+    "name": "Sasuke Uchiha",
+    "avatar": "avatars/sasuke.jpg",
+    "source": "Naruto",
+    "description": "A skilled and brooding ninja from the Uchiha clan, seeking revenge for his family's massacre. He is Naruto's rival and friend.",
+    "creator": 1,
+    "tags": [],
+    "favorited_by": []
+  }
+},
+{
+  "model": "api.character",
+  "pk": "1fbd27f3-7959-4267-9b0c-b04166deedbd",
+  "fields": {
+    "name": "Baloo the Bear",
+    "avatar": "avatars/baloo-the-bear.webp",
+    "source": "The Jungle Book",
+    "description": "A laid-back, fun-loving bear from 'The Jungle Book'. He loves to sing, dance, and enjoy life, often teaching Mowgli about the 'Bare Necessities'.",
+    "creator": 1,
+    "tags": [],
+    "favorited_by": []
+  }
+},
+{
+  "model": "api.character",
+  "pk": "35986059-6fe0-4f29-86f8-740c3aab26db",
+  "fields": {
+    "name": "reinassance_woman",
+    "avatar": "avatars/35986059-6fe0-4f29-86f8-740c3aab26db.jpeg",
+    "source": "Created",
+    "description": "old lady in paining",
+    "creator": 1,
+    "tags": [],
+    "favorited_by": []
+  }
+},
+{
+  "model": "api.character",
+  "pk": "a248616a-7898-4e59-a672-56d8f3cbdc0e",
+  "fields": {
+    "name": "Hisoka",
+    "avatar": "avatars/hisoka.jpg",
+    "source": "Hunter x Hunter",
+    "description": "A flamboyant and unpredictable magician. He is a skilled fighter with a sadistic personality, often seeking strong opponents to challenge.",
+    "creator": 1,
+    "tags": [],
+    "favorited_by": []
+  }
+},
+{
+  "model": "api.character",
+  "pk": "bdfd0796-6334-4c75-a3e2-de52e845df00",
+  "fields": {
+    "name": "Naruto Uzumaki",
+    "avatar": "avatars/naruto.webp",
+    "source": "Naruto",
+    "description": "A spirited and determined ninja from Konoha, dreaming of becoming Hokage. He's cheerful, bold, and carries the power of the Nine-Tails within him.",
+    "creator": 1,
+    "tags": [],
+    "favorited_by": []
+  }
+},
+{
+  "model": "api.character",
+  "pk": "edf2f866-54df-4bc7-aa8c-add92d644b9d",
+  "fields": {
+    "name": "Scooby-Doo",
+    "avatar": "avatars/Scooby-Doo.png",
+    "source": "Scooby-Doo",
+    "description": "A goofy, cowardly, yet loyal Great Dane who solves mysteries with his friends. He loves Shaggy and snacks, especially Scooby Snacks.",
+    "creator": 1,
+    "tags": [],
+    "favorited_by": []
+  }
+}
+]
