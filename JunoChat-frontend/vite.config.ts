@@ -19,7 +19,7 @@ export default defineConfig({
             },
   preview: {
     host: true,
-    allowedHosts: ['talented-spontaneity-production.up.railway.app', '.railway.app'],
+    allowedHosts: ['localhost', '.railway.app', '.up.railway.app', '.onrender.com'],
   },
   server: {
     host: true,
