@@ -1,10 +1,20 @@
 import axios from 'axios';
+import { API_BASE_URL } from './config';
 
 const RPG_API = axios.create({
-  baseURL: 'http://localhost:8000/api/rpg/',
+  baseURL: `${API_BASE_URL}/api/rpg/`,
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// Add request interceptor to include auth token
+RPG_API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+  return config;
 });
 
 export const initializeGame = async () => {
