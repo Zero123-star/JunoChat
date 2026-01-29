@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { openrouter_chat,getChatMessages, storeMessage} from '@/api';
 import { Button } from '@/components/Button';
+import { API_BASE_URL } from '@/config';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -49,7 +50,7 @@ const ChatPage: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://localhost:8000/api/characters/${characterId}/`);
+        const response = await fetch(`${API_BASE_URL}/api/characters/${characterId}/`);
         if (!response.ok) {
           throw new Error('Failed to fetch character data');
         }
@@ -92,33 +93,62 @@ const ChatPage: React.FC = () => {
     if (input.trim() === '') return;
     
     const userMessage: Message = { role: 'user', content: input };
+    const currentInput = input; // Save input before clearing
     setMessages(prev => [...prev, userMessage]);
+    setInput(''); // Clear input immediately for better UX
+    setError(null); // Clear any previous errors
     
     try {
+      // Store user message (don't fail the whole operation if this fails)
       const userId = localStorage.getItem('user');
-      if (characterId && userId) {
-        await storeMessage(chatId, { role: 'user', content: input, id: parseInt(userId) });
+      if (chatId && userId) {
+        try {
+          await storeMessage(chatId, { role: 'user', content: currentInput, id: parseInt(userId) });
+        } catch (storeErr) {
+          console.warn("Failed to store user message:", storeErr);
+        }
       }
       
+      console.log("Calling openrouter_chat with characterId:", characterId);
       const response = await openrouter_chat([...messages, userMessage], characterId);
-      const botReply = response.choices[0].message.content;
-      const botMessage: Message = { role: 'assistant', content: botReply };
+      console.log("OpenRouter response:", response);
       
-      const charId = characterId ? parseInt(characterId) : 0;
-      if (charId) {
-        await storeMessage(chatId, { role: 'assistant', content: botReply, id: charId });
+      // Check if response has the expected structure
+      if (response.error) {
+        throw new Error(response.error);
       }
+      
+      const botReply = response.choices?.[0]?.message?.content;
+      if (!botReply) {
+        console.error("Unexpected response structure:", response);
+        throw new Error("Invalid response from AI");
+      }
+      
+      const botMessage: Message = { role: 'assistant', content: botReply };
       setMessages(prev => [...prev, botMessage]);
+      
+      // Store bot message (don't fail if this fails)
+      // Note: storeMessage expects numeric IDs - skip if chatId is not available
+      if (chatId && userId) {
+        try {
+          await storeMessage(chatId, { role: 'assistant', content: botReply, id: parseInt(userId) });
+        } catch (storeErr) {
+          console.warn("Failed to store bot message:", storeErr);
+        }
+      }
     } catch (error: unknown) {
-      console.error("Error:", error);
+      console.error("Chat error:", error);
       // Check if it's an OpenRouter API key issue
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { status?: number; data?: { error?: string } } };
+        console.error("Axios error details:", axiosError.response);
         if (axiosError.response?.status === 401 && axiosError.response?.data?.error?.includes('OpenRouter')) {
           setError("OpenRouter API key is not configured. Please contact your administrator to add the API key.");
         } else {
           setError("Failed to send message. Please try again.");
         }
+      } else if (error instanceof Error) {
+        setError(error.message);
       } else {
         setError("Failed to send message. Please try again.");
       }

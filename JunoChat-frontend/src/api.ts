@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { Character } from '@/types/character'; // Importă tipul dintr-un singur loc
+import { API_BASE_URL } from './config';
 
-// Configurarea URL-ului de bază al API-ului
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: `${API_BASE_URL}/api/`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -87,7 +87,10 @@ export const fetchCharacterChat = async (characterId: string) => {
 //Use this for openrouter
 export const openrouter_chat = async (messages: {role: string; content: string}[],id: string | undefined) => {
   console.log("Reply from frontend apy:",messages,id);
-  const m={messages,id};
+  // Include API key from localStorage
+  const apiKey = localStorage.getItem('openrouter_api_key') || '';
+  const model = localStorage.getItem('selected_model') || 'google/gemini-2.0-flash-001';
+  const m = { messages, id, api_key: apiKey, model: model };
   const response = await API.post('chat/openrouter_chat/', m);
   return response.data;
 }

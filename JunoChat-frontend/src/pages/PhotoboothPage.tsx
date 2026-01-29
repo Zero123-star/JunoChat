@@ -186,7 +186,7 @@ const PhotoboothPage: React.FC = () => {
       <div 
         className="fixed inset-0 z-0 opacity-20"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80)',
+          backgroundImage: 'url(https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           filter: 'blur(2px)',

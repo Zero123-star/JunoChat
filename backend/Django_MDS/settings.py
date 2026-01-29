@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os 
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +23,13 @@ os.makedirs(LOGS_DIR, exist_ok=True)
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-raqb@^v#q%&uapir=m4@ne(+_e^6)_k196(3f4l=@haic(#2++'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-raqb@^v#q%&uapir=m4@ne(+_e^6)_k196(3f4l=@haic(#2++')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1', '0.0.0.0'] ####For debugging
+# Get allowed hosts from environment or use defaults
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'testserver,localhost,127.0.0.1,0.0.0.0').split(',')
 
 #ADMINS = [
 #      ('Brain', 'lightbrain2018@gmail.com'),
@@ -43,12 +45,24 @@ EMAIL_HOST_PASSWORD = 'egtmnmsaxuwntjqp'
 DEFAULT_FROM_EMAIL = 'Da-Boss <djangonuts232@gmail.com>'
 SITE_URL = 'http://localhost:8000'
 
+# CORS origins - add production URL from environment
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Dacă folosești Create React App
+    "http://localhost:3000",  # Create React App
     "http://localhost:5173", 
-    "http://localhost:5174", # Dacă folosești Vite
-    "http://localhost:4173", # Vite preview mode
+    "http://localhost:5174",  # Vite dev
+    "http://localhost:4173",  # Vite preview mode
 ]
+
+# Add production frontend URL if set
+FRONTEND_URL = os.environ.get('FRONTEND_URL')
+if FRONTEND_URL:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+
+# Allow all Render subdomains in production
+if not DEBUG:
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^https://.*\.onrender\.com$",
+    ]
 
 # Allow custom headers for CORS
 CORS_ALLOW_HEADERS = [
@@ -183,6 +197,7 @@ MESSAGE_TAGS = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -219,19 +234,30 @@ WSGI_APPLICATION = 'Django_MDS.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'OPTIONS': {
-                'options': '-c search_path=django'
-        },
-        'NAME': 'Django_MDS',
-        'USER': 'postgres',
-        'PASSWORD': 'mongo',
-        'HOST': 'localhost',
-        'PORT': '5432',
+# Database configuration - use DATABASE_URL in production (Render)
+if os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Local development database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'OPTIONS': {
+                    'options': '-c search_path=django'
+            },
+            'NAME': 'Django_MDS',
+            'USER': 'postgres',
+            'PASSWORD': 'mongo',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
@@ -274,6 +300,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Whitenoise for serving static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

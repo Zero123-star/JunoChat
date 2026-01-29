@@ -95,6 +95,7 @@ const APIConfigPage = () => {
         // Save the configuration locally to persist between sessions
         localStorage.setItem('openrouter_configured', 'true');
         localStorage.setItem('selected_model', selectedModel);
+        localStorage.setItem('openrouter_api_key', apiKey);  // Save API key for chat requests
       } else {
         toast.error('Connection failed', {
           description: result.message || 'Could not connect',
