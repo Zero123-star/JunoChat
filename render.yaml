@@ -9,7 +9,6 @@ services:
   - type: web
     name: junochat-api
     runtime: python
-    plan: free
     rootDir: backend
     buildCommand: |
       pip install -r requirements.txt
@@ -36,7 +35,6 @@ services:
   - type: web
     name: junochat-frontend
     runtime: static
-    plan: free
     rootDir: JunoChat-frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
