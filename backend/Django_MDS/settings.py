@@ -31,6 +31,11 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 # Get allowed hosts from environment or use defaults
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'testserver,localhost,127.0.0.1,0.0.0.0,.railway.app,.up.railway.app').split(',')
 
+# Trust proxy headers for HTTPS on Railway and other reverse proxies
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
 #ADMINS = [
 #      ('Brain', 'lightbrain2018@gmail.com'),
 #      ('Mastermind', 'djangonuts232@gmail.com'),
