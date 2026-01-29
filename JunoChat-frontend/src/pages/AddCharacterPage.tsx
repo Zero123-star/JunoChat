@@ -66,10 +66,13 @@ const AddCharacterPage: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Store file for later upload
+      setFormData(prev => ({ ...prev, avatar: file as any }));
+      
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
-        setFormData(prev => ({ ...prev, avatar: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }

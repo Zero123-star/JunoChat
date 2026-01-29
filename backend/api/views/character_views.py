@@ -62,22 +62,26 @@ class CharacterViewSet(viewsets.ModelViewSet):
     def create_character(self,request):
             print(123)
             try:
-                # Parse the request body
+                # Handle both JSON (nested formData) and multipart/form-data
                 data = request.data
                 print(123)
-                # Extract formData and creator_id from the request
-                form_data = data.get('formData')
+                
+                # Check if data is nested (formData object) or flat (multipart)
+                form_data = data.get('formData') if 'formData' in data else data
                 creator_id = data.get('creator_id')
                 print(form_data)
+                
                 # Validate creator_id and check if user exists
                 if not creator_id:
                     return JsonResponse({'error': 'Creator ID is required'}, status=400)
                 print(creator_id)
-                # Extract character fields from formData
+                
+                # Extract character fields
                 name = form_data.get('name')
                 description = form_data.get('description')
-                avatar_data = form_data.get('avatar', None)
+                avatar_file = form_data.get('avatar', None)
                 tags = form_data.get('tags', '')
+                source = form_data.get('source', 'Created')
                 color = form_data.get('color', None)
                 
                 # Validate required fields
@@ -88,24 +92,31 @@ class CharacterViewSet(viewsets.ModelViewSet):
                 # Create new character
                 character = Character.objects.create(
                     name=name,
-                    source="Created",
+                    source=source,
                     description=description,
                     creator=given_creator_id
                 )
                 
-                # Handle avatar if provided (base64 string)
-                if avatar_data and avatar_data.startswith('data:image'):
-                    try:
-                        # Extract base64 data
-                        format, imgstr = avatar_data.split(';base64,')
-                        ext = format.split('/')[-1]  # Get file extension
-                        
-                        # Decode base64 and create ContentFile
-                        data = ContentFile(base64.b64decode(imgstr), name=f'{character.id}.{ext}')
-                        character.avatar.save(f'{character.id}.{ext}', data, save=True)
-                    except Exception as e:
-                        print(f"Error saving avatar: {str(e)}")
-                        # Continue without avatar if there's an error
+                # Handle avatar - could be File upload or base64 string
+                if avatar_file:
+                    if isinstance(avatar_file, str):
+                        # Handle base64 string
+                        if avatar_file.startswith('data:image'):
+                            try:
+                                format, imgstr = avatar_file.split(';base64,')
+                                ext = format.split('/')[-1]
+                                from django.core.files.base import ContentFile
+                                import base64
+                                data_bytes = ContentFile(base64.b64decode(imgstr), name=f'{character.id}.{ext}')
+                                character.avatar.save(f'{character.id}.{ext}', data_bytes, save=True)
+                            except Exception as e:
+                                print(f"Error saving base64 avatar: {str(e)}")
+                    else:
+                        # Handle file upload (multipart/form-data)
+                        try:
+                            character.avatar.save(avatar_file.name, avatar_file, save=True)
+                        except Exception as e:
+                            print(f"Error saving uploaded avatar: {str(e)}")
                 
                 print("Character created successfully")
                 # Return the created character as JSON
@@ -115,8 +126,6 @@ class CharacterViewSet(viewsets.ModelViewSet):
                     'message': 'Character created successfully'
                 }, status=201)
             
-            except json.JSONDecodeError:
-                return JsonResponse({'error': 'Invalid JSON'}, status=400)
             except Exception as e:
                 return JsonResponse({'error': str(e)}, status=500)
 

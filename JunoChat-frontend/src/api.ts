@@ -139,9 +139,28 @@ export const createCharacter = async (data: {
   
   console.log("Front end",data);
   try{
-  const response = await API.post<Character>('characters/create_character/', data);
-  console.log(response.data);
-  return response.data;
+    // Create FormData for multipart upload (handles both files and text)
+    const uploadData = new FormData();
+    uploadData.append('creator_id', String(data.creator_id));
+    uploadData.append('name', data.formData.name);
+    uploadData.append('description', data.formData.description);
+    uploadData.append('source', data.formData.source);
+    uploadData.append('tags', data.formData.tags);
+    
+    // Handle avatar - could be File or string
+    if (data.formData.avatar instanceof File) {
+      uploadData.append('avatar', data.formData.avatar);
+    } else if (typeof data.formData.avatar === 'string' && data.formData.avatar) {
+      uploadData.append('avatar', data.formData.avatar);
+    }
+    
+    const response = await API.post<Character>('characters/create_character/', uploadData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+    console.log(response.data);
+    return response.data;
   }
   catch(error)
   {
