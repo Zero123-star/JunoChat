@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build": "vite build",
-    "serve": "vite preview",
+    "serve": "vite preview --host 0.0.0.0 --port ${PORT:-4173}",
+    "start": "vite preview --host 0.0.0.0 --port ${PORT:-4173}",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
   },
