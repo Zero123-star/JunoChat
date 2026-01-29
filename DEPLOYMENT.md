@@ -1,126 +1,283 @@
 # JunoChat Deployment Guide
 
-## Quick Deploy to Render (Free)
+## Production Deployment on Railway
 
-### Option 1: One-Click Deploy (Blueprint)
+JunoChat is currently deployed on **Railway.app** - a free, credit-card-free deployment platform.
 
-1. Push your code to GitHub
-2. Go to [render.com](https://render.com) and sign up/login
-3. Click **"New"** → **"Blueprint"**
-4. Connect your GitHub repo
-5. Render will detect the `render.yaml` and create:
-   - PostgreSQL database (free for 90 days)
-   - Backend API service (free)
-   - Frontend static site (free forever)
+### Live Application
 
-### Option 2: Manual Setup
+🚀 **Production URL**: https://proiect-inginerie-software-juno-production.up.railway.app
 
-#### 1. Create PostgreSQL Database
-- Go to Render Dashboard → **New** → **PostgreSQL**
-- Name: `junochat-db`
-- Plan: **Free**
-- Copy the **Internal Database URL**
+### Architecture
 
-#### 2. Deploy Backend
-- Go to **New** → **Web Service**
-- Connect your GitHub repo
-- Settings:
-  - **Name**: `junochat-api`
-  - **Root Directory**: `backend`
-  - **Runtime**: Python 3
-  - **Build Command**: `./build.sh`
-  - **Start Command**: `gunicorn Django_MDS.wsgi:application`
-- Environment Variables:
-  ```
-  DATABASE_URL=<paste internal database URL>
-  DJANGO_SECRET_KEY=<generate a random string>
-  DJANGO_DEBUG=False
-  DJANGO_ALLOWED_HOSTS=.onrender.com,localhost
-  FRONTEND_URL=https://junochat-frontend.onrender.com
-  ```
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Railway Platform                      │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌──────────────────┐         ┌──────────────────┐     │
+│  │   Backend        │         │   Frontend       │     │
+│  │   (Gunicorn)     │◄────────┤   (Vite)         │     │
+│  │   Port: 8000     │         │   Static Site    │     │
+│  │                  │         │                  │     │
+│  │  Django 5.1.7    │         │  React 18        │     │
+│  │  Python 3.10     │         │  Vite 6.3.4      │     │
+│  └────────┬─────────┘         └──────────────────┘     │
+│           │                                             │
+│           ▼                                             │
+│  ┌──────────────────────────────────────────┐          │
+│  │  PostgreSQL Database (Railway Managed)   │          │
+│  │  - Characters, Users, Messages           │          │
+│  │  - Profile Pictures & Avatars (media/)   │          │
+│  └──────────────────────────────────────────┘          │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
 
-#### 3. Deploy Frontend
-- Go to **New** → **Static Site**
-- Connect your GitHub repo
-- Settings:
-  - **Name**: `junochat-frontend`
-  - **Root Directory**: `JunoChat-frontend`
-  - **Build Command**: `npm install && npm run build`
-  - **Publish Directory**: `dist`
-- Environment Variables:
-  ```
-  VITE_API_URL=https://junochat-api.onrender.com
-  ```
+### Deployment Pipeline
+
+#### 1. **Backend Deployment (Django)**
+
+**Build Step** (`railway.json`):
+```bash
+pip install -r requirements.txt
+python manage.py collectstatic --noinput
+```
+
+**Deploy Step**:
+```bash
+python manage.py migrate --noinput
+python manage.py loaddata characters.json
+gunicorn Django_MDS.wsgi:application --bind 0.0.0.0:8000
+```
+
+**Environment Variables**:
+```
+DATABASE_URL=postgresql://...  # Railway managed PostgreSQL
+DJANGO_SECRET_KEY=<secret>
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=.railway.app,.up.railway.app
+FRONTEND_URL=https://proiect-inginerie-software-juno-production.up.railway.app
+VITE_API_URL=https://proiect-inginerie-software-juno-production.up.railway.app
+SITE_URL=https://proiect-inginerie-software-juno-production.up.railway.app
+```
+
+**Key Features**:
+- ✅ WhiteNoise middleware for static file serving
+- ✅ CORS configured for Railway domains
+- ✅ Proxy headers configured for HTTPS
+- ✅ Media files served via Django (avatars, profile pictures)
+- ✅ Token-based authentication (DRF)
+- ✅ Automatic database migrations on deploy
+
+#### 2. **Frontend Deployment (React/Vite)**
+
+**Build Command**:
+```bash
+npm install
+npm run build  # Outputs to dist/
+```
+
+**Serve**: Static hosting via Railway
+
+**Environment Variables**:
+```
+VITE_API_URL=https://proiect-inginerie-software-juno-production.up.railway.app
+```
+
+**Features**:
+- ✅ Dynamic API_BASE_URL for development/production switching
+- ✅ Vite preview mode with allowed hosts
+- ✅ Token-based auth stored in localStorage
+- ✅ CORS enabled for Railway API domains
 
 ---
 
-## Local Development
+## Local Development Setup
 
-### Backend
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- PostgreSQL 12+ (local)
+
+### Backend Setup
+
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+python3.10 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
+
+# Create database (local)
+createdb Django_MDS
+export DATABASE_URL="postgresql://postgres:mongo@localhost:5432/Django_MDS"
+
+# Run migrations
 python manage.py migrate
-python manage.py runserver
+python manage.py loaddata characters.json
+
+# Start dev server
+python manage.py runserver 0.0.0.0:8000
 ```
 
-### Frontend
+### Frontend Setup
+
 ```bash
 cd JunoChat-frontend
 npm install
-npm run dev
+npm run dev  # Vite dev server on :5173
+```
+
+**API Configuration** (`src/config.ts`):
+```typescript
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 ```
 
 ---
 
-## Environment Variables
+## Database Seeding
 
-### Backend (Django)
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | Local PostgreSQL |
-| `DJANGO_SECRET_KEY` | Django secret key | Insecure default |
-| `DJANGO_DEBUG` | Enable debug mode | `True` |
-| `DJANGO_ALLOWED_HOSTS` | Comma-separated hosts | `localhost,127.0.0.1` |
-| `FRONTEND_URL` | Frontend URL for CORS | - |
+Characters are automatically loaded on deploy via:
+1. **Source**: `backend/characters.json` (Git tracked)
+2. **Trigger**: `railway.json` deploy step
+3. **Command**: `python manage.py loaddata characters.json`
 
-### Frontend (Vite)
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `http://localhost:8000` |
+To update characters:
+```bash
+cd backend
+python manage.py dumpdata api.Character > characters.json
+git add characters.json && git commit -m "Update characters"
+git push
+```
 
 ---
 
-## Architecture
+## Media Files & Asset Serving
 
+### Image Storage
+- **Location**: `backend/media/`
+- **Tracked in Git**: ✅ (removed from `.gitignore`)
+- **Serving**: Django view-based serving (works in production)
+
+### URL Pattern
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Frontend      │────▶│   Backend API   │────▶│   PostgreSQL    │
-│  (React/Vite)   │     │   (Django)      │     │   Database      │
-│  Static Site    │     │   Web Service   │     │                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                               │
-                               ▼
-                        ┌─────────────────┐
-                        │  OpenRouter API │
-                        │  (AI Responses) │
-                        └─────────────────┘
+/media/avatars/{filename}      # Character avatars
+/media/pfp/{filename}          # User profile pictures
+```
+
+### API Response Example
+Characters API returns full absolute URLs:
+```json
+{
+  "id": "...",
+  "name": "Naruto",
+  "avatar": "https://proiect-inginerie-software-juno-production.up.railway.app/media/avatars/naruto.webp",
+  ...
+}
 ```
 
 ---
 
 ## Troubleshooting
 
-### Backend not starting
-- Check `DATABASE_URL` is correct
-- Ensure `build.sh` has execute permissions: `chmod +x build.sh`
+### Images Not Loading
 
-### CORS errors
-- Add your frontend URL to `FRONTEND_URL` env var
-- Check `DJANGO_ALLOWED_HOSTS` includes your domain
+1. **Check API returns full URLs**:
+   ```bash
+   curl https://api.railway.app/api/characters/
+   # Should return: "avatar": "https://...railway.app/media/..."
+   ```
 
-### Frontend can't connect to backend
-- Verify `VITE_API_URL` points to your backend URL
-- Rebuild frontend after changing env vars
+2. **Verify media files exist**:
+   ```bash
+   ls -la backend/media/avatars/
+   ```
+
+3. **Test media endpoint**:
+   ```bash
+   curl -I https://api.railway.app/media/avatars/naruto.webp
+   # Should return HTTP 200
+   ```
+
+### Database Connection Issues
+
+1. **Check DATABASE_URL**:
+   ```bash
+   echo $DATABASE_URL
+   ```
+
+2. **Test connection**:
+   ```bash
+   psql $DATABASE_URL -c "SELECT 1;"
+   ```
+
+### CORS Errors
+
+1. **Add domain to ALLOWED_HOSTS** in `settings.py`
+2. **Add domain to CORS_ALLOWED_ORIGINS** in `settings.py`
+3. **Redeploy backend**
+
+---
+
+## Monitoring
+
+### Railway Dashboard
+- [Logs](https://railway.app) - Real-time backend logs
+- [Metrics](https://railway.app) - CPU, memory, request count
+- [Deployments](https://railway.app) - Deploy history
+
+### Manual Health Checks
+
+```bash
+# Backend health
+curl https://api.railway.app/api/characters/
+
+# Frontend accessible
+curl https://proiect-inginerie-software-juno-production.up.railway.app
+
+# Database migration status
+# (Check Railway logs for "Applying..." messages)
+```
+
+---
+
+## Cost & Limits
+
+**Railway Free Plan**:
+- ✅ $5/month free tier
+- ✅ PostgreSQL (managed)
+- ✅ Up to 100GB/month bandwidth
+- ✅ No credit card required
+
+---
+
+## Git Workflow
+
+### Deploy to Production
+```bash
+git add .
+git commit -m "Feature/fix description"
+git push origin photobooth
+git push unibuc photobooth  # Push to both remotes
+```
+
+Railway automatically detects push and redeploys within 2-3 minutes.
+
+### Branches
+- `photobooth` - Main deployment branch (Railway)
+- `develop` - Feature development
+- Feature branches - Individual features
+
+---
+
+## Testing in Production
+
+### Checklist
+- [ ] Login/signup works
+- [ ] Characters load with images
+- [ ] Can create character
+- [ ] Can chat with character
+- [ ] Profile pictures display
+- [ ] Search functionality works
+- [ ] Follow/unfollow works
+- [ ] Favorite characters works
