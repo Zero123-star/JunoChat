@@ -182,15 +182,75 @@
 
 ---
 
-##  Documentation
+##  📚 Documentation
 
-- [Architecture Diagrams](DIAGRAM.md) - UML and system architecture
+### For University Capstone Evaluation
+
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** ⭐ START HERE
+  - Live application URL: https://proiect-inginerie-software-juno-production.up.railway.app
+  - Railway deployment guide with cost breakdown
+  - Local development setup instructions
+  - Production troubleshooting
+
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** 📊 REQUIRED
+  - C4 System/Container/Component diagrams
+  - Data flow diagrams (character display, authentication)
+  - Technology stack details
+  - Non-functional characteristics
+
+- **[SECURITY.md](SECURITY.md)** 🔒
+  - Authentication & authorization implementation
+  - OWASP Top 10 coverage
+  - Data protection mechanisms
+  - API security details
+
+- **[QA_TESTING_PLAN.md](QA_TESTING_PLAN.md)** ✅
+  - Test coverage matrix
+  - Production validation checklist
+  - Manual smoke testing procedures
+  - CI/CD workflow
+
+### General Documentation
+
 - [Feature Specifications](FEATURES.md) - Detailed feature descriptions
 - [User Stories](USER_STORIES.md) - User scenarios and acceptance criteria
-- [Development Guide](DEVELOPMENT.md) - Setup and contribution guidelines
+- [Backlog](BACKLOG.md) - Development roadmap
 
 ---
 
-**Last Updated**: November 2, 2025  
+## 🚀 Quick Start for Evaluation
+
+1. **View Live Application**: https://proiect-inginerie-software-juno-production.up.railway.app
+   - Register new account with any email
+   - Browse characters with avatars loaded
+   - Chat with any character via OpenRouter API
+   - Create your own character
+
+2. **Review Architecture**: See [ARCHITECTURE.md](ARCHITECTURE.md)
+   - C1: System Context Diagram
+   - C2: Container Architecture (Frontend/Backend/DB)
+   - C3: Component Diagram
+   - Data Flow Diagrams
+
+3. **Understand Deployment**: See [DEPLOYMENT.md](DEPLOYMENT.md)
+   - Two services on Railway (backend + frontend)
+   - Automatic CI/CD pipeline
+   - Media file serving
+   - Database migrations
+
+4. **Security Assessment**: See [SECURITY.md](SECURITY.md)
+   - Token-based authentication
+   - HTTPS/CORS configuration
+   - Password hashing (PBKDF2)
+   - API key management
+
+5. **Testing Details**: See [QA_TESTING_PLAN.md](QA_TESTING_PLAN.md)
+   - Production validation checklist
+   - Manual test procedures
+   - Performance baselines
+
+---
+
+**Last Updated**: 2024  
 **Version**: 1.0.0  
-**Status**: Active Development 
+**Status**: ✅ Production Ready for Evaluation 
