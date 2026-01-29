@@ -398,12 +398,12 @@ npm update             # Update packages to latest safe versions
 
 | Feature | Provided by Railway | Usage |
 |---------|-------------------|-------|
-| HTTPS/TLS | ✅ Automatic | All traffic encrypted |
-| DDoS Protection | ✅ Enterprise tier | Protection against volumetric attacks |
-| Database Isolation | ✅ Managed PostgreSQL | Private network, firewalled |
-| Automatic Backups | ✅ Daily | Database snapshots |
-| Zero-downtime Deploys | ✅ Built-in | New version before old terminates |
-| Environment Encryption | ✅ Encrypted at rest | Env vars encrypted in dashboard |
+| HTTPS/TLS | Automatic | All traffic encrypted |
+| DDoS Protection | Enterprise tier | Protection against volumetric attacks |
+| Database Isolation | Managed PostgreSQL | Private network, firewalled |
+| Automatic Backups | Daily | Database snapshots |
+| Zero-downtime Deploys | Built-in | New version before old terminates |
+| Environment Encryption | Encrypted at rest | Env vars encrypted in dashboard |
 
 ### Firewall Rules (Future Enhancement)
 
@@ -446,11 +446,11 @@ def serve_media(request, path):
 
 ### Prevention:
 
-- ✅ Never commit secrets to Git (use `.gitignore`)
-- ✅ Use branch protection rules (require review before merge)
-- ✅ Enable GitHub security scanning (Dependabot alerts)
-- ✅ Regularly rotate API keys (monthly)
-- ✅ Monitor Railway logs for failed auth attempts
+- Never commit secrets to Git (use `.gitignore`)
+- Use branch protection rules (require review before merge)
+- Enable GitHub security scanning (Dependabot alerts)
+- Regularly rotate API keys (monthly)
+- Monitor Railway logs for failed auth attempts
 
 ---
 
@@ -460,24 +460,24 @@ def serve_media(request, path):
 
 | Vulnerability | Status | Implementation |
 |---------------|--------|-----------------|
-| A1: Broken Authentication | ✅ Mitigated | Token auth, HTTPS, secure password hashing |
-| A2: Broken Authorization | ✅ Mitigated | Permission classes, object-level checks |
-| A3: Injection | ✅ Mitigated | Django ORM parameterized queries |
-| A4: Insecure Design | ✅ Considered | Security by default in Django |
-| A5: Security Misconfiguration | ✅ Mitigated | Environment-based config, no DEBUG=True |
-| A6: Vulnerable Components | ✅ Monitored | pip/npm audit, Dependabot alerts |
-| A7: Identification Failures | ✅ Mitigated | Token-based, HTTPS, secure storage |
-| A8: Data Integrity Failures | ✅ Mitigated | CSRF protection, signed sessions |
-| A9: Logging Failures | ⚠️ Partial | Logging configured, could add more detail |
-| A10: SSRF | ✅ Safe | Only outbound to OpenRouter, no user input in URLs |
+| A1: Broken Authentication | Mitigated | Token auth, HTTPS, secure password hashing |
+| A2: Broken Authorization | Mitigated | Permission classes, object-level checks |
+| A3: Injection | Mitigated | Django ORM parameterized queries |
+| A4: Insecure Design | Considered | Security by default in Django |
+| A5: Security Misconfiguration | Mitigated | Environment-based config, no DEBUG=True |
+| A6: Vulnerable Components | Monitored | pip/npm audit, Dependabot alerts |
+| A7: Identification Failures | Mitigated | Token-based, HTTPS, secure storage |
+| A8: Data Integrity Failures | Mitigated | CSRF protection, signed sessions |
+| A9: Logging Failures | Partial | Logging configured, could add more detail |
+| A10: SSRF | Safe | Only outbound to OpenRouter, no user input in URLs |
 
 ### GDPR Considerations
 
-- ✅ User data stored securely
-- ✅ HTTPS protects personal data in transit
-- ✅ Password hashing (can't recover from DB)
-- ⚠️ No data deletion API yet (future: implement user delete account)
-- ⚠️ No consent management (future: add privacy policy + consent form)
+- User data stored securely
+- HTTPS protects personal data in transit
+- Password hashing (can't recover from DB)
+- No data deletion API yet (future: implement user delete account)
+- No consent management (future: add privacy policy + consent form)
 
 ---
 
@@ -496,27 +496,27 @@ def serve_media(request, path):
 
 ## 13. Teacher Evaluation Checklist
 
-✅ **Authentication Security**
+**Authentication Security**
 - Token-based authentication implemented
 - Passwords hashed (PBKDF2)
 - HTTPS enforced
 
-✅ **Authorization**
+**Authorization**
 - Users can only modify own characters
 - Public read-only access to character list
 - Permission classes in code
 
-✅ **Data Protection**
+**Data Protection**
 - No SQL injection vulnerabilities
 - CORS properly configured
 - API keys in environment variables
 
-✅ **API Security**
+**API Security**
 - HTTPS encryption
 - Request validation
 - Error handling (no sensitive data leaks)
 
-✅ **Third-party Integration**
+**Third-party Integration**
 - OpenRouter API secure (token-based)
 - Only necessary data shared
 - Error handling for external API failures
@@ -540,7 +540,7 @@ def serve_media(request, path):
 
 JunoChat implements security best practices across authentication, authorization, data protection, and API design. The application is production-ready with current security measures sufficient for the capstone evaluation. Future enhancements are documented for post-deployment hardening.
 
-**Security Status:** ✅ **APPROVED FOR PRODUCTION**
+**Security Status:** **APPROVED FOR PRODUCTION**
 
 ---
 

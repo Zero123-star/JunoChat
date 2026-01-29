@@ -6,7 +6,7 @@ JunoChat is currently deployed on **Railway.app** - a free, credit-card-free dep
 
 ### Live Application
 
-🚀 **Production URL**: https://proiect-inginerie-software-juno-production.up.railway.app
+**Production URL**: https://proiect-inginerie-software-juno-production.up.railway.app
 
 ### Architecture
 
@@ -63,12 +63,12 @@ SITE_URL=https://proiect-inginerie-software-juno-production.up.railway.app
 ```
 
 **Key Features**:
-- ✅ WhiteNoise middleware for static file serving
-- ✅ CORS configured for Railway domains
-- ✅ Proxy headers configured for HTTPS
-- ✅ Media files served via Django (avatars, profile pictures)
-- ✅ Token-based authentication (DRF)
-- ✅ Automatic database migrations on deploy
+- WhiteNoise middleware for static file serving
+- CORS configured for Railway domains
+- Proxy headers configured for HTTPS
+- Media files served via Django (avatars, profile pictures)
+- Token-based authentication (DRF)
+- Automatic database migrations on deploy
 
 #### 2. **Frontend Deployment (React/Vite)**
 
@@ -86,10 +86,10 @@ VITE_API_URL=https://proiect-inginerie-software-juno-production.up.railway.app
 ```
 
 **Features**:
-- ✅ Dynamic API_BASE_URL for development/production switching
-- ✅ Vite preview mode with allowed hosts
-- ✅ Token-based auth stored in localStorage
-- ✅ CORS enabled for Railway API domains
+- Dynamic API_BASE_URL for development/production switching
+- Vite preview mode with allowed hosts
+- Token-based auth stored in localStorage
+- CORS enabled for Railway API domains
 
 ---
 
@@ -156,7 +156,7 @@ git push
 
 ### Image Storage
 - **Location**: `backend/media/`
-- **Tracked in Git**: ✅ (removed from `.gitignore`)
+- **Tracked in Git**: (removed from `.gitignore`)
 - **Serving**: Django view-based serving (works in production)
 
 ### URL Pattern
@@ -244,10 +244,10 @@ curl https://proiect-inginerie-software-juno-production.up.railway.app
 ## Cost & Limits
 
 **Railway Free Plan**:
-- ✅ $5/month free tier
-- ✅ PostgreSQL (managed)
-- ✅ Up to 100GB/month bandwidth
-- ✅ No credit card required
+- $5/month free tier
+- PostgreSQL (managed)
+- Up to 100GB/month bandwidth
+- No credit card required
 
 ---
 

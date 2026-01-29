@@ -182,33 +182,39 @@
 
 ---
 
-##  📚 Documentation
+## Documentation
 
 ### For University Capstone Evaluation
 
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** ⭐ START HERE
+- **[Deployment.md](Deployment.md)** - START HERE
   - Live application URL: https://proiect-inginerie-software-juno-production.up.railway.app
   - Railway deployment guide with cost breakdown
   - Local development setup instructions
   - Production troubleshooting
 
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** 📊 REQUIRED
+- **[Architecture.md](Architecture.md)** - REQUIRED
   - C4 System/Container/Component diagrams
   - Data flow diagrams (character display, authentication)
   - Technology stack details
   - Non-functional characteristics
 
-- **[SECURITY.md](SECURITY.md)** 🔒
+- **[Security.md](Security.md)** - SECURITY DETAILS
   - Authentication & authorization implementation
   - OWASP Top 10 coverage
   - Data protection mechanisms
   - API security details
 
-- **[QA_TESTING_PLAN.md](QA_TESTING_PLAN.md)** ✅
+- **[Testing.md](Testing.md)** - TESTING & QA
   - Test coverage matrix
   - Production validation checklist
   - Manual smoke testing procedures
   - CI/CD workflow
+
+- **[Demo Video](https://drive.google.com/file/d/1ACU5ZaR8D4o54at9JxEwARJfdpTKmDbQ/view?usp=sharing)** - LIVE DEMO
+  - Full feature walkthrough
+  - User registration and authentication
+  - Character chat and creation
+  - Image display and media serving
 
 ### General Documentation
 
@@ -218,7 +224,7 @@
 
 ---
 
-## 🚀 Quick Start for Evaluation
+## Quick Start for Evaluation
 
 1. **View Live Application**: https://proiect-inginerie-software-juno-production.up.railway.app
    - Register new account with any email
@@ -226,31 +232,34 @@
    - Chat with any character via OpenRouter API
    - Create your own character
 
-2. **Review Architecture**: See [ARCHITECTURE.md](ARCHITECTURE.md)
+2. **Review Architecture**: See [Architecture.md](Architecture.md)
    - C1: System Context Diagram
    - C2: Container Architecture (Frontend/Backend/DB)
    - C3: Component Diagram
    - Data Flow Diagrams
 
-3. **Understand Deployment**: See [DEPLOYMENT.md](DEPLOYMENT.md)
+3. **Understand Deployment**: See [Deployment.md](Deployment.md)
    - Two services on Railway (backend + frontend)
    - Automatic CI/CD pipeline
    - Media file serving
    - Database migrations
 
-4. **Security Assessment**: See [SECURITY.md](SECURITY.md)
+4. **Security Assessment**: See [Security.md](Security.md)
    - Token-based authentication
    - HTTPS/CORS configuration
    - Password hashing (PBKDF2)
    - API key management
 
-5. **Testing Details**: See [QA_TESTING_PLAN.md](QA_TESTING_PLAN.md)
+5. **Testing Details**: See [Testing.md](Testing.md)
    - Production validation checklist
    - Manual test procedures
    - Performance baselines
 
+6. **Watch Demo**: See [Demo Video](https://drive.google.com/file/d/1ACU5ZaR8D4o54at9JxEwARJfdpTKmDbQ/view?usp=sharing)
+   - Full feature walkthrough recorded on production
+
 ---
 
-**Last Updated**: 2024  
-**Version**: 1.0.0  
-**Status**: ✅ Production Ready for Evaluation 
+**Last Updated**: 2024
+**Version**: 1.0.0
+**Status**: Production Ready for Evaluation 
