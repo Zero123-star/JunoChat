@@ -292,6 +292,8 @@ const GroupChatPage: React.FC = () => {
                     >
                       {message.content}
                     </div>
+                  </div>
+
                   {/* User Avatar */}
                   {message.role === 'user' && message.sender_user_profile?.profile_picture && (
                     <div className="ml-2 flex-shrink-0">
