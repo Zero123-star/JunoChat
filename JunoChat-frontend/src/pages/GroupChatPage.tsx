@@ -12,8 +12,11 @@ interface Message {
   content: string;
   sender_name?: string;
   sender_id?: string;
-  sender_user_profile?: { username: string; profile_picture?: string };
-  sender_bot_avatar?: { name: string; avatar?: string };
+  sender_user?: number;
+  sender_bot?: number;
+  sender_type?: 'user' | 'bot';
+  sender_user_profile?: { id: number; username: string; profile_picture?: string };
+  sender_bot_avatar?: { id: number; name: string; avatar?: string };
 }
 
 const GroupChatPage: React.FC = () => {
@@ -252,13 +255,13 @@ const GroupChatPage: React.FC = () => {
                   key={index}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} items-start group`}
                 >
-                  {/* Bot Avatar */}
-                  {message.role === 'assistant' && (
+                  {/* Bot Avatar - Only show if sender_type is 'bot' */}
+                  {message.sender_type === 'bot' && message.sender_bot && (
                     <div className="mr-2 flex-shrink-0">
                       {(() => {
-                        // Try to get avatar from message data first, then fallback to characters
-                        const avatarUrl = message.sender_bot_avatar?.avatar || botAvatars[message.sender_id || ''] || characters.find(c => c.id === message.sender_id)?.avatar;
-                        const name = message.sender_bot_avatar?.name || message.sender_name || characters.find(c => c.id === message.sender_id)?.name || 'Bot';
+                        // Use the full bot avatar data from the message
+                        const avatarUrl = message.sender_bot_avatar?.avatar;
+                        const name = message.sender_bot_avatar?.name || message.sender_name || 'Bot';
                         
                         return avatarUrl ? (
                           <img
@@ -294,8 +297,8 @@ const GroupChatPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* User Avatar */}
-                  {message.role === 'user' && message.sender_user_profile?.profile_picture && (
+                  {/* User Avatar - Only show if sender_type is 'user' */}
+                  {message.sender_type === 'user' && message.sender_user && message.sender_user_profile?.profile_picture && (
                     <div className="ml-2 flex-shrink-0">
                       <img
                         src={message.sender_user_profile.profile_picture}

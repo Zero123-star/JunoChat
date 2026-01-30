@@ -148,11 +148,20 @@ class GroupChatMessageSerializer(serializers.ModelSerializer):
     sender_username = serializers.SerializerMethodField()
     sender_user_profile = serializers.SerializerMethodField()
     sender_bot_avatar = serializers.SerializerMethodField()
+    sender_type = serializers.SerializerMethodField()  # 'user' or 'bot'
     
     class Meta:
         model = GroupChatMessage
-        fields = ['id', 'description', 'timestamp', 'group_chat', 'sender_user', 'sender_bot', 'number', 'sender_username', 'sender_user_profile', 'sender_bot_avatar']
-        read_only_fields = ['timestamp', 'number', 'sender_username', 'sender_user_profile', 'sender_bot_avatar']
+        fields = ['id', 'description', 'timestamp', 'group_chat', 'sender_user', 'sender_bot', 'number', 'sender_username', 'sender_user_profile', 'sender_bot_avatar', 'sender_type']
+        read_only_fields = ['timestamp', 'number', 'sender_username', 'sender_user_profile', 'sender_bot_avatar', 'sender_type']
+    
+    def get_sender_type(self, obj):
+        """Return whether sender is 'user' or 'bot'"""
+        if obj.sender_user:
+            return 'user'
+        elif obj.sender_bot:
+            return 'bot'
+        return None
     
     def get_sender_username(self, obj):
         if obj.sender_user:
@@ -165,14 +174,14 @@ class GroupChatMessageSerializer(serializers.ModelSerializer):
         """Return user profile picture if sender is a user"""
         if obj.sender_user:
             serializer = CustomUserSerializer(obj.sender_user, context=self.context)
-            return {'username': obj.sender_user.username, 'profile_picture': serializer.data['profile_picture']}
+            return {'id': obj.sender_user.id, 'username': obj.sender_user.username, 'profile_picture': serializer.data['profile_picture']}
         return None
     
     def get_sender_bot_avatar(self, obj):
         """Return bot avatar if sender is a character/bot"""
         if obj.sender_bot:
             serializer = CharacterSerializer(obj.sender_bot, context=self.context)
-            return {'name': obj.sender_bot.name, 'avatar': serializer.data['avatar']}
+            return {'id': obj.sender_bot.id, 'name': obj.sender_bot.name, 'avatar': serializer.data['avatar']}
         return None
 
 class GroupChatSerializer(serializers.ModelSerializer):
