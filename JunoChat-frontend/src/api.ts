@@ -306,11 +306,15 @@ export const sendGroupChatMessage = async (
     messages,
     other_bot_ids
   });
+  const apiKey = localStorage.getItem('openrouter_api_key') || '';
+  const model = localStorage.getItem('selected_model') || 'google/gemini-2.0-flash-001';
   const response = await API.post('chat/openrouter_chat/', {
     id: bot_id,
     messages,
     is_group_chat: true,
-    other_bot_ids
+    other_bot_ids,
+    api_key: apiKey,
+    model: model
   });
   return response.data;
 };
