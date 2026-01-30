@@ -12,6 +12,8 @@ interface Message {
   content: string;
   sender_name?: string;
   sender_id?: string;
+  sender_user_profile?: { username: string; profile_picture?: string };
+  sender_bot_avatar?: { name: string; avatar?: string };
 }
 
 const GroupChatPage: React.FC = () => {
@@ -22,6 +24,7 @@ const GroupChatPage: React.FC = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [botAvatars, setBotAvatars] = useState<Record<string, string>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get character data from navigation state
@@ -43,7 +46,17 @@ const GroupChatPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await getGroupChatMessages(groupChatId);
-        setMessages(response.messages || []);
+        const msgs = response.messages || [];
+        setMessages(msgs);
+        
+        // Extract bot avatars from messages for fallback
+        const avatars: Record<string, string> = {};
+        msgs.forEach(msg => {
+          if (msg.sender_bot_avatar?.avatar && msg.sender_id) {
+            avatars[msg.sender_id] = msg.sender_bot_avatar.avatar;
+          }
+        });
+        setBotAvatars(avatars);
       } catch (error) {
         console.error('Error loading group chat messages:', error);
       } finally {
@@ -243,13 +256,16 @@ const GroupChatPage: React.FC = () => {
                   {message.role === 'assistant' && (
                     <div className="mr-2 flex-shrink-0">
                       {(() => {
-                        const character = characters.find(c => c.id === message.sender_id);
-                        return character ? (
+                        // Try to get avatar from message data first, then fallback to characters
+                        const avatarUrl = message.sender_bot_avatar?.avatar || botAvatars[message.sender_id || ''] || characters.find(c => c.id === message.sender_id)?.avatar;
+                        const name = message.sender_bot_avatar?.name || message.sender_name || characters.find(c => c.id === message.sender_id)?.name || 'Bot';
+                        
+                        return avatarUrl ? (
                           <img
-                            src={character.avatar}
-                            alt={character.name}
+                            src={avatarUrl}
+                            alt={name}
                             className="h-8 w-8 rounded-full object-cover"
-                            title={character.name}
+                            title={name}
                           />
                         ) : (
                           <div className="h-8 w-8 rounded-full bg-gray-300" />
@@ -276,7 +292,17 @@ const GroupChatPage: React.FC = () => {
                     >
                       {message.content}
                     </div>
-                  </div>
+                  {/* User Avatar */}
+                  {message.role === 'user' && message.sender_user_profile?.profile_picture && (
+                    <div className="ml-2 flex-shrink-0">
+                      <img
+                        src={message.sender_user_profile.profile_picture}
+                        alt={message.sender_user_profile.username}
+                        className="h-8 w-8 rounded-full object-cover"
+                        title={message.sender_user_profile.username}
+                      />
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
