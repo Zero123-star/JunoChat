@@ -7,6 +7,8 @@
 
 ## Railway Dashboard Screenshot
 
+![Railway Dashboard - All Services Online](screenshots/3AE79789-AD55-4C02-9E4C-4CD52EA08E2F.jpeg)
+
 ### Infrastructure Overview
 
 **Project:** insightful-generosity  
@@ -60,12 +62,14 @@ The screenshot shows:
 
 ## GitHub Actions CI/CD Pipeline Screenshot
 
+![GitHub Actions Pipeline - Test Results](screenshots/6332AFA7-789B-458B-AF79-A9D96E0585CE.jpeg)
+
 ### Workflow Results
 
 **Pipeline Name:** JunoChat CI/CD Pipeline  
 **Status:** Partial Success (1 job failed, 2 passed)  
 **Total Duration:** 2 minutes 21 seconds  
-**Triggered By:** Git push to photobooth branch  
+**Triggered By:** Git push to photobooth branch
 
 ### Job Status Summary
 
