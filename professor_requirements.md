@@ -1,25 +1,25 @@
-# Cerințele Profesorului - Mapping la Livrabile
+# Professor Requirements - Mapping to Deliverables
 
-**Evaluare Inginerie Software – Livrabil Final**  
-**Data Evaluării:** Februarie 2026  
-**Status:** COMPLET - Gata pentru Prezentare  
+**Software Engineering Evaluation - Final Deliverable**  
+**Evaluation Date:** February 2026  
+**Status:** COMPLETE - Ready for Presentation  
 
 ---
 
 ## 1. REPOSITORY REQUIREMENTS
 
-### Cerință: Codul sursă al proiectului
-**Status:** [OK] SATISFĂCUT
+### Requirement: Project Source Code
+**Status:** [OK] SATISFIED
 
-- **Locație:** `/backend` (Django REST API) + `/JunoChat-frontend` (React Vite)
-- **Organizare:** Folder structure clar, conventii de naming respectate
-- **Versioning:** Git history complet cu 160 commits
-- **Branches:** `photobooth` (main) + `main` + alte feature branches
+- **Location:** `/backend` (Django REST API) + `/JunoChat-frontend` (React Vite)
+- **Organization:** Clear folder structure, naming conventions followed
+- **Versioning:** Complete git history with 160 commits
+- **Branches:** `photobooth` (main) + `main` + other feature branches
 - **Repositories:** 
   - Primary: https://github.com/Zero123-star/JunoChat
   - Fork: https://github.com/unibuc-ro/proiect-inginerie-software-juno
 
-**Evidență:**
+**Evidence:**
 ```
 backend/
   Django_MDS/           (Django project settings)
@@ -46,62 +46,62 @@ JunoChat-frontend/
 
 ---
 
-### Cerință: Demo video prezentând funcționalitățile
-**Status:** [OK] SATISFĂCUT
+### Requirement: Demo Video Presenting Features
+**Status:** [OK] SATISFIED
 
 - **URL:** https://drive.google.com/file/d/1ACU5ZaR8D4o54at9JxEwARJfdpTKmDbQ/view
-- **Durată:** 2:21 minute
-- **Conținut:** Demonstrație completă a funcționalităților pe aplicația live
-- **Calitate:** HD, audio clar, flux logic
+- **Duration:** 2:21 minutes
+- **Content:** Complete feature demonstration on live application
+- **Quality:** HD, clear audio, logical flow
 
-**Conținut video:**
-1. Home page prezentare
-2. Registrare user nou
-3. Login și navigare
-4. Browse personaje
-5. Create personaj nou cu avatar
-6. Chat cu personaj (AI response)
+**Video Content:**
+1. Home page overview
+2. User registration flow
+3. Login and navigation
+4. Browse characters
+5. Create new character with avatar
+6. Chat with character (AI response)
 7. Follow/Favorite features
 8. Profile management
 
 ---
 
-## 2. IMPLEMENTARE
+## 2. IMPLEMENTATION
 
-### Cerință: Aplicația trebuie să fie funcțională la momentul prezentării
-**Status:** [OK] SATISFĂCUT
+### Requirement: Application Must Be Functional at Presentation Time
+**Status:** [OK] SATISFIED
 
-- **Status Live:** OPERATIONAL
+- **Live Status:** OPERATIONAL
 - **Frontend URL:** https://talented-spontaneity-production.up.railway.app
 - **Backend URL:** https://project-inginerie-software-juno-production.up.railway.app/api
 - **Database:** PostgreSQL (Railway managed) - ONLINE
 - **Uptime:** 99.9% (managed platform)
 
-**Verificări Funcționale:**
-- [x] User registration și login funcționează
-- [x] Character creation cu upload avatar
-- [x] Character display cu imagini
-- [x] Chat cu AI responses
+**Functional Verification:**
+- [x] User registration and login functional
+- [x] Character creation with avatar upload
+- [x] Character display with images
+- [x] Chat with AI responses
 - [x] Social features (follow, like)
 - [x] All CRUD operations working
 - [x] Error handling functional
 - [x] Mobile responsive design
 
-**Documentație:** [Index.md](Index.md) - Quick Verification Path
+**Documentation:** [index.md](index.md) - Quick Verification Path
 
 ---
 
-### Cerință: Aplicația trebuie să adreseze problema/nevoia utilizatorului
-**Status:** [OK] SATISFĂCUT
+### Requirement: Application Must Address User Problem/Need
+**Status:** [OK] SATISFIED
 
-**Problema Inițială:**
-> Utilizatorii doresc să interacționeze cu personaje fictive prin intermediul unui sistem de chat AI, într-o comunitate socială interactivă.
+**Initial Problem:**
+> Users want to interact with fictional characters through an AI-powered chat system within an interactive social community.
 
-**Soluție Implementată:**
+**Implemented Solution:**
 
 1. **Character Chat System**
-   - Utilizatori pot crea/browsa personaje
-   - Chat real-time cu AI responses (OpenRouter API)
+   - Users can create/browse characters
+   - Real-time chat with AI responses (OpenRouter API)
    - Message history tracking
    - Context-aware conversations
 
@@ -117,65 +117,61 @@ JunoChat-frontend/
    - Detailed personality descriptions
    - Photobooth feature for images
 
-**Comparație cu Livrabil Intermediar:**
-- Intermediar: Plan conceptual cu wireframes
+**Comparison with Intermediate Deliverable:**
+- Intermediate: Conceptual plan with wireframes
 - Final: Fully implemented, tested, deployed
 
 ---
 
-## 3. DESCRIERE ARHITECTURALĂ
+## 3. ARCHITECTURAL DESCRIPTION
 
-### Cerință: Capacitatea de a crea artefacte statice care descriu deciziile arhitecturale
+### Requirement: Ability to Create Static Artifacts Describing Architectural Decisions
 
-**Status:** [OK] SATISFĂCUT - [Architecture.md](Architecture.md)
+**Status:** [OK] SATISFIED - [architecture.md](architecture.md)
 
 ---
 
-### Cerință: Sinteză a produsului rezultat
+### Requirement: Product Summary
 
-**Status:** [OK] SATISFĂCUT - [Deliverables.md](Deliverables.md)
+**Status:** [OK] SATISFIED - [deliverables.md](deliverables.md)
 
-**Includ:**
-- Feature list complet
-- Technology stack detailed
-- Comparison cu intermediate deliverable
+**Includes:**
+- Complete feature list
+- Detailed technology stack
+- Comparison with intermediate deliverable
 - Architecture decisions justification
 
 ---
 
-### Cerință: Descriere folosind diagrame C4
+### Requirement: Description Using C4 Diagrams
 
-**Status:** [OK] SATISFĂCUT - [Architecture.md](Architecture.md)
+**Status:** [OK] SATISFIED - [architecture.md](architecture.md)
 
-#### System Diagram (C1) - COMPLET
+#### System Diagram (C1) - COMPLETE
 ```
-┌─────────────────┐         ┌──────────────┐
-│   User/         │◄─────Browser─────│  JunoChat │
-│   Developer     │         │  System    │
-└─────────────────┘         └──────┬──────┘
-                                   │
-                         ┌─────────▼─────────┐
-                         │ OpenRouter API    │
-                         │ (AI Responses)    │
-                         └───────────────────┘
+User/Browser         JunoChat System
+    |                     |
+    |-----HTTP/HTTPS------|
+                           |
+                    OpenRouter API
+                    (AI Responses)
 ```
 
-#### Container Diagram (C2) - COMPLET
+#### Container Diagram (C2) - COMPLETE
 ```
 Frontend (React/Vite)
-    ↓
+    |
+    v
 API Gateway (Railway)
-    ↓
+    |
+    v
 Backend (Django REST)
-    ↓
+    |
+    v
 PostgreSQL Database
-    ↓
-OpenRouter (External AI)
 ```
 
-Detalii în [Architecture.md](Architecture.md)
-
-#### Component Diagram (C3) - COMPLET
+#### Component Diagram (C3) - COMPLETE
 ```
 API Layer:
   - User Views (Login, Profile, Follow)
@@ -196,17 +192,19 @@ Data Layer:
   - Relationship Model (followers, favorites)
 ```
 
+**Details:** [architecture.md](architecture.md)
+
 ---
 
-### Cerință: Descrierea cerințelor non-funcționale și soluțiile arhitecturale
+### Requirement: Description of Non-Functional Requirements and Architectural Solutions
 
-**Status:** [OK] SATISFĂCUT - [Architecture.md](Architecture.md) Section 4
+**Status:** [OK] SATISFIED - [architecture.md](architecture.md) Section 4
 
-| Cerință Non-Funcțională | Soluție Arhitecturală | Implementare |
+| Non-Functional Requirement | Architectural Solution | Implementation |
 |---|---|---|
-| **Performance** | Database indexing, query optimization | PostgreSQL indexes pe user_id, character_id |
-| **Scalability** | Horizontal scaling via Railway, stateless API | Load balancer inclus în Railway |
-| **Security** | Token auth, HTTPS, CORS, input validation | See Security.md |
+| **Performance** | Database indexing, query optimization | PostgreSQL indexes on user_id, character_id |
+| **Scalability** | Horizontal scaling via Railway, stateless API | Load balancer included in Railway |
+| **Security** | Token auth, HTTPS, CORS, input validation | See security.md |
 | **Reliability** | Auto-migrations, error handling, logging | Django logging configured |
 | **Maintainability** | Clear code structure, type safety (TypeScript) | See Code Organization |
 | **Availability** | 99.9% uptime SLA (Railway managed) | Production monitoring active |
@@ -217,16 +215,16 @@ Data Layer:
 
 ## 4. QA - TESTING
 
-### Cerință: Construirea unui plan de testare
+### Requirement: Build a Comprehensive Testing Plan
 
-**Status:** [OK] SATISFĂCUT - [Testing.md](Testing.md)
+**Status:** [OK] SATISFIED - [testing.md](testing.md)
 
-#### 4.1 Obiectivele testării
-**Status:** [OK] COMPLET
+#### 4.1 Testing Objectives
+**Status:** [OK] COMPLETE
 
-Artifact-uri care trebuie testate și la ce nivel:
+Artifacts to test and at what level:
 
-| Artifact | Nivel | Obiectiv |
+| Artifact | Level | Objective |
 |----------|-------|----------|
 | API Endpoints | Unit + Integration | Verify correctness, error handling |
 | Authentication | Unit + Integration | Verify token validation, authorization |
@@ -236,15 +234,15 @@ Artifact-uri care trebuie testate și la ce nivel:
 | Security Measures | Integration | Verify encryption, CORS, validation |
 | Error Handling | Unit + Integration | Verify graceful degradation |
 
-**Detalii:** [Testing.md](Testing.md) - Section 2: Test Coverage Matrix
+**Details:** [testing.md](testing.md) - Section 2: Test Coverage Matrix
 
 ---
 
-#### 4.2 Procesul testării - SDLC timeline
+#### 4.2 Testing Process - SDLC Timeline
 
-**Status:** [OK] COMPLET - [Testing.md](Testing.md) - Section 3
+**Status:** [OK] COMPLETE - [testing.md](testing.md) - Section 3
 
-| Fază SDLC | Tip Testing | Executat De | Status |
+| SDLC Phase | Testing Type | Executed By | Status |
 |-----------|-----------|-----------|--------|
 | Development | Unit Tests | Developer | [OK] PASS |
 | Code Review | Static Analysis | Linter (ESLint, Black) | [OK] PASS |
@@ -255,58 +253,58 @@ Artifact-uri care trebuie testate și la ce nivel:
 
 ---
 
-#### 4.3 Metodele testării - Justificarea relevanței
+#### 4.3 Testing Methods - Justification of Relevance
 
-**Status:** [OK] COMPLET - [Testing.md](Testing.md) - Section 3
+**Status:** [OK] COMPLETE - [testing.md](testing.md) - Section 3
 
-**Metode Implementate:**
+**Implemented Methods:**
 
 1. **Unit Testing** (Framework: Django TestCase, Vitest)
-   - **Obiectiv:** Verify individual functions/methods
-   - **Aplicare:** API endpoints, serializers, React components
-   - **Relevanță:** Identify bugs early, ensure code quality
-   - **Rezultate:** [OK] PASSED (Backend Tests 43 seconds)
+   - **Objective:** Verify individual functions/methods
+   - **Application:** API endpoints, serializers, React components
+   - **Relevance:** Identify bugs early, ensure code quality
+   - **Results:** [OK] PASSED (Backend Tests 43 seconds)
 
 2. **Integration Testing** (Framework: Django TestCase)
-   - **Obiectiv:** Verify component interactions
-   - **Aplicare:** API requests, database operations, auth flow
-   - **Relevanță:** Ensure end-to-end functionality
-   - **Rezultate:** [OK] PASSED
+   - **Objective:** Verify component interactions
+   - **Application:** API requests, database operations, auth flow
+   - **Relevance:** Ensure end-to-end functionality
+   - **Results:** [OK] PASSED
 
 3. **Component Testing** (Framework: React Testing Library)
-   - **Obiectiv:** Verify React components render correctly
-   - **Aplicare:** CharacterCard, Navbar, ChatPage, forms
-   - **Relevanță:** Ensure UI functionality
-   - **Rezultate:** [WARNING] FAILED (CI environment issue, production working)
+   - **Objective:** Verify React components render correctly
+   - **Application:** CharacterCard, Navbar, ChatPage, forms
+   - **Relevance:** Ensure UI functionality
+   - **Results:** [WARNING] FAILED (CI environment issue, production working)
 
 4. **Code Quality Analysis** (ESLint, Black)
-   - **Obiectiv:** Enforce coding standards
-   - **Aplicare:** Style checks, convention validation
-   - **Relevanță:** Maintainability, readability
-   - **Rezultate:** [OK] PASSED (14 seconds)
+   - **Objective:** Enforce coding standards
+   - **Application:** Style checks, convention validation
+   - **Relevance:** Maintainability, readability
+   - **Results:** [OK] PASSED (14 seconds)
 
 5. **Manual Testing** (Documented procedures)
-   - **Obiectiv:** User workflow validation
-   - **Aplicare:** Registration, character creation, chat, social features
-   - **Relevanță:** Real-world usage scenarios
-   - **Proceduri:** [Testing.md](Testing.md) - Section 4
+   - **Objective:** User workflow validation
+   - **Application:** Registration, character creation, chat, social features
+   - **Relevance:** Real-world usage scenarios
+   - **Procedures:** [testing.md](testing.md) - Section 4
 
 ---
 
-#### 4.4 Rezultatele testării - Observații
+#### 4.4 Testing Results - Observations
 
-**Status:** [OK] DOCUMENTED - [Pipeline.md](Pipeline.md)
+**Status:** [OK] DOCUMENTED - [pipeline.md](pipeline.md)
 
 ### Test Results Summary:
 ```
 [OK] Code Quality Check:         PASSED (14 seconds)
 [OK] Backend Tests:              PASSED (43 seconds)
-[WARNING] Frontend Tests:             FAILED (25 seconds - CI environment)
+[WARNING] Frontend Tests:         FAILED (25 seconds - CI environment)
 [OK] Production Deployment:      SUCCESSFUL
 [OK] Live Application:           OPERATIONAL
 ```
 
-**Observații Cheie:**
+**Key Observations:**
 
 1. **Backend Tests PASSING**
    - API endpoints working correctly
@@ -324,7 +322,7 @@ Artifact-uri care trebuie testate și la ce nivel:
    - CI environment test setup issue
    - Related to: Node dependencies, environment variables, or test timeout
    - Non-blocking: Application is live and functional
-   - **Mitigation:** See [Pipeline.md](Pipeline.md) Remediation Section
+   - **Mitigation:** See [pipeline.md](pipeline.md) Remediation Section
 
 4. **Production Verification**
    - Live application fully functional
@@ -336,13 +334,13 @@ Artifact-uri care trebuie testate și la ce nivel:
 
 ## 5. SECURITY ANALYSIS
 
-### Cerință: Analizarea principalelor riscuri de securitate
+### Requirement: Analysis of Main Security Risks
 
-**Status:** [OK] SATISFĂCUT - [Security.md](Security.md)
+**Status:** [OK] SATISFIED - [security.md](security.md)
 
-#### Riscuri Identificate și Mitigări:
+#### Identified Risks and Mitigations:
 
-| Risc | Severitate | Mitigation |
+| Risk | Severity | Mitigation |
 |-----|-----------|-----------|
 | **SQL Injection** | CRITICAL | Django ORM (parameterized queries) |
 | **XSS (Cross-Site Scripting)** | CRITICAL | React auto-escaping + no dangerouslySetInnerHTML |
@@ -355,15 +353,15 @@ Artifact-uri care trebuie testate și la ce nivel:
 | **Information Disclosure** | MEDIUM | Error handling without sensitive data leaks |
 | **Insecure File Upload** | MEDIUM | File type + size validation |
 
-**Detalii:** [Security.md](Security.md)
+**Details:** [security.md](security.md)
 
 ---
 
-### Cerință: Tactici pentru adresarea riscurilor de Securitate
+### Requirement: Tactics for Addressing Security Risks
 
-**Status:** [OK] SATISFĂCUT - [Security.md](Security.md)
+**Status:** [OK] SATISFIED - [security.md](security.md)
 
-#### Tactici Implementate:
+#### Implemented Tactics:
 
 1. **Authentication Tactics**
    ```python
@@ -411,11 +409,11 @@ Artifact-uri care trebuie testate și la ce nivel:
 
 ## 6. CI/CD PIPELINE
 
-### Cerință: Descrierea environment-urilor folosite
+### Requirement: Description of Environments Used
 
-**Status:** [OK] SATISFĂCUT - [Pipeline.md](Pipeline.md) + [Deployment.md](Deployment.md)
+**Status:** [OK] SATISFIED - [pipeline.md](pipeline.md) + [deployment.md](deployment.md)
 
-#### 6.1 Diferențe între environment-uri
+#### 6.1 Differences Between Environments
 
 | Aspect | Development | Staging | Production |
 |--------|-------------|---------|-----------|
@@ -430,13 +428,13 @@ Artifact-uri care trebuie testate și la ce nivel:
 | **Backups** | Manual | Daily automatic | Daily automatic + hourly |
 | **Monitoring** | Local | Basic (Railway) | Full (Railway + custom) |
 
-**Detalii:** [Deployment.md](Deployment.md) - Environment Configuration Section
+**Details:** [deployment.md](deployment.md) - Environment Configuration Section
 
 ---
 
-#### 6.2 Configurări specifice per environment
+#### 6.2 Environment-Specific Configurations
 
-**Status:** [OK] SATISFĂCUT - [Deployment.md](Deployment.md) - Section 3
+**Status:** [OK] SATISFIED - [deployment.md](deployment.md) - Section 3
 
 ### Development Environment
 ```yaml
@@ -447,7 +445,7 @@ OPENROUTER_API_KEY=test_key_xxx
 DATABASE_URL=sqlite:///db.sqlite3
 ```
 
-**Caracteristici:**
+**Features:**
 - Full error debugging
 - Hot reload enabled
 - Console logging
@@ -467,7 +465,7 @@ DJANGO_SECRET_KEY=<generated>
 SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO
 ```
 
-**Caracteristici:**
+**Features:**
 - No debugging information
 - HTTPS enforced (via proxy)
 - PostgreSQL managed
@@ -480,7 +478,7 @@ SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO
 ---
 
 ### CI/CD Pipeline Configuration
-**Status:** [OK] DOCUMENTED - [Pipeline.md](Pipeline.md)
+**Status:** [OK] DOCUMENTED - [pipeline.md](pipeline.md)
 
 **GitHub Actions Workflow:**
 
@@ -500,55 +498,55 @@ SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO
 
 ---
 
-## 7. REZUMAT FINAL - MAPARE COMPLETĂ
+## 7. FINAL SUMMARY - COMPLETE MAPPING
 
-### [OK] TOATE CERINȚELE SATISFĂCUTE
+### [OK] ALL REQUIREMENTS SATISFIED
 
-| Cerință | Document | Status |
+| Requirement | Document | Status |
 |---------|----------|--------|
-| **Cod sursă în repository** | GitHub repos | [OK] |
+| **Source code in repository** | GitHub repos | [OK] |
 | **Demo video** | Drive link | [OK] |
-| **Aplicație funcțională** | Live URL | [OK] |
-| **Problema utilizatorului adresată** | Feature list | [OK] |
-| **Sinteză produs** | Deliverables.md | [OK] |
-| **C1 System Diagram** | Architecture.md | [OK] |
-| **C2 Container Diagram** | Architecture.md | [OK] |
-| **C3 Component Diagram** | Architecture.md | [OK] |
-| **Cerințe non-funcționale** | Architecture.md | [OK] |
-| **Plan de testare complet** | Testing.md | [OK] |
-| **Obiectivele testării** | Testing.md S2 | [OK] |
-| **Procesul testării în SDLC** | Testing.md S3 | [OK] |
-| **Metodele testării justificate** | Testing.md S3 | [OK] |
-| **Rezultatele testării** | Pipeline.md | [OK] |
-| **Analiza riscuri securitate** | Security.md | [OK] |
-| **Tactici adresare riscuri** | Security.md | [OK] |
-| **Descriere environment-uri** | Deployment.md | [OK] |
-| **Diferențe dev/staging/prod** | Deployment.md S3 | [OK] |
-| **Configurări specifice** | Deployment.md S3 | [OK] |
+| **Functional application** | Live URL | [OK] |
+| **User problem addressed** | Feature list | [OK] |
+| **Product summary** | deliverables.md | [OK] |
+| **C1 System Diagram** | architecture.md | [OK] |
+| **C2 Container Diagram** | architecture.md | [OK] |
+| **C3 Component Diagram** | architecture.md | [OK] |
+| **Non-functional requirements** | architecture.md | [OK] |
+| **Complete testing plan** | testing.md | [OK] |
+| **Testing objectives** | testing.md S2 | [OK] |
+| **Testing process in SDLC** | testing.md S3 | [OK] |
+| **Testing methods justified** | testing.md S3 | [OK] |
+| **Testing results** | pipeline.md | [OK] |
+| **Security risk analysis** | security.md | [OK] |
+| **Risk addressing tactics** | security.md | [OK] |
+| **Environment description** | deployment.md | [OK] |
+| **Dev/staging/prod differences** | deployment.md S3 | [OK] |
+| **Environment-specific configs** | deployment.md S3 | [OK] |
 
 ---
 
-## 8. NAVIGARE PENTRU PROFESOR
+## 8. NAVIGATION FOR PROFESSOR
 
-### Quick Evaluation Path (50 minute)
+### Quick Evaluation Path (50 minutes)
 
-1. **Start Here** [Index.md](Index.md) - Overview (5 min)
+1. **Start Here** [index.md](index.md) - Overview (5 min)
 2. **Try Live App** https://talented-spontaneity-production.up.railway.app (5 min)
-3. **Architecture** [Architecture.md](Architecture.md) - C4 Diagrams (10 min)
-4. **Testing** [Testing.md](Testing.md) - QA Plan (10 min)
-5. **Security** [Security.md](Security.md) - Risk Analysis (10 min)
-6. **Deployment** [Deployment.md](Deployment.md) - CI/CD (10 min)
+3. **Architecture** [architecture.md](architecture.md) - C4 Diagrams (10 min)
+4. **Testing** [testing.md](testing.md) - QA Plan (10 min)
+5. **Security** [security.md](security.md) - Risk Analysis (10 min)
+6. **Deployment** [deployment.md](deployment.md) - CI/CD (10 min)
 
 ### Detailed Evaluation Path (2 hours)
 
-1. Index.md + README.md (10 min)
-2. Architecture.md - Complete (20 min)
-3. Testing.md - Complete (20 min)
-4. Security.md - Complete (20 min)
-5. Pipeline.md - CI/CD Details (15 min)
-6. Deployment.md - Environment Setup (15 min)
-7. Screenshots.md - Infrastructure (10 min)
-8. Contributions.md - Team Work (10 min)
+1. index.md + readme.md (10 min)
+2. architecture.md - Complete (20 min)
+3. testing.md - Complete (20 min)
+4. security.md - Complete (20 min)
+5. pipeline.md - CI/CD Details (15 min)
+6. deployment.md - Environment Setup (15 min)
+7. screenshots.md - Infrastructure (10 min)
+8. contributions.md - Team Work (10 min)
 
 ---
 
