@@ -82,15 +82,6 @@ const GroupChatPage: React.FC = () => {
         }));
         
         setMessages(mappedMessages);
-        
-        // Extract bot avatars from messages for fallback
-        const avatars: Record<string | number, string> = {};
-        mappedMessages.forEach(msg => {
-          if (msg.sender_bot_avatar?.avatar && msg.sender_bot !== undefined) {
-            avatars[msg.sender_bot] = msg.sender_bot_avatar.avatar;
-          }
-        });
-        setBotAvatars(avatars);
       } catch (error) {
         console.error('Error loading group chat messages:', error);
       } finally {
