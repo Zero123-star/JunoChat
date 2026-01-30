@@ -114,7 +114,18 @@ class CustomOpenrouterViewset(viewsets.ViewSet):
         ]
         for desc in bot_descriptions:
             messages.append({'role': 'system', 'content': desc})
-        messages.append({'role': 'system', 'content': 'Beginning of the group rpchat below:'})
+        messages.append({'role': 'system', 'content': '''IMPORTANT: When responding as multiple characters in this group chat, ALWAYS format your response like this for EACH message from EACH character:
+
+<Message sent by: CharacterName> Their message content here
+
+For example:
+<Message sent by: Sasuke> I see your weakness.
+<Message sent by: Naruto> I will never give up!
+<Message sent by: Sakura> We need to work together.
+
+MUST follow this format exactly. Each character\'s message must start with <Message sent by: CharacterName> and the message content follows immediately after.
+
+Beginning of the group rpchat below:'''})
         return messages
 
     @action(detail=False, methods=['post', 'get'])
@@ -215,9 +226,9 @@ class CustomOpenrouterViewset(viewsets.ViewSet):
                     pattern = r'<Message sent by:\s*([^>]+)>\s*([^<]*?)(?=<Message sent by:|$)'
                     matches = re.findall(pattern, response_text, re.DOTALL)
                     
-                    if matches and len(matches) > 1:
+                    if matches:
                         print(f"Detected {len(matches)} messages in group chat response")
-                        # Store parsed messages for potential future use
+                        # Store parsed messages for frontend to separate into individual bubbles
                         result['parsed_messages'] = [
                             {'sender': match[0].strip(), 'content': match[1].strip()}
                             for match in matches

@@ -160,11 +160,14 @@ const GroupChatPage: React.FC = () => {
           let parsedMessages: Array<{sender: string; content: string}> = [];
           if (response.parsed_messages && response.parsed_messages.length > 0) {
             parsedMessages = response.parsed_messages;
-            console.log(`Backend detected ${parsedMessages.length} messages:`, parsedMessages);
+            console.log(`✅ Backend detected ${parsedMessages.length} messages:`, parsedMessages);
+          } else {
+            console.log('❌ No parsed_messages in response. Full response:', response);
           }
           
           // If we have parsed messages, create separate Message objects for each
           if (parsedMessages.length > 0) {
+            console.log(`Processing ${parsedMessages.length} parsed messages from backend`);
             for (const parsedMsg of parsedMessages) {
               const senderName = parsedMsg.sender.trim();
               const msgContent = parsedMsg.content.trim();
@@ -173,6 +176,7 @@ const GroupChatPage: React.FC = () => {
               
               // Find the character that matches this sender name
               const senderChar = characters.find(c => c.name.toLowerCase() === senderName.toLowerCase());
+              console.log(`Looking for character "${senderName}", found:`, senderChar?.name || 'NOT FOUND');
               
               if (senderChar) {
                 const botMessage: Message = {
