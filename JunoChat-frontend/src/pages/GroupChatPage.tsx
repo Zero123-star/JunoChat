@@ -32,6 +32,7 @@ const GroupChatPage: React.FC = () => {
   const [sending, setSending] = useState(false);
   const [botAvatars, setBotAvatars] = useState<Record<string, string>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const errorShownRef = useRef<Set<string>>(new Set()); // Track shown errors to avoid duplicates
 
   // Get character data from navigation state
   const characterIds: string[] = location.state?.characterIds || [];
@@ -39,6 +40,18 @@ const GroupChatPage: React.FC = () => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Helper to show error only once
+  const showErrorOnce = (errorKey: string, errorMsg: string) => {
+    if (!errorShownRef.current.has(errorKey)) {
+      errorShownRef.current.add(errorKey);
+      toast.error(errorMsg);
+      // Clear the error from tracking after 5 seconds to allow showing again
+      setTimeout(() => {
+        errorShownRef.current.delete(errorKey);
+      }, 5000);
+    }
   };
 
   useEffect(() => {
@@ -117,7 +130,7 @@ const GroupChatPage: React.FC = () => {
         });
       } catch (storeError) {
         console.error('Failed to store user message:', storeError);
-        toast.error('Failed to save your message');
+        showErrorOnce('store-user-msg', 'Failed to save your message');
       }
       console.log("hey")
       // Get responses from each bot
@@ -137,7 +150,7 @@ const GroupChatPage: React.FC = () => {
           // Check if response has the expected structure
           if (!response || !response.choices || !response.choices[0] || !response.choices[0].message) {
             console.error(`Invalid response format from ${character.name}:`, response);
-            toast.error(`${character.name} returned an invalid response`);
+            showErrorOnce(`invalid-response-${character.id}`, `${character.name} returned an invalid response`);
             failCount++;
             continue;
           }
@@ -154,7 +167,7 @@ const GroupChatPage: React.FC = () => {
           
           if (!botReply || botReply.trim() === '') {
             console.warn(`Empty reply from ${character.name}`);
-            toast.warning(`${character.name} returned an empty message`);
+            showErrorOnce(`empty-reply-${character.id}`, `${character.name} returned an empty message`);
             failCount++;
             continue;
           }
@@ -204,13 +217,13 @@ const GroupChatPage: React.FC = () => {
             }
           }
           
-          toast.error(`Failed to get reply from ${character.name}: ${errorMsg}`);
+          showErrorOnce(`response-error-${character.id}`, `Failed to get reply from ${character.name}: ${errorMsg}`);
           failCount++;
         }
       }
       
       if (successCount === 0 && failCount > 0) {
-        toast.error('No characters could respond. Check your OpenRouter API key in API Config.');
+        showErrorOnce('no-responses', 'No characters could respond. Check your OpenRouter API key in API Config.');
       } else if (failCount > 0) {
         toast.info(`${successCount} character(s) responded, ${failCount} failed`);
       }
