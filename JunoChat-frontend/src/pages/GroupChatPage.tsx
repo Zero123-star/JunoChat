@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { getGroupChatMessages, storeGroupChatMessage, sendGroupChatMessage } from '@/api';
+import { toast } from 'sonner';
 import { Button } from '@/components/Button';
 import { Users, ArrowLeft } from 'lucide-react';
 import { Character } from '@/types/character';
@@ -74,14 +75,21 @@ const GroupChatPage: React.FC = () => {
 
     try {
       // Store user message
-      await storeGroupChatMessage(groupChatId, {
-        role: 'user',
-        content: input,
-        id: userId
-      });
+      try {
+        await storeGroupChatMessage(groupChatId, {
+          role: 'user',
+          content: input,
+          id: userId
+        });
+      } catch (storeError) {
+        console.error('Failed to store user message:', storeError);
+        toast.error('Failed to save your message');
+      }
       console.log("hey")
       // Get responses from each bot
       const updatedMessages = [...messages, userMessage];
+      let successCount = 0;
+      let failCount = 0;
       
       for (const character of characters) {
         try {
@@ -90,8 +98,24 @@ const GroupChatPage: React.FC = () => {
             updatedMessages,
             characterIds
           );
-          console.log("response", response)
+          console.log("response", response);
+          
+          // Check if response has the expected structure
+          if (!response || !response.choices || !response.choices[0] || !response.choices[0].message) {
+            console.error(`Invalid response format from ${character.name}:`, response);
+            toast.error(`${character.name} returned an invalid response`);
+            failCount++;
+            continue;
+          }
+          
           const botReply = response.choices[0].message.content;
+          if (!botReply || botReply.trim() === '') {
+            console.warn(`Empty reply from ${character.name}`);
+            toast.warning(`${character.name} returned an empty message`);
+            failCount++;
+            continue;
+          }
+          
           const botMessage: Message = {
             role: 'assistant',
             content: botReply,
@@ -108,9 +132,19 @@ const GroupChatPage: React.FC = () => {
 
           setMessages(prev => [...prev, botMessage]);
           updatedMessages.push(botMessage);
+          successCount++;
         } catch (error) {
           console.error(`Error getting response from ${character.name}:`, error);
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          toast.error(`Failed to get reply from ${character.name}: ${errorMsg}`);
+          failCount++;
         }
+      }
+      
+      if (successCount === 0 && failCount > 0) {
+        toast.error('No characters could respond. Check your OpenRouter API key in API Config.');
+      } else if (failCount > 0) {
+        toast.info(`${successCount} character(s) responded, ${failCount} failed`);
       }
     } catch (error) {
       console.error('Error in group chat:', error);
