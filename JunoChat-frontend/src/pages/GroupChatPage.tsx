@@ -67,10 +67,19 @@ const GroupChatPage: React.FC = () => {
         const response = await getGroupChatMessages(groupChatId);
         const msgs = response.messages || [];
         
-        // Map API response to Message interface (sender_username -> sender_name)
-        const mappedMessages = msgs.map(msg => ({
-          ...msg,
-          sender_name: msg.sender_username
+        // Map API response to Message interface with proper typing
+        const mappedMessages: Message[] = msgs.map((msg: any) => ({
+          id: msg.id,
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content || msg.description || '',
+          sender_name: msg.sender_username,
+          sender_username: msg.sender_username,
+          sender_user: msg.sender_user,
+          sender_bot: msg.sender_bot,
+          sender_type: msg.sender_type,
+          sender_user_profile: msg.sender_user_profile,
+          sender_bot_avatar: msg.sender_bot_avatar,
+          timestamp: msg.timestamp
         }));
         
         setMessages(mappedMessages);
