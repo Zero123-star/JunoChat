@@ -22,6 +22,7 @@ import CreateGroupChatPage from './pages/CreateGroupChatPage';
 import GroupChatPage from './pages/GroupChatPage';
 import RPGCombatDemo from './pages/RPGCombatDemo';
 import APIConfigPage from './pages/APIConfigPage';
+import PhotoboothPage from './pages/PhotoboothPage'
 
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/my-characters" element={<MyCharactersPage />} />
             <Route path="/chat/:characterId" element={<ChatPage />} />            
             <Route path="/character/:id" element={<CharacterDetails />} /> 
+            <Route path="/photobooth" element={<PhotoboothPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<UserProfilePage />} />
