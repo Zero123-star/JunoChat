@@ -11,6 +11,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   sender_name?: string;
+  sender_username?: string;
   sender_id?: string;
   sender_user?: number;
   sender_bot?: number;
@@ -50,13 +51,20 @@ const GroupChatPage: React.FC = () => {
         setLoading(true);
         const response = await getGroupChatMessages(groupChatId);
         const msgs = response.messages || [];
-        setMessages(msgs);
+        
+        // Map API response to Message interface (sender_username -> sender_name)
+        const mappedMessages = msgs.map(msg => ({
+          ...msg,
+          sender_name: msg.sender_username
+        }));
+        
+        setMessages(mappedMessages);
         
         // Extract bot avatars from messages for fallback
         const avatars: Record<string, string> = {};
-        msgs.forEach(msg => {
-          if (msg.sender_bot_avatar?.avatar && msg.sender_id) {
-            avatars[msg.sender_id] = msg.sender_bot_avatar.avatar;
+        mappedMessages.forEach(msg => {
+          if (msg.sender_bot_avatar?.avatar && msg.sender_bot) {
+            avatars[msg.sender_bot] = msg.sender_bot_avatar.avatar;
           }
         });
         setBotAvatars(avatars);
