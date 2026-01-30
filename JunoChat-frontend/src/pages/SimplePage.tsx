@@ -98,7 +98,7 @@ const SimplePage: React.FC = () => {
 
       {/* Footer */}
       <footer className="mt-12 text-center text-purple-500 pb-4">
-        <p>© 2023 JunoChat App - Creat pentru învățare React</p>
+        <p>© JunoChat App - Creat pentru învățare React</p>
       </footer>
     </div>
   );
