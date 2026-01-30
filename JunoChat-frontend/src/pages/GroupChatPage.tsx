@@ -135,7 +135,21 @@ const GroupChatPage: React.FC = () => {
           successCount++;
         } catch (error) {
           console.error(`Error getting response from ${character.name}:`, error);
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          let errorMsg = 'Unknown error';
+          
+          if (error instanceof Error) {
+            errorMsg = error.message;
+          } else if (typeof error === 'object' && error !== null && 'response' in error) {
+            const axiosError = error as any;
+            if (axiosError.response?.data?.error) {
+              errorMsg = axiosError.response.data.error;
+            } else if (axiosError.response?.status === 400) {
+              errorMsg = 'Bad request - Check your OpenRouter API key in API Config';
+            } else if (axiosError.response?.status === 401) {
+              errorMsg = 'Unauthorized - Invalid OpenRouter API key';
+            }
+          }
+          
           toast.error(`Failed to get reply from ${character.name}: ${errorMsg}`);
           failCount++;
         }

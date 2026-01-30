@@ -205,7 +205,16 @@ class CustomOpenrouterViewset(viewsets.ViewSet):
         if response.status_code == 200:
             return JsonResponse(response.json())
         else:
-            return JsonResponse({
+            error_response = {
                 "error": f"OpenRouter API returned status code {response.status_code}",
-                "details": response.text
+                "details": response.text,
+                "status": response.status_code
+            }
+            # Check if it's an auth/key error
+            if response.status_code == 401:
+                error_response["error"] = "OpenRouter API key is invalid or expired. Please check your API key in the API Config page."
+            elif response.status_code == 400:
+                error_response["error"] = "Bad request to OpenRouter. Check your API key and model configuration."
+            print(f"OpenRouter API Error: {error_response}")
+            return JsonResponse(error_response, status=response.status_code)
             }, status=response.status_code)
