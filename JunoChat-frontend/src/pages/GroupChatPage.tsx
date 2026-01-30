@@ -293,12 +293,20 @@ const GroupChatPage: React.FC = () => {
                   )}
 
                   <div className="flex flex-col max-w-xs">
-                    {/* Sender Name */}
-                    {message.sender_name && (
-                      <span className={`text-xs mb-1 ${message.role === 'user' ? 'text-right text-purple-600' : 'text-left text-gray-600'}`}>
-                        {message.sender_name}
-                      </span>
-                    )}
+                    {/* Sender Name - Use explicit sender data, not sender_name fallback */}
+                    {(() => {
+                      // Determine the correct name based on sender_type
+                      const senderName = 
+                        message.sender_type === 'bot' 
+                          ? message.sender_bot_avatar?.name 
+                          : message.sender_user_profile?.username;
+                      
+                      return senderName ? (
+                        <span className={`text-xs mb-1 ${message.role === 'user' ? 'text-right text-purple-600' : 'text-left text-gray-600'}`}>
+                          {senderName}
+                        </span>
+                      ) : null;
+                    })()}
 
                     {/* Message Bubble */}
                     <div
