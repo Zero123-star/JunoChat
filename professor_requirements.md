@@ -552,8 +552,7 @@ SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO
 
 ## 9. CONTACT & SUPPORT
 
-**Lead Developer:** Ingrid Corobana  
-**Team:** dirgnic, Matei5, Zero123-star, BrainDBD, Irina Moise  
+**Team Members:** dirgnic, Matei5, Zero123-star, Ingrid Corobana, BrainDBD, Irina Moise  
 **Repository:** https://github.com/Zero123-star/JunoChat  
 **Live App:** https://talented-spontaneity-production.up.railway.app  
 **Demo Video:** https://drive.google.com/file/d/1ACU5ZaR8D4o54at9JxEwARJfdpTKmDbQ  
