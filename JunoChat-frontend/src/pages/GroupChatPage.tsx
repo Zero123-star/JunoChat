@@ -272,17 +272,25 @@ const GroupChatPage: React.FC = () => {
         <div className="max-w-5xl mx-auto w-full px-4">
           <div className="space-y-4 py-12">
             {messages.length > 0 ? (
-              messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} items-start group`}
-                >
-                  {/* Bot Avatar - Only show if sender_type is 'bot' */}
-                  {message.sender_type === 'bot' && message.sender_bot && (
-                    <div className="mr-2 flex-shrink-0">
-                      {(() => {
-                        // Use the full bot avatar data from the message
-                        const avatarUrl = message.sender_bot_avatar?.avatar;
+                  messages.map((message, index) => {
+                    // Determine sender_type with fallback inference
+                    let senderType = message.sender_type;
+                    if (!senderType) {
+                      senderType = message.sender_bot ? 'bot' : (message.sender_user ? 'user' : undefined);
+                    }
+                    const isBot = senderType === 'bot';
+                    
+                    return (
+                    <div
+                      key={index}
+                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} items-start group`}
+                    >
+                      {/* Bot Avatar - Only show if sender_type is 'bot' */}
+                      {isBot && message.sender_bot && (
+                        <div className="mr-2 flex-shrink-0">
+                          {(() => {
+                            // Use the full bot avatar data from the message
+                            const avatarUrl = message.sender_bot_avatar?.avatar;
                         const name = message.sender_bot_avatar?.name || message.sender_name || 'Bot';
                         
                         return avatarUrl ? (
@@ -300,13 +308,22 @@ const GroupChatPage: React.FC = () => {
                   )}
 
                   <div className="flex flex-col max-w-xs">
-                    {/* Sender Name - Use explicit sender data, not sender_name fallback */}
+                    {/* Sender Name - Use explicit sender data with fallback inference */}
                     {(() => {
-                      // Determine the correct name based on sender_type
-                      const senderName = 
-                        message.sender_type === 'bot' 
-                          ? message.sender_bot_avatar?.name 
-                          : message.sender_user_profile?.username;
+                      // Determine sender_type: use explicit field, or infer from available data
+                      let senderType = message.sender_type;
+                      if (!senderType) {
+                        // Infer from available data - if sender_bot exists, it's a bot message
+                        senderType = message.sender_bot ? 'bot' : (message.sender_user ? 'user' : undefined);
+                      }
+                      
+                      // Get the correct name based on sender_type
+                      let senderName: string | undefined;
+                      if (senderType === 'bot') {
+                        senderName = message.sender_bot_avatar?.name;
+                      } else if (senderType === 'user') {
+                        senderName = message.sender_user_profile?.username;
+                      }
                       
                       return senderName ? (
                         <span className={`text-xs mb-1 ${message.role === 'user' ? 'text-right text-purple-600' : 'text-left text-gray-600'}`}>
@@ -328,7 +345,7 @@ const GroupChatPage: React.FC = () => {
                   </div>
 
                   {/* User Avatar - Only show if sender_type is 'user' */}
-                  {message.sender_type === 'user' && message.sender_user && message.sender_user_profile?.profile_picture && (
+                  {!isBot && message.sender_user && message.sender_user_profile?.profile_picture && (
                     <div className="ml-2 flex-shrink-0">
                       <img
                         src={message.sender_user_profile.profile_picture}
@@ -339,7 +356,8 @@ const GroupChatPage: React.FC = () => {
                     </div>
                   )}
                 </div>
-              ))
+                  );
+                  })
             ) : (
               <p className="text-gray-500 text-center">
                 Start the conversation! Say hello to everyone 👋
