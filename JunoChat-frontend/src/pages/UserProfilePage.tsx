@@ -6,6 +6,7 @@ import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { API_BASE_URL } from '@/api/config';
+import { API } from '@/api';
 import defaultAvatar from '../../images/icon.png'; 
 import CharacterCarousel from '@/components/CharacterCarousel';
 import CharacterCard from '@/components/CharacterCard';
@@ -72,7 +73,7 @@ const UserProfilePage: React.FC = () => {
           setUserId(parsedUserId);
           
           // Get the username of logged-in user
-          const response = await axios.post(`${API_BASE_URL}/api/users/get_username/`, {
+          const response = await API.post('users/get_username/', {
             id: parsedUserId
           });
           setLoggedInUsername(response.data.username);
@@ -90,7 +91,7 @@ const UserProfilePage: React.FC = () => {
       setLoading(true);
       try {
         // Get user data by username
-        const usersResponse = await axios.get(`${API_BASE_URL}/api/users/?search=${username}`);
+        const usersResponse = await API.get(`users/?search=${username}`);
         
         if (usersResponse.data && usersResponse.data.length > 0) {
           const userData = usersResponse.data[0];
@@ -112,7 +113,7 @@ const UserProfilePage: React.FC = () => {
           // Check if logged-in user is already following this user
           if (userId) {
             try {
-              const followingResponse = await axios.get(`${API_BASE_URL}/api/users/${userId}/following/`);
+              const followingResponse = await API.get(`users/${userId}/following/`);
               const isAlreadyFollowing = followingResponse.data.some((user: { username: string }) => user.username === username);
               setIsFollowing(isAlreadyFollowing);
             } catch (error) {
@@ -121,7 +122,7 @@ const UserProfilePage: React.FC = () => {
           }
 
           // Get characters created by this user
-          const charactersResponse = await axios.get(`${API_BASE_URL}/api/characters/`);
+          const charactersResponse = await API.get('characters/');
           console.log('All characters:', charactersResponse.data);
           const userCharacters = charactersResponse.data.filter((char: { creator_username: string }) => char.creator_username === username);
           console.log('Filtered user characters:', userCharacters);
@@ -130,7 +131,7 @@ const UserProfilePage: React.FC = () => {
           // Get favorite characters for this user
           if (userData.id) {
             try {
-              const favResponse = await axios.get(`${API_BASE_URL}/api/users/${userData.id}/favorite_characters/`);
+              const favResponse = await API.get(`users/${userData.id}/favorite_characters/`);
               console.log('Favorite characters:', favResponse.data);
               setFavoriteCharacters(favResponse.data);
             } catch (error) {
@@ -141,10 +142,10 @@ const UserProfilePage: React.FC = () => {
           // Get followers and following lists
           if (userData.id) {
             try {
-              const followersResponse = await axios.get(`${API_BASE_URL}/api/users/${userData.id}/followers/`);
+              const followersResponse = await API.get(`users/${userData.id}/followers/`);
               setFollowers(followersResponse.data);
               
-              const followingResponse = await axios.get(`${API_BASE_URL}/api/users/${userData.id}/following/`);
+              const followingResponse = await API.get(`users/${userData.id}/following/`);
               setFollowing(followingResponse.data);
             } catch (error) {
               console.error('Error fetching followers/following:', error);
@@ -205,7 +206,7 @@ const UserProfilePage: React.FC = () => {
       if (editedEmail !== email) updateData.email = editedEmail;
 
       if (Object.keys(updateData).length > 0) {
-        await axios.patch(`${API_BASE_URL}/api/users/${userId}/`, updateData);
+        await API.patch(`users/${userId}/`, updateData);
         setName(editedName);
         setEmail(editedEmail);
         
@@ -257,15 +258,14 @@ const UserProfilePage: React.FC = () => {
       console.log(pair[0], pair[1]);
     }
 
-    const url = `${API_BASE_URL}/api/users/${userId}/`;
+    const url = `users/${userId}/`;
     console.log('Request URL:', url);
 
     try {
       console.log('Sending PATCH request...');
-      const response = await axios.patch(url, formData, {
+      const response = await API.patch(url, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Token ${localStorage.getItem('token')}`,
         },
       });
       
@@ -334,12 +334,7 @@ const UserProfilePage: React.FC = () => {
         'X-User-ID': userId,
       });
 
-      const response = await axios.post(url, {}, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem('token')}`,
-          'X-User-ID': userId,
-        },
-      });
+      const response = await API.post(url, {});
       
       console.log('SUCCESS! Response:', response.data);
       

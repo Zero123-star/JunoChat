@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Character } from '@/types/character'; // Importă tipul dintr-un singur loc
 import { API_BASE_URL } from './config';
 
-const API = axios.create({
+export const API = axios.create({
   baseURL: `${API_BASE_URL}/api/`,
   headers: {
     'Content-Type': 'application/json',
