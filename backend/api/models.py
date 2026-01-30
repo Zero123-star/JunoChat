@@ -4,6 +4,8 @@ import random, string
 
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='pfp/', blank=True, null=True)
+    profile_picture_data = models.BinaryField(blank=True, null=True)
+    profile_picture_mime = models.CharField(max_length=100, blank=True, null=True)
     code = models.CharField(max_length=100, unique=True, null=True)
     confirmed_email = models.BooleanField(default=False, null=False)
     blocked = models.BooleanField(default=False, null=False)
@@ -72,6 +74,8 @@ class Character(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)  # Câmp pentru imagine
+    avatar_data = models.BinaryField(blank=True, null=True)
+    avatar_mime = models.CharField(max_length=100, blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)  # Câmp pentru sursa (serial/film)
     description = models.TextField(null=True)
     tags = models.ManyToManyField(Tag, related_name='characters', blank=True)

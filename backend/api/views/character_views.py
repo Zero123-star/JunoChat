@@ -104,17 +104,23 @@ class CharacterViewSet(viewsets.ModelViewSet):
                         if avatar_file.startswith('data:image'):
                             try:
                                 format, imgstr = avatar_file.split(';base64,')
+                                mime_type = format.split(':')[1] if ':' in format else 'image/png'
                                 ext = format.split('/')[-1]
-                                from django.core.files.base import ContentFile
-                                import base64
-                                data_bytes = ContentFile(base64.b64decode(imgstr), name=f'{character.id}.{ext}')
+                                decoded_bytes = base64.b64decode(imgstr)
+                                data_bytes = ContentFile(decoded_bytes, name=f'{character.id}.{ext}')
+                                character.avatar_data = decoded_bytes
+                                character.avatar_mime = mime_type
                                 character.avatar.save(f'{character.id}.{ext}', data_bytes, save=True)
                             except Exception as e:
                                 print(f"Error saving base64 avatar: {str(e)}")
                     else:
                         # Handle file upload (multipart/form-data)
                         try:
-                            character.avatar.save(avatar_file.name, avatar_file, save=True)
+                            file_mime = getattr(avatar_file, 'content_type', None)
+                            file_content = avatar_file.read()
+                            character.avatar_data = file_content
+                            character.avatar_mime = file_mime or 'application/octet-stream'
+                            character.avatar.save(avatar_file.name, ContentFile(file_content), save=True)
                         except Exception as e:
                             print(f"Error saving uploaded avatar: {str(e)}")
                 
@@ -144,9 +150,13 @@ class CharacterViewSet(viewsets.ModelViewSet):
                         # Extract base64 data
                         format, imgstr = avatar_data.split(';base64,')
                         ext = format.split('/')[-1]  # Get file extension
+                        mime_type = format.split(':')[1] if ':' in format else 'image/png'
                         
                         # Decode base64 and create ContentFile
-                        file_data = ContentFile(base64.b64decode(imgstr), name=f'{instance.id}_updated.{ext}')
+                        decoded_bytes = base64.b64decode(imgstr)
+                        file_data = ContentFile(decoded_bytes, name=f'{instance.id}_updated.{ext}')
+                        instance.avatar_data = decoded_bytes
+                        instance.avatar_mime = mime_type
                         instance.avatar.save(f'{instance.id}_updated.{ext}', file_data, save=False)
                         
                         # Remove avatar from data so serializer doesn't try to process it
@@ -156,6 +166,18 @@ class CharacterViewSet(viewsets.ModelViewSet):
                         data.pop('avatar', None)
                 elif avatar_data.startswith('http'):
                     # Existing URL - don't try to update it, just remove from data
+                    data.pop('avatar', None)
+            elif 'avatar' in request.FILES:
+                file_obj = request.FILES['avatar']
+                try:
+                    file_content = file_obj.read()
+                    mime_type = getattr(file_obj, 'content_type', None)
+                    instance.avatar_data = file_content
+                    instance.avatar_mime = mime_type or 'application/octet-stream'
+                    instance.avatar.save(file_obj.name, ContentFile(file_content), save=False)
+                except Exception as e:
+                    print(f"Error saving uploaded avatar: {str(e)}")
+                finally:
                     data.pop('avatar', None)
             
             # Use serializer for other fields

@@ -34,21 +34,33 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         
         # Handle profile picture if provided
         profile_picture_data = request.data.get('profile_picture') or request.FILES.get('profile_picture')
+        binary_payload = None
+        mime_type = None
         if profile_picture_data:
             try:
                 if isinstance(profile_picture_data, str) and profile_picture_data.startswith('data:image'):
                     # Handle base64 string
                     format_info, imgstr = profile_picture_data.split(';base64,')
+                    mime_type = format_info.split(':')[1] if ':' in format_info else 'image/png'
                     ext = format_info.split('/')[-1]
-                    data_bytes = ContentFile(base64.b64decode(imgstr), name=f'profile_{instance.id}.{ext}')
+                    binary_payload = base64.b64decode(imgstr)
+                    data_bytes = ContentFile(binary_payload, name=f'profile_{instance.id}.{ext}')
                     instance.profile_picture.save(f'profile_{instance.id}.{ext}', data_bytes, save=True)
                     print(f"Profile picture saved as base64")
                 else:
                     # Handle multipart file upload
-                    instance.profile_picture.save(profile_picture_data.name, profile_picture_data, save=True)
+                    mime_type = getattr(profile_picture_data, 'content_type', None)
+                    binary_payload = profile_picture_data.read()
+                    file_name = getattr(profile_picture_data, 'name', f'profile_{instance.id}')
+                    instance.profile_picture.save(file_name, ContentFile(binary_payload), save=True)
                     print(f"Profile picture saved as file upload")
             except Exception as e:
                 print(f"Error saving profile picture: {str(e)}")
+            finally:
+                if binary_payload:
+                    instance.profile_picture_data = binary_payload
+                    instance.profile_picture_mime = mime_type or 'application/octet-stream'
+                    instance.save(update_fields=['profile_picture_data', 'profile_picture_mime'])
         
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)

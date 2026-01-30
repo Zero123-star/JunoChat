@@ -1,5 +1,14 @@
+import base64
 from rest_framework import serializers
 from .models import CustomUser, Follow, Tag, Character, Message, Chat, GroupChatMessage, GroupChat
+
+
+def _build_data_url(binary_data, mime_type):
+    if not binary_data:
+        return None
+    encoded = base64.b64encode(binary_data).decode('ascii')
+    mime = mime_type or 'application/octet-stream'
+    return f'data:{mime};base64,{encoded}'
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -25,14 +34,15 @@ class CustomUserSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if obj.profile_picture:
             try:
-                if request:
-                    return request.build_absolute_uri(obj.profile_picture.url)
-                else:
+                # Check if file actually exists on disk
+                if obj.profile_picture.storage.exists(obj.profile_picture.name):
+                    if request:
+                        return request.build_absolute_uri(obj.profile_picture.url)
                     return obj.profile_picture.url
-            except:
-                # If file doesn't exist, return None to signal frontend to use default
-                return None
-        return None
+            except Exception:
+                pass
+        # Fallback to binary data stored in DB
+        return _build_data_url(obj.profile_picture_data, obj.profile_picture_mime)
 
 class FollowSerializer(serializers.ModelSerializer):
     follower_username = serializers.ReadOnlyField(source='follower.username')
@@ -64,11 +74,16 @@ class CharacterSerializer(serializers.ModelSerializer):
     def get_avatar(self, obj):
         request = self.context.get('request')
         if obj.avatar:
-            if request:
-                return request.build_absolute_uri(obj.avatar.url)
-            else:
-                return obj.avatar.url
-        return None
+            try:
+                # Check if file actually exists on disk
+                if obj.avatar.storage.exists(obj.avatar.name):
+                    if request:
+                        return request.build_absolute_uri(obj.avatar.url)
+                    return obj.avatar.url
+            except Exception:
+                pass
+        # Fallback to binary data stored in DB
+        return _build_data_url(obj.avatar_data, obj.avatar_mime)
     
     def get_is_favorited(self, obj):
         request = self.context.get('request')
