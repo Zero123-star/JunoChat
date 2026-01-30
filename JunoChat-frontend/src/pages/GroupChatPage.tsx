@@ -136,7 +136,14 @@ const GroupChatPage: React.FC = () => {
             role: 'assistant',
             content: botReply,
             sender_name: character.name,
-            sender_id: character.id
+            sender_id: character.id,
+            sender_bot: character.id,
+            sender_type: 'bot',
+            sender_bot_avatar: {
+              id: character.id,
+              name: character.name,
+              avatar: character.avatar
+            }
           };
 
           // Store bot message
