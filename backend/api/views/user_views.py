@@ -1,9 +1,11 @@
 import requests###pip install requests
 import json
 import uuid
+import base64
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.core.files.base import ContentFile
 from rest_framework import viewsets, filters, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
@@ -22,13 +24,31 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     search_fields = ['username', 'email']
     
     def update(self, request, *args, **kwargs):
-        """Override update to handle profile picture uploads"""
+        """Override update to handle profile picture uploads (base64 or multipart)"""
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         
         print(f"Updating user {instance.id} - {instance.username}")
         print(f"Request data: {request.data}")
         print(f"Request files: {request.FILES}")
+        
+        # Handle profile picture if provided
+        profile_picture_data = request.data.get('profile_picture') or request.FILES.get('profile_picture')
+        if profile_picture_data:
+            try:
+                if isinstance(profile_picture_data, str) and profile_picture_data.startswith('data:image'):
+                    # Handle base64 string
+                    format_info, imgstr = profile_picture_data.split(';base64,')
+                    ext = format_info.split('/')[-1]
+                    data_bytes = ContentFile(base64.b64decode(imgstr), name=f'profile_{instance.id}.{ext}')
+                    instance.profile_picture.save(f'profile_{instance.id}.{ext}', data_bytes, save=True)
+                    print(f"Profile picture saved as base64")
+                else:
+                    # Handle multipart file upload
+                    instance.profile_picture.save(profile_picture_data.name, profile_picture_data, save=True)
+                    print(f"Profile picture saved as file upload")
+            except Exception as e:
+                print(f"Error saving profile picture: {str(e)}")
         
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
