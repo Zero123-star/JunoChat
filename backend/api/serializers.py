@@ -146,11 +146,13 @@ class ChatListSerializer(serializers.ModelSerializer):
 
 class GroupChatMessageSerializer(serializers.ModelSerializer):
     sender_username = serializers.SerializerMethodField()
+    sender_user_profile = serializers.SerializerMethodField()
+    sender_bot_avatar = serializers.SerializerMethodField()
     
     class Meta:
         model = GroupChatMessage
-        fields = ['id', 'description', 'timestamp', 'group_chat', 'sender_user', 'sender_bot', 'number', 'sender_username']
-        read_only_fields = ['timestamp', 'number', 'sender_username']
+        fields = ['id', 'description', 'timestamp', 'group_chat', 'sender_user', 'sender_bot', 'number', 'sender_username', 'sender_user_profile', 'sender_bot_avatar']
+        read_only_fields = ['timestamp', 'number', 'sender_username', 'sender_user_profile', 'sender_bot_avatar']
     
     def get_sender_username(self, obj):
         if obj.sender_user:
@@ -158,15 +160,31 @@ class GroupChatMessageSerializer(serializers.ModelSerializer):
         elif obj.sender_bot:
             return obj.sender_bot.name
         return None
+    
+    def get_sender_user_profile(self, obj):
+        """Return user profile picture if sender is a user"""
+        if obj.sender_user:
+            serializer = CustomUserSerializer(obj.sender_user, context=self.context)
+            return {'username': obj.sender_user.username, 'profile_picture': serializer.data['profile_picture']}
+        return None
+    
+    def get_sender_bot_avatar(self, obj):
+        """Return bot avatar if sender is a character/bot"""
+        if obj.sender_bot:
+            serializer = CharacterSerializer(obj.sender_bot, context=self.context)
+            return {'name': obj.sender_bot.name, 'avatar': serializer.data['avatar']}
+        return None
 
 class GroupChatSerializer(serializers.ModelSerializer):
     user_username = serializers.ReadOnlyField(source='user.username')
-    chatbot_names = serializers.SerializerMethodField()
+    chatbots_full = serializers.SerializerMethodField()
     messages = GroupChatMessageSerializer(many=True, read_only=True)
     
     class Meta:
         model = GroupChat
-        fields = ['id', 'user', 'chatbots', 'user_username', 'chatbot_names', 'messages', 'created_at']
+        fields = ['id', 'user', 'chatbots', 'user_username', 'chatbots_full', 'messages', 'created_at']
     
-    def get_chatbot_names(self, obj):
-        return [bot.name for bot in obj.chatbots.all()]
+    def get_chatbots_full(self, obj):
+        """Return full character data including avatars"""
+        serializer = CharacterSerializer(obj.chatbots.all(), many=True, context=self.context)
+        return serializer.data
