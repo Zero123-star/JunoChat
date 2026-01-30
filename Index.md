@@ -9,7 +9,8 @@
 
 ## Live Application
 
-**URL:** https://talented-spontaneity-production.up.railway.app/
+**Frontend:** https://talented-spontaneity-production.up.railway.app/  
+**Backend API:** https://project-inginerie-software-juno-production.up.railway.app/api/
 
 **Features Available:**
 - User registration and authentication
