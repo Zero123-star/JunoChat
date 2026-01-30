@@ -17,10 +17,18 @@ export const getGameState = async () => {
   return response.data;
 };
 
-export const playerAction = async (actionType: string, abilityName?: string) => {
+export const setApiKey = async (apiKey: string) => {
+  const response = await RPG_API.post('set_api_key/', {
+    api_key: apiKey
+  });
+  return response.data;
+};
+
+export const playerAction = async (actionType: string, abilityName?: string, message?: string) => {
   const response = await RPG_API.post('player_action/', {
     action_type: actionType,
-    ability_name: abilityName
+    ability_name: abilityName,
+    message: message
   });
   return response.data;
 };

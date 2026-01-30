@@ -8,10 +8,10 @@ interface Message {
   content: string;
 }
 interface Character {
-  characterId: number;
+  characterId: string; // Changed from number to string
   name: string;
   description: string;
-  avatar?: string; // Optional avatar property
+  avatar?: string;
 }
 
 const ChatPage: React.FC = () => {
@@ -97,15 +97,16 @@ const ChatPage: React.FC = () => {
     try {
       const userId = localStorage.getItem('user');
       if (characterId && userId) {
-        await storeMessage(chatId, { role: 'user', content: input, id: parseInt(userId) });
+        await storeMessage(chatId, { role: 'user', content: input, id: userId });
       }
       
       const response = await openrouter_chat([...messages, userMessage], characterId);
       const botReply = response.choices[0].message.content;
       const botMessage: Message = { role: 'assistant', content: botReply };
       
-      const charId = characterId ? parseInt(characterId) : 0;
+      const charId = characterId;
       if (charId) {
+        // Pass characterId directly as a string
         await storeMessage(chatId, { role: 'assistant', content: botReply, id: charId });
       }
       setMessages(prev => [...prev, botMessage]);

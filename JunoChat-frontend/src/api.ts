@@ -7,6 +7,7 @@ const API = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,  
 });
 
 // Add request interceptor to include auth token
@@ -191,7 +192,7 @@ export const getChatMessages = async (chat_id: number) => {
   return response.data;
 };
 //Stores a new message in the database, given the chat id and the message content
-export const storeMessage = async (chat_id: number, message: { role: string, content: string, id: number }) => {
+export const storeMessage = async (chat_id: number, message: { role: string, content: string, id: string }) => {
   console.log("(API)Storing message in chat ID:", chat_id, "with content:", message);
   const json = { chat_id: chat_id, message: message };
   const response = await API.post('messages/store_message/', json);
