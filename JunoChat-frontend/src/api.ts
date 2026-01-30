@@ -67,6 +67,11 @@ export const fetchCharacter = async (id: string): Promise<Character> => {
   return response.data;
 };
 
+export const fetchMyCharacters = async (): Promise<Character[]> => {
+  const response = await API.get<Character[]>('characters/my_characters/');
+  return response.data;
+};
+
 export const fetchUserCharacters = async (userId: number) => {
   const response = await API.get<Character[]>(`users/${userId}/characters/`);
   return response.data; // Returnează doar personajele utilizatorului

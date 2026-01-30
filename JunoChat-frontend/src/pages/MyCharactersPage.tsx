@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-import axios from 'axios';
+import { fetchMyCharacters, deleteCharacter } from '../api';
+import { toast } from 'sonner';
 
 interface Character {
   id: string;
@@ -20,7 +21,7 @@ const MyCharactersPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMyCharacters = async () => {
+    const loadMyCharacters = async () => {
       try {
         const userId = localStorage.getItem('user');
         if (!userId) {
@@ -28,27 +29,18 @@ const MyCharactersPage: React.FC = () => {
           return;
         }
 
-        // Get current user's username
-        const userResponse = await axios.post(`${API_BASE_URL}/api/users/get_username/`, {
-          id: JSON.parse(userId)
-        });
-        const currentUsername = userResponse.data.username;
-
-        // Get all characters and filter by creator
-        const charactersResponse = await axios.get(`${API_BASE_URL}/api/characters/`);
-        
-        const myCharacters = charactersResponse.data.filter(
-          (char: Character) => char.creator_username === currentUsername
-        );
+        // Fetch characters created by current user
+        const myCharacters = await fetchMyCharacters();
         setCharacters(myCharacters);
       } catch (error) {
         console.error('Error fetching characters:', error);
+        toast.error('Failed to load your characters');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMyCharacters();
+    loadMyCharacters();
   }, [navigate]);
 
   const handleDelete = async (characterId: string) => {
@@ -57,11 +49,12 @@ const MyCharactersPage: React.FC = () => {
     }
 
     try {
-      await axios.delete(`${API_BASE_URL}/api/characters/${characterId}/`);
+      await deleteCharacter(characterId);
       setCharacters(characters.filter(char => char.id !== characterId));
+      toast.success('Character deleted successfully!');
     } catch (error) {
       console.error('Error deleting character:', error);
-      alert('Failed to delete character');
+      toast.error('Failed to delete character');
     }
   };
 
