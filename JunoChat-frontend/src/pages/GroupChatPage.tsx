@@ -14,11 +14,11 @@ interface Message {
   sender_name?: string;
   sender_username?: string;
   sender_id?: string;
-  sender_user?: number;
-  sender_bot?: number;
+  sender_user?: number | string;
+  sender_bot?: number | string;
   sender_type?: 'user' | 'bot';
-  sender_user_profile?: { id: number; username: string; profile_picture?: string };
-  sender_bot_avatar?: { id: number; name: string; avatar?: string };
+  sender_user_profile?: { id: number | string; username: string; profile_picture?: string };
+  sender_bot_avatar?: { id: number | string; name: string; avatar?: string };
   timestamp?: string;
 }
 
@@ -30,7 +30,7 @@ const GroupChatPage: React.FC = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [botAvatars, setBotAvatars] = useState<Record<string, string>>({});
+  const [botAvatars, setBotAvatars] = useState<Record<string | number, string>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const errorShownRef = useRef<Set<string>>(new Set()); // Track shown errors to avoid duplicates
 
@@ -85,9 +85,9 @@ const GroupChatPage: React.FC = () => {
         setMessages(mappedMessages);
         
         // Extract bot avatars from messages for fallback
-        const avatars: Record<string, string> = {};
+        const avatars: Record<string | number, string> = {};
         mappedMessages.forEach(msg => {
-          if (msg.sender_bot_avatar?.avatar && msg.sender_bot) {
+          if (msg.sender_bot_avatar?.avatar && msg.sender_bot !== undefined) {
             avatars[msg.sender_bot] = msg.sender_bot_avatar.avatar;
           }
         });
@@ -312,12 +312,12 @@ const GroupChatPage: React.FC = () => {
             {messages.length > 0 ? (
                   messages.map((message, index) => {
                     // Use message ID if available, otherwise use index
-                    const messageKey = message.id !== undefined ? message.id : `local-${index}`;
+                    const messageKey = (message.id !== undefined && message.id !== null) ? String(message.id) : `local-${index}`;
                     
                     // Determine sender_type with fallback inference
                     let senderType = message.sender_type;
                     if (!senderType) {
-                      senderType = message.sender_bot ? 'bot' : (message.sender_user ? 'user' : undefined);
+                      senderType = message.sender_bot !== undefined ? 'bot' : (message.sender_user !== undefined ? 'user' : undefined);
                     }
                     const isBot = senderType === 'bot';
                     
