@@ -8,6 +8,7 @@ import { Users, ArrowLeft } from 'lucide-react';
 import { Character } from '@/types/character';
 
 interface Message {
+  id?: number | string; // Unique message ID from API or generated locally
   role: 'user' | 'assistant';
   content: string;
   sender_name?: string;
@@ -18,6 +19,7 @@ interface Message {
   sender_type?: 'user' | 'bot';
   sender_user_profile?: { id: number; username: string; profile_picture?: string };
   sender_bot_avatar?: { id: number; name: string; avatar?: string };
+  timestamp?: string;
 }
 
 const GroupChatPage: React.FC = () => {
@@ -88,6 +90,7 @@ const GroupChatPage: React.FC = () => {
     }
 
     const userMessage: Message = { 
+      id: `user-${Date.now()}`, // Unique ID for local messages
       role: 'user', 
       content: input,
       sender_name: 'You',
@@ -148,6 +151,7 @@ const GroupChatPage: React.FC = () => {
           }
           
           const botMessage: Message = {
+            id: `bot-${character.id}-${Date.now()}`, // Unique ID for bot messages
             role: 'assistant',
             content: botReply,
             sender_name: character.name,
@@ -273,6 +277,9 @@ const GroupChatPage: React.FC = () => {
           <div className="space-y-4 py-12">
             {messages.length > 0 ? (
                   messages.map((message, index) => {
+                    // Use message ID if available, otherwise use index
+                    const messageKey = message.id !== undefined ? message.id : `local-${index}`;
+                    
                     // Determine sender_type with fallback inference
                     let senderType = message.sender_type;
                     if (!senderType) {
@@ -282,7 +289,7 @@ const GroupChatPage: React.FC = () => {
                     
                     return (
                     <div
-                      key={index}
+                      key={messageKey}
                       className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} items-start group`}
                     >
                       {/* Bot Avatar - Only show if sender_type is 'bot' */}
