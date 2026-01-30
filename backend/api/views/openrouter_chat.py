@@ -217,4 +217,3 @@ class CustomOpenrouterViewset(viewsets.ViewSet):
                 error_response["error"] = "Bad request to OpenRouter. Check your API key and model configuration."
             print(f"OpenRouter API Error: {error_response}")
             return JsonResponse(error_response, status=response.status_code)
-            }, status=response.status_code)
