@@ -30,7 +30,6 @@ const GroupChatPage: React.FC = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [botAvatars, setBotAvatars] = useState<Record<string | number, string>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const errorShownRef = useRef<Set<string>>(new Set()); // Track shown errors to avoid duplicates
 
@@ -141,7 +140,7 @@ const GroupChatPage: React.FC = () => {
         console.error('Failed to store user message:', storeError);
         showErrorOnce('store-user-msg', 'Failed to save your message');
       }
-      console.log("hey")
+      
       // Get responses from each bot
       const updatedMessages = [...messages, userMessage];
       let successCount = 0;
@@ -165,6 +164,56 @@ const GroupChatPage: React.FC = () => {
           }
           
           let botReply = response.choices[0].message.content;
+          
+          // Check if backend parsed multiple messages
+          let parsedMessages: Array<{sender: string; content: string}> = [];
+          if (response.parsed_messages && response.parsed_messages.length > 0) {
+            parsedMessages = response.parsed_messages;
+            console.log(`Backend detected ${parsedMessages.length} messages:`, parsedMessages);
+          }
+          
+          // If we have parsed messages, create separate Message objects for each
+          if (parsedMessages.length > 0) {
+            for (const parsedMsg of parsedMessages) {
+              const senderName = parsedMsg.sender.trim();
+              const msgContent = parsedMsg.content.trim();
+              
+              if (!msgContent) continue; // Skip empty messages
+              
+              // Find the character that matches this sender name
+              const senderChar = characters.find(c => c.name.toLowerCase() === senderName.toLowerCase());
+              
+              if (senderChar) {
+                const botMessage: Message = {
+                  id: `bot-${senderChar.id}-${Date.now()}-${Math.random()}`,
+                  role: 'assistant',
+                  content: msgContent,
+                  sender_name: senderChar.name,
+                  sender_id: senderChar.id,
+                  sender_bot: senderChar.id,
+                  sender_type: 'bot',
+                  sender_bot_avatar: {
+                    id: senderChar.id,
+                    name: senderChar.name,
+                    avatar: senderChar.avatar
+                  }
+                };
+                
+                await storeGroupChatMessage(groupChatId, {
+                  role: 'assistant',
+                  content: msgContent,
+                  id: senderChar.id
+                });
+                
+                setMessages(prev => [...prev, botMessage]);
+                updatedMessages.push(botMessage);
+              }
+            }
+            successCount++;
+            continue;
+          }
+          
+          // Fallback: if no parsed messages, treat entire response as single message from current character
           
           // Log raw response for debugging concatenation issues
           console.log(`Raw response from ${character.name}:`, {

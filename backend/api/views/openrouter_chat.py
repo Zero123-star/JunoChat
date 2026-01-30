@@ -203,7 +203,29 @@ class CustomOpenrouterViewset(viewsets.ViewSet):
         )
 
         if response.status_code == 200:
-            return JsonResponse(response.json())
+            result = response.json()
+            
+            # If this is a group chat, try to parse multiple bot messages from the response
+            if is_group_chat:
+                try:
+                    response_text = result.get('choices', [{}])[0].get('message', {}).get('content', '')
+                    
+                    # Parse messages with format: <Message sent by: CharName> Message content
+                    import re
+                    pattern = r'<Message sent by:\s*([^>]+)>\s*([^<]*?)(?=<Message sent by:|$)'
+                    matches = re.findall(pattern, response_text, re.DOTALL)
+                    
+                    if matches and len(matches) > 1:
+                        print(f"Detected {len(matches)} messages in group chat response")
+                        # Store parsed messages for potential future use
+                        result['parsed_messages'] = [
+                            {'sender': match[0].strip(), 'content': match[1].strip()}
+                            for match in matches
+                        ]
+                except Exception as e:
+                    print(f"Error parsing multiple messages: {e}")
+            
+            return JsonResponse(result)
         else:
             error_response = {
                 "error": f"OpenRouter API returned status code {response.status_code}",
