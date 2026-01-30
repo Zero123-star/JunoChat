@@ -90,7 +90,14 @@ const GroupChatPage: React.FC = () => {
     const userMessage: Message = { 
       role: 'user', 
       content: input,
-      sender_name: 'You'
+      sender_name: 'You',
+      sender_type: 'user',
+      sender_user: parseInt(userId),
+      sender_user_profile: {
+        id: parseInt(userId),
+        username: localStorage.getItem('username') || 'You',
+        profile_picture: localStorage.getItem('profile_picture') || undefined
+      }
     };
     
     setMessages(prev => [...prev, userMessage]);
