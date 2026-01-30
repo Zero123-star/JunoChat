@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { motion } from 'framer-motion';
 import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { toast } from 'sonner';
 import axios from 'axios';
+import { API_BASE_URL } from '@/api/config';
 import defaultAvatar from '../../images/icon.png'; 
 import CharacterCarousel from '@/components/CharacterCarousel';
 import CharacterCard from '@/components/CharacterCard';
@@ -99,7 +101,7 @@ const UserProfilePage: React.FC = () => {
           const profilePicUrl = userData.profile_picture
             ? (userData.profile_picture.startsWith('http') 
                 ? userData.profile_picture 
-                : `http://localhost:8000${userData.profile_picture}`)
+                : `${API_BASE_URL}${userData.profile_picture}`)
             : defaultAvatar;
           setProfileImage(profilePicUrl);
           
@@ -110,7 +112,7 @@ const UserProfilePage: React.FC = () => {
           // Check if logged-in user is already following this user
           if (userId) {
             try {
-              const followingResponse = await axios.get(`http://localhost:8000/api/users/${userId}/following/`);
+              const followingResponse = await axios.get(`${API_BASE_URL}/api/users/${userId}/following/`);
               const isAlreadyFollowing = followingResponse.data.some((user: { username: string }) => user.username === username);
               setIsFollowing(isAlreadyFollowing);
             } catch (error) {
@@ -119,7 +121,7 @@ const UserProfilePage: React.FC = () => {
           }
 
           // Get characters created by this user
-          const charactersResponse = await axios.get(`http://localhost:8000/api/characters/`);
+          const charactersResponse = await axios.get(`${API_BASE_URL}/api/characters/`);
           console.log('All characters:', charactersResponse.data);
           const userCharacters = charactersResponse.data.filter((char: { creator_username: string }) => char.creator_username === username);
           console.log('Filtered user characters:', userCharacters);
@@ -128,7 +130,7 @@ const UserProfilePage: React.FC = () => {
           // Get favorite characters for this user
           if (userData.id) {
             try {
-              const favResponse = await axios.get(`http://localhost:8000/api/users/${userData.id}/favorite_characters/`);
+              const favResponse = await axios.get(`${API_BASE_URL}/api/users/${userData.id}/favorite_characters/`);
               console.log('Favorite characters:', favResponse.data);
               setFavoriteCharacters(favResponse.data);
             } catch (error) {
@@ -139,10 +141,10 @@ const UserProfilePage: React.FC = () => {
           // Get followers and following lists
           if (userData.id) {
             try {
-              const followersResponse = await axios.get(`http://localhost:8000/api/users/${userData.id}/followers/`);
+              const followersResponse = await axios.get(`${API_BASE_URL}/api/users/${userData.id}/followers/`);
               setFollowers(followersResponse.data);
               
-              const followingResponse = await axios.get(`http://localhost:8000/api/users/${userData.id}/following/`);
+              const followingResponse = await axios.get(`${API_BASE_URL}/api/users/${userData.id}/following/`);
               setFollowing(followingResponse.data);
             } catch (error) {
               console.error('Error fetching followers/following:', error);
@@ -154,6 +156,8 @@ const UserProfilePage: React.FC = () => {
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
+        const errorMsg = error instanceof Error ? error.message : 'Failed to load profile';
+        toast.error(`Error loading profile: ${errorMsg}`);
         setName(username || 'Unknown User');
         setEmail('Error loading profile');
       } finally {
@@ -201,7 +205,7 @@ const UserProfilePage: React.FC = () => {
       if (editedEmail !== email) updateData.email = editedEmail;
 
       if (Object.keys(updateData).length > 0) {
-        await axios.patch(`http://localhost:8000/api/users/${userId}/`, updateData);
+        await axios.patch(`${API_BASE_URL}/api/users/${userId}/`, updateData);
         setName(editedName);
         setEmail(editedEmail);
         
@@ -217,10 +221,11 @@ const UserProfilePage: React.FC = () => {
       }
 
       setIsEditingProfile(false);
-      alert('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      const errorMsg = error instanceof Error ? error.message : 'Failed to update profile';
+      toast.error(`Error updating profile: ${errorMsg}`);
     }
   };
 
@@ -252,7 +257,7 @@ const UserProfilePage: React.FC = () => {
       console.log(pair[0], pair[1]);
     }
 
-    const url = `http://localhost:8000/api/users/${userId}/`;
+    const url = `${API_BASE_URL}/api/users/${userId}/`;
     console.log('Request URL:', url);
 
     try {
@@ -271,14 +276,14 @@ const UserProfilePage: React.FC = () => {
       if (response.data.profile_picture) {
         const imageUrl = response.data.profile_picture.startsWith('http') 
           ? response.data.profile_picture 
-          : `http://localhost:8000${response.data.profile_picture}`;
+          : `${API_BASE_URL}${response.data.profile_picture}`;
         console.log('Setting new profile image:', imageUrl);
         setProfileImage(imageUrl);
       }
       
       setHasUnsavedChanges(false);
       setSelectedFile(null);
-      alert('Profile picture updated successfully!');
+      toast.success('Profile picture updated successfully!');
       
       // Reload the page to fetch fresh data
       setTimeout(() => window.location.reload(), 1000);
@@ -302,7 +307,7 @@ const UserProfilePage: React.FC = () => {
                    'Unknown error';
       }
       
-      alert(`Failed to update profile picture:\n${JSON.stringify(errorMsg, null, 2)}`);
+      toast.error(`Failed to update profile picture: ${errorMsg}`);
     }
   };
 
@@ -320,8 +325,8 @@ const UserProfilePage: React.FC = () => {
 
     try {
       const url = isFollowing 
-        ? `http://localhost:8000/api/users/${profileUserId}/unfollow/`
-        : `http://localhost:8000/api/users/${profileUserId}/follow/`;
+        ? `${API_BASE_URL}/api/users/${profileUserId}/unfollow/`
+        : `${API_BASE_URL}/api/users/${profileUserId}/follow/`;
       
       console.log('Request URL:', url);
       console.log('Request headers:', {
