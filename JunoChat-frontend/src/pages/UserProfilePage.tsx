@@ -39,6 +39,7 @@ const UserProfilePage: React.FC = () => {
   
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(defaultAvatar);
+  const [imageLoadError, setImageLoadError] = useState(false);
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [createdCharacters, setCreatedCharacters] = useState<Character[]>([]);
@@ -170,6 +171,12 @@ const UserProfilePage: React.FC = () => {
       fetchProfile();
     }
   }, [username, userId]);
+
+  const handleImageLoadError = () => {
+    console.warn('Failed to load profile image, using default avatar');
+    setImageLoadError(true);
+    setProfileImage(defaultAvatar);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isOwnProfile) return; // Prevent non-owners from changing image
@@ -382,12 +389,13 @@ const UserProfilePage: React.FC = () => {
       >
         <div className="bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-pink-100">
           <div className="text-center mb-8">
-            {profileImage ? (
+            {profileImage && !imageLoadError ? (
               <img
                 src={profileImage}
                 alt="Profile"
                 className={`h-32 w-32 object-cover rounded-full mx-auto border-4 border-white shadow-md ${isOwnProfile ? 'cursor-pointer hover:opacity-80 transition' : ''}`}
                 onClick={() => isOwnProfile && document.getElementById('profileImageInput')?.click()}
+                onError={handleImageLoadError}
               />
             ) : (
               <motion.div 

@@ -24,10 +24,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
     def get_profile_picture(self, obj):
         request = self.context.get('request')
         if obj.profile_picture:
-            if request:
-                return request.build_absolute_uri(obj.profile_picture.url)
-            else:
-                return obj.profile_picture.url
+            try:
+                if request:
+                    return request.build_absolute_uri(obj.profile_picture.url)
+                else:
+                    return obj.profile_picture.url
+            except:
+                # If file doesn't exist, return None to signal frontend to use default
+                return None
         return None
 
 class FollowSerializer(serializers.ModelSerializer):
