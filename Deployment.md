@@ -6,7 +6,7 @@ JunoChat is currently deployed on **Railway.app** - a free, credit-card-free dep
 
 ### Live Application
 
-**Production URL**: https://proiect-inginerie-software-juno-production.up.railway.app
+**Production URL**: https://talented-spontaneity-production.up.railway.app/
 
 ### Architecture
 
@@ -57,9 +57,9 @@ DATABASE_URL=postgresql://...  # Railway managed PostgreSQL
 DJANGO_SECRET_KEY=<secret>
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=.railway.app,.up.railway.app
-FRONTEND_URL=https://proiect-inginerie-software-juno-production.up.railway.app
-VITE_API_URL=https://proiect-inginerie-software-juno-production.up.railway.app
-SITE_URL=https://proiect-inginerie-software-juno-production.up.railway.app
+FRONTEND_URL=https://talented-spontaneity-production.up.railway.app/
+VITE_API_URL=https://talented-spontaneity-production.up.railway.app/
+SITE_URL=https://talented-spontaneity-production.up.railway.app/
 ```
 
 **Key Features**:
@@ -82,7 +82,7 @@ npm run build  # Outputs to dist/
 
 **Environment Variables**:
 ```
-VITE_API_URL=https://proiect-inginerie-software-juno-production.up.railway.app
+VITE_API_URL=https://talented-spontaneity-production.up.railway.app/
 ```
 
 **Features**:
@@ -171,7 +171,7 @@ Characters API returns full absolute URLs:
 {
   "id": "...",
   "name": "Naruto",
-  "avatar": "https://proiect-inginerie-software-juno-production.up.railway.app/media/avatars/naruto.webp",
+  "avatar": "https://talented-spontaneity-production.up.railway.app//media/avatars/naruto.webp",
   ...
 }
 ```
@@ -233,7 +233,7 @@ Characters API returns full absolute URLs:
 curl https://api.railway.app/api/characters/
 
 # Frontend accessible
-curl https://proiect-inginerie-software-juno-production.up.railway.app
+curl https://talented-spontaneity-production.up.railway.app/
 
 # Database migration status
 # (Check Railway logs for "Applying..." messages)

@@ -187,7 +187,7 @@
 ### For University Capstone Evaluation
 
 - **[Deployment.md](Deployment.md)** - START HERE
-  - Live application URL: https://proiect-inginerie-software-juno-production.up.railway.app
+  - Live application URL: https://talented-spontaneity-production.up.railway.app/
   - Railway deployment guide with cost breakdown
   - Local development setup instructions
   - Production troubleshooting
@@ -226,7 +226,7 @@
 
 ## Quick Start for Evaluation
 
-1. **View Live Application**: https://proiect-inginerie-software-juno-production.up.railway.app
+1. **View Live Application**: https://talented-spontaneity-production.up.railway.app/
    - Register new account with any email
    - Browse characters with avatars loaded
    - Chat with any character via OpenRouter API

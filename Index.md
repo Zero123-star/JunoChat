@@ -9,7 +9,7 @@
 
 ## Live Application
 
-**URL:** https://proiect-inginerie-software-juno-production.up.railway.app
+**URL:** https://talented-spontaneity-production.up.railway.app/
 
 **Features Available:**
 - User registration and authentication
@@ -26,7 +26,7 @@
 
 ### For Quick Review (Start Here)
 
-1. **Live App:** https://proiect-inginerie-software-juno-production.up.railway.app
+1. **Live App:** https://talented-spontaneity-production.up.railway.app/
 2. **Demo Video:** https://drive.google.com/file/d/1ACU5ZaR8D4o54at9JxEwARJfdpTKmDbQ/view?usp=sharing
 3. **Project Overview:** [README.md](README.md)
 4. **Deliverables Summary:** [Deliverables.md](Deliverables.md)
@@ -208,7 +208,7 @@
 
 | Service | Status | URL |
 |---------|--------|-----|
-| Frontend | Running | https://proiect-inginerie-software-juno-production.up.railway.app |
+| Frontend | Running | https://talented-spontaneity-production.up.railway.app/ |
 | Backend API | Running | /api/ endpoints responding |
 | Database | Running | PostgreSQL connected and migrated |
 | Media Server | Running | /media/ endpoints serving images |
@@ -228,7 +228,7 @@
 
 ### Step 1: Access Live Application
 ```
-URL: https://proiect-inginerie-software-juno-production.up.railway.app
+URL: https://talented-spontaneity-production.up.railway.app/
 Expected: Homepage loads with character grid
 ```
 
@@ -392,7 +392,7 @@ All capstone requirements have been met:
 - CI/CD pipeline established
 - Code quality verified
 
-**Application URL:** https://proiect-inginerie-software-juno-production.up.railway.app  
+**Application URL:** https://talented-spontaneity-production.up.railway.app/  
 **Documentation:** See links above  
 **Demo:** https://drive.google.com/file/d/1ACU5ZaR8D4o54at9JxEwARJfdpTKmDbQ/view?usp=sharing
 

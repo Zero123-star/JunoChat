@@ -1,7 +1,7 @@
 # JunoChat - Capstone Deliverables Summary
 
 ## Live Application
-- **URL:** https://proiect-inginerie-software-juno-production.up.railway.app
+- **URL:** https://talented-spontaneity-production.up.railway.app/
 - **Status:** Active and production-ready
 
 ## Demo Video
@@ -157,7 +157,7 @@
 
 ## Quick Start for Evaluation
 
-1. **Visit Live App**: https://proiect-inginerie-software-juno-production.up.railway.app
+1. **Visit Live App**: https://talented-spontaneity-production.up.railway.app/
 2. **Watch Demo**: https://drive.google.com/file/d/1ACU5ZaR8D4o54at9JxEwARJfdpTKmDbQ/view?usp=sharing
 3. **Review Architecture**: [Architecture.md](Architecture.md) - C4 diagrams and data flows
 4. **Understand Deployment**: [Deployment.md](Deployment.md) - Railway setup and configuration
