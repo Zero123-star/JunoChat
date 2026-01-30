@@ -142,13 +142,25 @@ const GroupChatPage: React.FC = () => {
             continue;
           }
           
-          const botReply = response.choices[0].message.content;
+          let botReply = response.choices[0].message.content;
+          
+          // Log raw response for debugging concatenation issues
+          console.log(`Raw response from ${character.name}:`, {
+            length: botReply?.length,
+            preview: botReply?.substring(0, 200),
+            hasMultipleNewlines: botReply?.split('\n\n').length > 1,
+            fullContent: botReply
+          });
+          
           if (!botReply || botReply.trim() === '') {
             console.warn(`Empty reply from ${character.name}`);
             toast.warning(`${character.name} returned an empty message`);
             failCount++;
             continue;
           }
+          
+          // Clean up the reply - trim and normalize whitespace
+          botReply = botReply.trim();
           
           const botMessage: Message = {
             id: `bot-${character.id}-${Date.now()}`, // Unique ID for bot messages
