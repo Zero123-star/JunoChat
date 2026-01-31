@@ -39,3 +39,12 @@ beforeEach(() => {
   localStorageMock.setItem.mockClear()
   localStorageMock.removeItem.mockClear()
 })
+
+// Mock HTMLCanvasElement if not present (for Vitest/jsdom)
+if (typeof window.HTMLCanvasElement === 'undefined') {
+  class HTMLCanvasElementMock {}
+  // @ts-ignore
+  window.HTMLCanvasElement = HTMLCanvasElementMock;
+  // @ts-ignore
+  global.HTMLCanvasElement = HTMLCanvasElementMock;
+}

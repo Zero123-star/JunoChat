@@ -224,9 +224,9 @@ DATABASES = {
         'OPTIONS': {
                 'options': '-c search_path=django'
         },
-        'NAME': 'Django_MDS',
+        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'mongo',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '5432',
     }
